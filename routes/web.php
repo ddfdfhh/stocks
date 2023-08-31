@@ -90,8 +90,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
 
-    Route::post('delete_file_from_table', [CommonController::class, 'deleteFileFromTable'])->name('deleteTableFile');
-    Route::post('table_field_update', [CommonController::class, 'table_field_update'])->name('table_filed_update');
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/crud', [CrudGeneratorController::class, 'index'])->name('admin.crud');
 
