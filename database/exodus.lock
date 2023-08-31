@@ -1,0 +1,86 @@
+{
+    "create_users_table": {
+        "file": "2023_02_21_140121_create_users_table.php",
+        "hash": "f5c0646f401ada6f863c98765415ecb9"
+    },
+    "create_categories_table": {
+        "file": "2023_02_21_140122_create_categories_table.php",
+        "hash": "8740ee9bdf722e53925e49a10d3b53b3"
+    },
+    "create_pincodes_table": {
+        "file": "2023_02_21_140123_create_pincodes_table.php",
+        "hash": "af3fc5c152036e08720f6289df0837f8"
+    },
+    "create_tax_classes_table": {
+        "file": "2023_02_21_140124_create_tax_classes_table.php",
+        "hash": "e4c83a40ce207553e560186fca747ce8"
+    },
+    "create_taxes_table": {
+        "file": "2023_02_21_140125_create_taxes_table.php",
+        "hash": "7e2d79ee4fb3d725c0407cac6d3cde17"
+    },
+    "create_manufacturers_table": {
+        "file": "2023_02_21_140126_create_manufacturers_table.php",
+        "hash": "cd315e6b786c6ae8b02b41bbe61b1644"
+    },
+    "create_stores_table": {
+        "file": "2023_02_21_140127_create_stores_table.php",
+        "hash": "fb4a8ee0f712ecb00187a506d8b81433"
+    },
+    "create_pincodes_assigned_stores_table": {
+        "file": "2023_02_21_140128_create_pincodes_assigned_stores_table.php",
+        "hash": "0ab21a5c96a5ae823875ec68d83f6d2c"
+    },
+    "create_commission_classes_table": {
+        "file": "2023_02_21_140129_create_commission_classes_table.php",
+        "hash": "492a28cea5103f60ebae5dec2ec75806"
+    },
+    "create_customer_segments_table": {
+        "file": "2023_02_21_140130_create_customer_segments_table.php",
+        "hash": "b291a5191572cb6dc53d2f930f8bae64"
+    },
+    "create_customer_assigned_segments_table": {
+        "file": "2023_02_21_140131_create_customer_assigned_segments_table.php",
+        "hash": "26b5feb7378f6004e731d248a9f7f2f1"
+    },
+    "create_attributes_table": {
+        "file": "2023_02_21_140132_create_attributes_table.php",
+        "hash": "022ea5dad2c70d314c1a9291eb41de83"
+    },
+    "create_products_table": {
+        "file": "2023_02_21_140133_create_products_table.php",
+        "hash": "42451830da5c6699e36528ed04f2bd4f"
+    },
+    "create_books_table": {
+        "file": "2023_02_21_140134_create_books_table.php",
+        "hash": "98c1e781399cac2915fc1fd6d8d93ea9"
+    },
+    "create_product_images_table": {
+        "file": "2023_02_21_140135_create_product_images_table.php",
+        "hash": "214623bb2e187ef1d10054166bfabf45"
+    },
+    "create_wishlists_table": {
+        "file": "2023_02_21_140136_create_wishlists_table.php",
+        "hash": "53f577b45fb7ac419546f2685d8e267e"
+    },
+    "create_shopping_carts_table": {
+        "file": "2023_02_21_140137_create_shopping_carts_table.php",
+        "hash": "619ee1f1bc6e4c27da4939f146e6607f"
+    },
+    "create_order_items_table": {
+        "file": "2023_02_21_140138_create_order_items_table.php",
+        "hash": "4f9dadb944a2e9fcd8d92dea08fb3a35"
+    },
+    "create_orders_table": {
+        "file": "2023_02_21_140139_create_orders_table.php",
+        "hash": "c85c2c0be7a2f361c5b57b7bc91fd89c"
+    },
+    "create_reviews_table": {
+        "file": "2023_02_21_140140_create_reviews_table.php",
+        "hash": "177668869e0d5988f3b65b706908bb75"
+    },
+    "create_reviews_proof_table": {
+        "file": "2023_02_21_140141_create_reviews_proof_table.php",
+        "hash": "85475125554d2d637bea255af1f091aa"
+    }
+}

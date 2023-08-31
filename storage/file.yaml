@@ -1,0 +1,36 @@
+_token: hykBuPsy0ZulzZgmndOz0WKE5y4WUnpsLy8AHeKo
+name:
+    - AttributeFamily
+plural:
+    - attribute_families
+has_upload:
+    - 'Yes'
+single: 'Yes'
+field_name: image
+image_model_name: AttributeImage
+table_name: attribute_images
+parent_table_field: attribute_id
+filterable_fields:
+    - name
+    - image
+searchable_fields:
+    - name
+    - image
+has_export:
+    - 'Yes'
+column:
+    - [name]
+    - [image]
+    - [name]
+valdations_applied:
+    - [required]
+    - [required]
+    - [image]
+type:
+    - text
+default:
+    - [null]
+multiple:
+    - ['Yes']
+attribute:
+    - null

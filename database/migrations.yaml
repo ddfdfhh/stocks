@@ -1,0 +1,180 @@
+users:
+    id: true
+    name: string(300)
+    email: string(300).unique
+    phone: string(100).unique.nullable
+    password: string(300)
+    country: string(100).nullable
+    state: string(100).nullable
+    city: string(100).nullable
+    pincode: mediumInteger.nullable
+    address: string.nullable
+    image: string.nullable
+    status: enum(["Active","Inactive","Blocked"])
+    rememberToken: true
+    timestamps: true
+categories:
+    id: true
+    timestamps: true
+    name: string
+    parent: mediumInteger
+    status: enum(["Active","In-Active"])
+    image: string(300)
+pincodes:
+    id: true
+    timestamps: true
+    name: mediumInteger
+    city_id: mediumInteger.index
+    status: enum(["Active","In-Active"])
+tax_classes:
+    id: true
+    timestamps: true
+    name: string
+    status: enum(["Active","In-Active"])
+taxes:
+    id: true
+    timestamps: true
+    name: string
+    country: string(100).nullable
+    state: string(100).nullable
+    city: string(100).nullable
+    rate: smallInteger
+    pincode_id: integer.nullable.index
+    class_id: integer.index
+manufacturers:
+    id: true
+    timestamps: true
+    name: string
+    status: enum(["Active","In-Active"])
+stores:
+    id: true
+    timestamps: true
+    name: string
+    country: string(100)
+    state: string(100)
+    city: string(100)
+    address: string
+    owner: integer.nullable.index
+    status: enum(["Active","In-Active"])
+pincodes_assigned_stores:
+    id: true
+    timestamps: true
+    pincode: string
+    store: string(100)
+    state: string(100)
+    city: string(100)
+    vendor: integer.nullable.index
+    store_id: integer.index
+commission_classes:
+    id: true
+    timestamps: true
+    name: string
+    rate: double(4,2).nullable
+    status: enum(["Active","In-Active"])
+customer_segments:
+    id: true
+    timestamps: true
+    name: string(200)
+    status: enum(["Active","In-Active"])
+customer_assigned_segments:
+    id: true
+    timestamps: true
+    segment_id: integer.index
+    customer_id: integer.index
+attributes:
+    id: true
+    timestamps: true
+    name: string(200)
+    value: string(200)
+    category_id: integer.nullable.index
+    status: enum(["Active","In-Active"])
+products:
+    id: true
+    timestamps: true
+    softDeletes: true
+    slug: string(100).unique
+    name: string
+    price: decimal(10,2).default(0)
+    sale_price: decimal(10,2).default(0)
+    discount_type: enum(['Percent','Fixed'])
+    discount: decimal(5,2).default(0)
+    content: text
+    category_id: integer.index
+    published: enum(["Yes","No"])
+    taxable: enum(["Yes","No"])
+    bv: decimal(10,2).default(0)
+    shipping_charge: decimal(8,2).nullable
+   
+books:
+    id: true
+    timestamps: true
+    softDeletes: true
+    slug: string(100).unique
+    name: string
+    price: decimal(10,2).default(0)
+    sale_price: decimal(10,2).default(0)
+    discount_type: enum(['Percent','Fixed'])
+    discount: decimal(5,2).default(0)
+    content: text
+    category_id: integer.index
+    publisher: integer.nullable
+    published_date: datetime
+    isbn: string.nullable
+product_images:
+    id: true
+    timestamps: true
+    name: string
+    product_id: integer.index
+wishlists:
+    id: true
+    timestamps: true
+    product_id: integer
+shopping_carts:
+    id: true
+    timestamps: true
+    product_name: string(300)
+    product_price: decimal(10,2).default(0)
+    product_sale_price: decimal(10,2).default(0)
+    discount: decimal(8,2).default(0)
+    quantity: integer.default(0)
+    tax_class: smallInteger
+    total_payable: double(10,2)
+order_items:
+    id: true
+    timestamps: true
+    product_name: string(300)
+    product_price: decimal(10,2).default(0)
+    product_sale_price: decimal(10,2).default(0)
+    discount: decimal(8,2).default(0)
+    quantity: integer.default(0)
+    total_tax: smallInteger
+    total_payable: double(10,2)
+orders:
+    id: true
+    timestamps: true
+    user_id: string(300)
+    total_mrp: decimal(10,2).default(0)
+    total_discount: decimal(10,2).default(0)
+    total_tax: decimal(10,2).default(0)
+    net_payable: double(10,2)
+    payment_status: enum(["Pending","Paid","Cancelled","Refund"])
+    payment_method: enum(["COD","Online"])
+reviews:
+    id: true
+    timestamps: true
+    rating: decimal(2,2)
+    review: string
+    published: enum(["Yes","No"])
+    user_id: integer.index
+reviews_proof:
+    id: true
+    timestamps: true
+    type: enum(["Image","Video"])
+    image: string
+    video: string
+    review_id: integer.index
+    
+
+    
+
+  

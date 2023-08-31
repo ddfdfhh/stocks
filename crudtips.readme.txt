@@ -1,0 +1,43 @@
+1-agar koi field mein _id hai and wo belongsTo hai wo table mein coresponsing record fetch ho ke show ho jayega using model_relations array in controller 
+So any more relations can be added in model_relations variable in controller and then add that in table_columns to be fetched in index
+2-agar koi imagees field table mein nai hai to bhi aap table_columns mein add kar sakte ho but should contain images or file ,docs substring
+  to code automatically fetch karega images taking into account model_relations array of controller.
+3-try to keep belongsTo field with _id appende
+5- always create model first then generte module  
+-during creating input group ,agar filed select type ka hai to hum options mein 'getList('model_name')' bhi de sakte hai dynamic ;
+6-jab hum kisi relationsio field ko dispaly karte hai to  we use this fun isme last mein jo array hai wo ye decide karta hai ki kis field se us relation ke reocrd fetch kar ke display karna hai
+getForeignKeyFieldValue($model_relations, $row, $field, ['BelongsTo' => 'name'])
+so here it means agar field/column belongsTo relation rakhta hai to use display karne ke liye uske name column ko fetch karke show karenge 
+7-HasMany relationship ke 2 table need to be created second one will have parant table key as foreign key 
+So generate table mein jaake pahle second table create karo then first parentt wala 
+
+==8- applyselect2 will not work in popup unitll we pas popup=true and container id of modal box etc
+
+10 agar kisi doosre table ki ids save karnni hai as json then store id and name both taki retreive karne ke liye join na karna pagde
+11-FIlter ke liye agar koi select box dena aur multiple bhi to attr=['multiple'=>'multiple ] de do and options=getList('Category') aise optinos de sakte hai 
+so filterable mein multiple values sleect se  bhi filter ho jayeg.
+12- kahi pe bhi modle ke deta ko select box mein dena hoto just do getList('modelname',$whereArry); 
+13- common.php mein checkobx radiobox mein list ya options dene ke liye functions hai
+getListFromIndexArray--koi static array hai to use select option  array liek ['apple','mango']*
+getList('model',whereArr)  this from model with condition
+getRadioOptions($model, $where = [])
+
+14 -some fie delete function available in common.php helper 
+deleteSingleFileOwnTable($folder, $model, $model_field, $rowid)
+
+
+deleteAllFilesFromRelatedTable($folder, $parent_field_name, $parent_id, $filemodel)
+
+15 isArrayEmpty,fieldExist($model, $field_name, $value),getTables,getAllModels, getModelRelations($model),properPluralName,properSigularName,
+ getArrayFromModel($model, $fields_label = []),getNameToIdPairFromModel($model, $array_names = []), getCount($table, $where = [])
+ 
+ 16-custom js mein modal popup and dropdown open hone per select2 apply event hai initiseEvents mein 
+ 17- assignUser multiple or single row ka compoenent bana hai just place it above table 
+     so kisi row ko kuch assing karna hai column mein to ye compoent use kar sakte ho just replace user with whatever assing u use like cateory
+18-date should always end with _date suffix in field in table
+19-agar koi dodosre table ki ids as json store karni pade to plain ids ko json mein na save karke {id:1,name:'sds'} is format ke arrya mein save kkro 
+to prevent join on json 
+
+20-agar koi fild json wala ai to usko validation ke filed mein add na karo in gui form of crud generatorautomatically __json
+ karke validation add hota ai
+ 21- multiple image wale table mein image will be stor in "name" column like in Productimage table 
