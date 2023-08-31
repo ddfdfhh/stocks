@@ -14,4 +14,4 @@ RewriteRule ^ index.php
 
 RewriteEngine On
 RewriteCond %{SERVER_PORT} 80
-RewriteRule ^(.*)$ https://app.rivo.co.in/laraadmin/$1 [R,L]
+RewriteRule ^(.*)$ https://app.spseasyway.com/$1 [R,L]
