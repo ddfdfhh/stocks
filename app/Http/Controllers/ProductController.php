@@ -50,7 +50,7 @@ class ProductController extends Controller
                 'field_name' => 'images',
                 'single' => false,
                 'parent_table_field' => 'product_id',
-                'table_name' => 'productimage',
+                'table_name' => 'product_image',
             ],
         ];
         $this->repeating_group_inputs = [
