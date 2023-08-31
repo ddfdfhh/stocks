@@ -141,8 +141,10 @@ class {{modelName}}Controller extends Controller
            $data={{create}};
           
      if(count( $this->form_image_field_name)>0){
+
     foreach($this->form_image_field_name as $g){
-                    $y=[
+          if($model->field_name){
+                        $y=[
                             'placeholder' => '',
                             'name' =>$g['single']?$g['field_name']:$g['field_name'].'[]',
                             'label' =>$g['single']?$g['field_name']:\Str::plural($g['field_name']),
@@ -152,6 +154,7 @@ class {{modelName}}Controller extends Controller
                             'attr' =>$g['single']?[]:['multiple' => 'multiple']
                             ];
                 array_push($data[0]['inputs'],$y);
+          }
     }
 }
        
@@ -227,6 +230,7 @@ class {{modelName}}Controller extends Controller
          $data={{edit}};
         if (count($this->form_image_field_name) > 0) {
     foreach ($this->form_image_field_name as $g) {
+          if($model->field_name){
         $y = [
             'placeholder' => '',
             'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
@@ -237,6 +241,7 @@ class {{modelName}}Controller extends Controller
               'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
         ];
         array_push($data[0]['inputs'], $y);
+          }
     }
 }
          $view_data=[ 

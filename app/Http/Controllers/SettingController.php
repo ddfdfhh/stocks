@@ -15,7 +15,7 @@ class SettingController extends Controller
         $this->module='Setting';
         $this->view_folder='settings';
         $this->storage_folder=$this->view_folder;
-        $this->has_upload=0;
+        $this->has_upload=1;
         $this->is_multiple_upload=0;
         $this->has_export=0;
         $this->pagination_count=100;
@@ -57,12 +57,19 @@ class SettingController extends Controller
         'sortable' => 'Yes'
     ],
     [
-        'column' => 'created_at',
-        'label' => 'Created At',
-        'sortable' => 'Yes'
+        'column' => 'image',
+        'label' => 'Logo',
+        'sortable' => 'No'
     ]
 ];
-		$this->form_image_field_name=[];
+		  $this->form_image_field_name = [
+            [
+                'field_name' => 'image',
+                'single' => true,
+                'parent_table_field' => '',
+                'table_name' => 'setting',
+            ],
+        ];
         $this->repeating_group_inputs=[];
         $this->toggable_group=[];
         $this->model_relations=[];
@@ -334,12 +341,22 @@ class SettingController extends Controller
                 'type' => 'text',
                 'default' => isset($model) ? $model->address : "",
                 'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter address',
+                'name' => 'image',
+                'label' => 'Logo',
+                'tag' => 'input',
+                'type' => 'file',
+                'default' => isset($model) ? $model->image : "",
+                'attr' => []
             ]
         ]
     ]
 ];
         if (count($this->form_image_field_name) > 0) {
     foreach ($this->form_image_field_name as $g) {
+        if($model->field_name){
         $y = [
             'placeholder' => '',
             'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
@@ -350,6 +367,7 @@ class SettingController extends Controller
               'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
         ];
         array_push($data[0]['inputs'], $y);
+    }
     }
 }
          $view_data=[ 
