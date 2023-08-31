@@ -3,7 +3,7 @@
     Login
 @endsection
 @section('content')
- 
+ <h4 class="mb-2  text-center">Welcome</h4>
           <p class="mb-4 text-center">Please sign-in to your account</p>
   <div class="login_error_msg" style="color:red"></div>
    <form  class="mb-3" action="{{ route('login') }}" id="login_form" method="POST">
