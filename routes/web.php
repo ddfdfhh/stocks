@@ -38,6 +38,8 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 /**===================================End custom verification============================== */
 Route::get('/', [FrontendController::class, 'index'])->name('home');
+Route::get('/clear_cache', [FrontendController::class, 'clear_cache'])->name('clear_cache');
+Route::get('/cache', [FrontendController::class, 'cache'])->name('cache');
 Route::group(['middleware' => ['guest']], function () {
     /**
      * Register Routes

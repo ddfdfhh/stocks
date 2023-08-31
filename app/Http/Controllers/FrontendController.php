@@ -12,6 +12,18 @@ class FrontendController extends Controller
   
        return redirect('login');
    }
+   public function clear_cache(){
+     \Artisan::call('cache:clear');
+     \Artisan::call('config:clear');
+     \Artisan::call('route:clear');
+      return 'cleared';
+   }
+   public function cache(){
+     \Artisan::call('config:cache');
+     \Artisan::call('storage:link');
+    \Artisan::call('route:cache');
+      return 'cached';
+   }
    /*****Redirect user id logged in on accessing login route  */
    public function redirect(){
    
