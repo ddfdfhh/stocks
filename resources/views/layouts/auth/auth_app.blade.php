@@ -11,11 +11,9 @@
     <meta name="description" content="Start your development with a Dashboard for Bootstrap 5" />
     <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 admin, bootstrap 5 design, bootstrap 5">
     <!-- Canonical SEO -->
-    <link rel="canonical" href="https://1.envato.market/frest_admin">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://pixinvent.com/demo/frest-clean-bootstrap-admin-dashboard-template/assets/img/favicon/favicon.ico" />
-
+   
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
@@ -93,7 +91,7 @@
 </svg>
 
 </span>
-              <span class="app-brand-text demo h3 mb-0 fw-bold">Frest</span>
+              <span class="app-brand-text demo h3 mb-0 fw-bold">Company</span>
             </a>
           </div>
          
