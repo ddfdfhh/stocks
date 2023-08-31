@@ -2,7 +2,7 @@
 
     $last_uri = request()->segment(2);
   //  dd($last_uri);
-    $routes_arr = ['attribute_families','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories', 'attributes', 'tax_classes', 'customer_segments', 'commission_classes', 'discount_classes', 'shipping_classes', 'countries', 'states', 'cities', 'pincodes', 'taxes', 'Shipping_zones', 'stores', 'product_assign_vendors', 'product_assign_stores', 'vendor_assign_commission', 'product_addons', 'manufactureres'];
+    $routes_arr = ['products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
 @endphp
 
 <ul class="menu-inner py-1">
