@@ -100,7 +100,7 @@
             <td>
                 <a class="btn btn-success btn-icon" title="View"
                     href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
-                    <i class="bx bx-dice-4"></i>
+                    <i class="bx bx-dice-4"></i> 
                 </a>
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
