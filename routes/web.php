@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-//use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CrudGeneratorController;
 use App\Http\Controllers\PermissionController;
@@ -37,7 +37,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 /**===================================End custom verification============================== */
-//Route::get('/', [FrontendController::class, 'index'])->name('home');
+Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::group(['middleware' => ['guest']], function () {
     /**
      * Register Routes
@@ -66,7 +66,7 @@ Route::get('/admin_create', function (Request $r) {
     $user->assignRole('Admin');
 
 });
-//Route::get('/redirect', [FrontendController::class, 'redirect']);
+Route::get('/redirect', [FrontendController::class, 'redirect']);
 Route::post('/fieldExist', [CommonController::class, 'field_exist']);
 Route::post('/getDependentSelectData', [CommonController::class, 'getDependentSelectData']);
 Route::post('/getDependentSelectDataMultipleVal', [CommonController::class, 'getDependentSelectDataMultipleVal']);
