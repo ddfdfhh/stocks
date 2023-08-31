@@ -451,7 +451,7 @@ function getImageList($id, $image_model, $parent_field_name)
 }
 function getFieldValuesFromModelAsArray($model, $field, $where = [])
 {
-    $model_class = "\App\models" . '\\' . $model;
+    $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where('status', 'Active')->where($where);
@@ -467,7 +467,7 @@ function getFieldValuesFromModelAsArray($model, $field, $where = [])
 }
 function getRadioOptions($model, $where = [],$by_field='name')
 {
-    $model_class = "\App\models" . '\\' . $model;
+    $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where('status', 'Active')->where($where);
@@ -493,7 +493,7 @@ function getListFromIndexArray($arr = []) /* for optinos in select not from mode
 }
 function getList($model, $where = [])
 {
-    $model_class = "\App\models" . '\\' . $model;
+    $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where('status', 'Active')->where($where);
@@ -509,7 +509,7 @@ function getList($model, $where = [])
 }
 function getListOnlyNonIdValue($model, $where = [],$by_field='name')
 {
-    $model_class = "\App\models" . '\\' . $model;
+    $model_class = "\App\Models" . '\\' . $model;
    
     $lists = $model_class::query();
     if (count($where) > 0) {
