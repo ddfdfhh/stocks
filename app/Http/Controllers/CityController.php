@@ -2,29 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{{modelName}}Request;
-use App\Models\{{modelName}};
+use App\Http\Requests\CityRequest;
+use App\Models\City;
 use File;
 use \Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-class {{modelName}}Controller extends Controller
+class CityController extends Controller
 {
      public function __construct(){
         $this->dashboard_url=\URL::to('/admin');
-        $this->index_url=route('{{modelNamePluralLowerCase}}.index');
-        $this->module='{{modelName}}';
-        $this->view_folder='{{modelNamePluralLowerCase}}';
+        $this->index_url=route('cities.index');
+        $this->module='City';
+        $this->view_folder='cities';
         $this->storage_folder=$this->view_folder;
-        $this->has_upload={{has_image}};
+        $this->has_upload=0;
         $this->is_multiple_upload=0;
-        $this->has_export={{has_export}};
+        $this->has_export=1;
         $this->pagination_count=100;
 		
-        $this->table_columns={{tableColumns}};
-		$this->form_image_field_name={{form_image_field_name}};
-        $this->repeating_group_inputs={{repeating_group_inputs}};
-        $this->toggable_group={{toggable_group}};
-        $this->model_relations={{model_relations}};
+        $this->table_columns=[
+    [
+        'column' => 'name',
+        'label' => 'Name',
+        'sortable' => 'Yes'
+    ],
+    [
+        'column' => 'state_id',
+        'label' => 'State',
+        'sortable' => 'No'
+    ]
+];
+		$this->form_image_field_name=[];
+        $this->repeating_group_inputs=[];
+        $this->toggable_group=[];
+        $this->model_relations=[
+    [
+        'name' => 'state',
+        'class' => 'App\\Models\\City',
+        'type' => 'BelongsTo'
+    ]
+];
       
           
         
@@ -66,8 +83,23 @@ class {{modelName}}Controller extends Controller
     public function index(Request $request)
     {
        
-        $searchable_fields={{searchFields}};
-        $filterable_fields={{filterFields}};
+        $searchable_fields=[
+    [
+        'name' => 'name',
+        'label' => 'Name'
+    ],
+    [
+        'name' => 'state_id',
+        'label' => 'State Id'
+    ]
+];
+        $filterable_fields=[
+    [
+        'name' => 'name',
+        'label' => 'Name',
+        'type' => 'select'
+    ]
+];
         $table_columns=$this->table_columns;
         if ($request->ajax())
          {
@@ -80,7 +112,7 @@ class {{modelName}}Controller extends Controller
             $search_val = str_replace(" ", "%", $query);
             if(empty($search_by))
                $search_by='name';
-            $list = {{modelName}}::when(!empty($search_val),function($query) use($search_val,$search_by){
+            $list = City::when(!empty($search_val),function($query) use($search_val,$search_by){
                          return $query->where($search_by, 'like', '%'.$search_val.'%');
                       })
                       ->when(!empty($sort_by),function($query) use($sort_by,$sort_type){
@@ -92,7 +124,7 @@ class {{modelName}}Controller extends Controller
                 'sort_by'=> $sort_by,
                 'sort_type'=> $sort_type,
                 'storage_folder'=>$this->storage_folder,
-                 'plural_lowercase'=>'{{modelNamePluralLowerCase}}',
+                 'plural_lowercase'=>'cities',
                  'module'=>$this->module,
                 'has_image'=>$this->has_upload,
                 'model_relations'=>$this->model_relations,
@@ -106,10 +138,10 @@ class {{modelName}}Controller extends Controller
         $query=null;
         if(count($this->model_relations)>0)
         {
-                $query={{modelName}}::with(array_column($this->model_relations,'name'));
+                $query=City::with(array_column($this->model_relations,'name'));
         }
         else{
-            $query={{modelName}}::query();
+            $query=City::query();
         }
         $query=$this->buildFilter($request,$query);
         $list=$query->paginate($this->pagination_count);
@@ -117,13 +149,13 @@ class {{modelName}}Controller extends Controller
             'list'=>$list,
             'dashboard_url'=>$this->dashboard_url,
             'index_url'=>$this->index_url,
-            'title'=>'All {{modelName}}s',
+            'title'=>'All Citys',
             'module'=>$this->module,'model_relations'=>$this->model_relations,
             'searchable_fields'=>$searchable_fields,
             'filterable_fields'=>$filterable_fields,
              'storage_folder'=>$this->storage_folder,
                'table_columns'=> $table_columns,
-                'plural_lowercase'=>'{{modelNamePluralLowerCase}}',
+                'plural_lowercase'=>'cities',
                  'has_image'=>$this->has_upload,
              
              
@@ -138,7 +170,34 @@ class {{modelName}}Controller extends Controller
  
      public function create()
     {
-           $data={{create}};
+           $data=[
+    [
+        'label' => null,
+        'inputs' => [
+            [
+                'placeholder' => 'Enter name',
+                'name' => 'name',
+                'label' => 'Name',
+                'tag' => 'input',
+                'type' => 'text',
+                'default' => isset($model) ? $model->name : "",
+                'attr' => []
+            ],
+            [
+                'name' => 'state_id',
+                'label' => 'State Id',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getList('State'),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
+            ]
+        ]
+    ]
+];
           
      if(count( $this->form_image_field_name)>0){
     foreach($this->form_image_field_name as $g){
@@ -162,7 +221,7 @@ class {{modelName}}Controller extends Controller
              'index_url'=>$this->index_url,
              'title'=>'Create '.$this->module,
              'module'=>$this->module,
-            'plural_lowercase'=>'{{modelNamePluralLowerCase}}',
+            'plural_lowercase'=>'cities',
               'image_field_names'=> $this->form_image_field_name,
               'has_image'=>$this->has_upload,
             'model_relations'=>$this->model_relations,
@@ -173,7 +232,7 @@ class {{modelName}}Controller extends Controller
              ];
         return view('admin.'.$this->view_folder.'.add',with($view_data));
     }
-    public function store({{modelName}}Request $request)
+    public function store(CityRequest $request)
     {
         try{
             $post=$request->all();
@@ -186,7 +245,7 @@ class {{modelName}}Controller extends Controller
                          }
                      }
             }
-           ${{modelNameSingularLowerCase}} = {{modelName}}::create($post);
+           $city = City::create($post);
           
              if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
@@ -198,12 +257,12 @@ class {{modelName}}Controller extends Controller
                         if (is_array($request->file($field_name))) {
                              $image_model_name =modelName($item['table_name']);
                     $parent_table_field = !empty($item['parent_table_field']) ? $item['parent_table_field'] : null;
-                            $this->upload($request->file($field_name), ${{modelNameSingularLowerCase}}->id, $image_model_name, $parent_table_field);
+                            $this->upload($request->file($field_name), $city->id, $image_model_name, $parent_table_field);
                         } else {
                             $image_name = $this->upload($request->file($field_name));
                             if ($image_name) {
-                                ${{modelNameSingularLowerCase}}->{$field_name} = $image_name;
-                                ${{modelNameSingularLowerCase}}->save();
+                                $city->{$field_name} = $image_name;
+                                $city->save();
                             }
                         }
 
@@ -222,9 +281,36 @@ class {{modelName}}Controller extends Controller
  public function edit($id)
     {
        
-        $model={{modelName}}::findOrFail($id);
+        $model=City::findOrFail($id);
         
-         $data={{edit}};
+         $data=[
+    [
+        'label' => null,
+        'inputs' => [
+            [
+                'placeholder' => 'Enter name',
+                'name' => 'name',
+                'label' => 'Name',
+                'tag' => 'input',
+                'type' => 'text',
+                'default' => isset($model) ? $model->name : "",
+                'attr' => []
+            ],
+            [
+                'name' => 'state_id',
+                'label' => 'State Id',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getList('State'),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
+            ]
+        ]
+    ]
+];
         if (count($this->form_image_field_name) > 0) {
     foreach ($this->form_image_field_name as $g) {
         $y = [
@@ -252,7 +338,7 @@ class {{modelName}}Controller extends Controller
              'storage_folder'=>$this->storage_folder,
               'repeating_group_inputs'=>$this->repeating_group_inputs,
               'toggable_group'=>$this->toggable_group,
-             'plural_lowercase'=>'{{modelNamePluralLowerCase}}','model'=>$model
+             'plural_lowercase'=>'cities','model'=>$model
              ];
              if($this->has_upload && $this->is_multiple_upload)
                $view_data['image_list']=$this->getImageList($id);
@@ -265,10 +351,10 @@ class {{modelName}}Controller extends Controller
         $data['row'] =null;
          if(count($this->model_relations)>0)
         {
-               $data['row']={{modelName}}::with(array_column($this->model_relations,'name'))->findOrFail($id);
+               $data['row']=City::with(array_column($this->model_relations,'name'))->findOrFail($id);
         }
         else{
-            $data['row']={{modelName}}::findOrFail($id);
+            $data['row']=City::findOrFail($id);
         }
        
         $data['has_image']=$this->has_upload;
@@ -276,14 +362,14 @@ class {{modelName}}Controller extends Controller
         $data['is_multiple']=$this->is_multiple_upload;
         $data['storage_folder']=$this->storage_folder;
         $data['table_columns']=$this->table_columns;
-        $data['plural_lowercase']='{{modelNamePluralLowerCase}}';
+        $data['plural_lowercase']='cities';
          $data['module']=$this->module;
         if($data['is_multiple'])
         {
          
             $data['image_list']=$this->getImageList($id);
         }
-        return createResponse(true,view('admin.'.$this->view_folder.'.view_modal',with($data))->render());
+        return view('admin.'.$this->view_folder.'.view',with($data));
       
     }
  public function view(Request $request)
@@ -292,10 +378,10 @@ class {{modelName}}Controller extends Controller
           $data['row'] =null;
          if(count($this->model_relations)>0)
         {
-               $data['row']={{modelName}}::with(array_column($this->model_relations,'name'))->findOrFail($id);
+               $data['row']=City::with(array_column($this->model_relations,'name'))->findOrFail($id);
         }
         else{
-            $data['row']={{modelName}}::findOrFail($id);
+            $data['row']=City::findOrFail($id);
         }
          $data['has_image']=$this->has_upload;
         $data['model_relations']=$this->model_relations;
@@ -306,13 +392,13 @@ class {{modelName}}Controller extends Controller
         $html=view('admin.'.$this->view_folder.'.view',with($data))->render();
         return createResponse(true,$html); 
     }
-    public function update({{modelName}}Request $request, $id)
+    public function update(CityRequest $request, $id)
     {
         try
         {
              $post=$request->all();
             
-            ${{modelNameSingularLowerCase}} = {{modelName}}::findOrFail($id);
+            $city = City::findOrFail($id);
              
                 $post=formatPostForJsonColumn($post);
             if(count($this->model_relations)>0&& in_array('BelongsToMany',array_column($this->model_relations,'type'))){
@@ -322,7 +408,7 @@ class {{modelName}}Controller extends Controller
                          }
                      }
             }
-            ${{modelNameSingularLowerCase}}->update($post);
+            $city->update($post);
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
                     $field_name = $item['field_name'];
@@ -333,12 +419,12 @@ class {{modelName}}Controller extends Controller
                         if (is_array($request->file($field_name))) {
                         $image_model_name =modelName($item['table_name']);
                         $parent_table_field = !empty($item['parent_table_field']) ? $item['parent_table_field'] : null;
-                            $this->upload($request->file($field_name), ${{modelNameSingularLowerCase}}->id, $image_model_name, $parent_table_field);
+                            $this->upload($request->file($field_name), $city->id, $image_model_name, $parent_table_field);
                         } else {
                             $image_name = $this->upload($request->file($field_name));
                             if ($image_name) {
-                                ${{modelNameSingularLowerCase}}->{$field_name} = $image_name;
-                                ${{modelNameSingularLowerCase}}->save();
+                                $city->{$field_name} = $image_name;
+                                $city->save();
                             }
                         }
 
@@ -359,7 +445,7 @@ class {{modelName}}Controller extends Controller
     {
         try
         {
-            {{modelName}}::destroy($id);
+            City::destroy($id);
      
             if($this->has_upload){
                 $this->deleteFile($id);
@@ -441,7 +527,34 @@ class {{modelName}}Controller extends Controller
         $form_type=$request->form_type;
         $id=$request->id;
         if($form_type=='add'){
-                 $data1={{create}};
+                 $data1=[
+    [
+        'label' => null,
+        'inputs' => [
+            [
+                'placeholder' => 'Enter name',
+                'name' => 'name',
+                'label' => 'Name',
+                'tag' => 'input',
+                'type' => 'text',
+                'default' => isset($model) ? $model->name : "",
+                'attr' => []
+            ],
+            [
+                'name' => 'state_id',
+                'label' => 'State Id',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getList('State'),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
+            ]
+        ]
+    ]
+];
      
            
        
@@ -452,7 +565,7 @@ class {{modelName}}Controller extends Controller
              'index_url'=>$this->index_url,
              'title'=>'Create '.$this->module,
              'module'=>$this->module,
-            'plural_lowercase'=>'{{modelNamePluralLowerCase}}',
+            'plural_lowercase'=>'cities',
               'image_field_names'=> $this->form_image_field_name,
               'has_image'=>$this->has_upload,
             
@@ -464,9 +577,36 @@ class {{modelName}}Controller extends Controller
        
         }
         if($form_type=='edit'){
-               $model={{modelName}}::findOrFail($id);
+               $model=City::findOrFail($id);
         
-              $data1={{edit}};
+              $data1=[
+    [
+        'label' => null,
+        'inputs' => [
+            [
+                'placeholder' => 'Enter name',
+                'name' => 'name',
+                'label' => 'Name',
+                'tag' => 'input',
+                'type' => 'text',
+                'default' => isset($model) ? $model->name : "",
+                'attr' => []
+            ],
+            [
+                'name' => 'state_id',
+                'label' => 'State Id',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getList('State'),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
+            ]
+        ]
+    ]
+];
         
        
          $data=[ 
@@ -482,7 +622,7 @@ class {{modelName}}Controller extends Controller
              'storage_folder'=>$this->storage_folder,
                'repeating_group_inputs'=>$this->repeating_group_inputs,
                'toggable_group'=>$this->toggable_group,
-             'plural_lowercase'=>'{{modelNamePluralLowerCase}}','model'=>$model
+             'plural_lowercase'=>'cities','model'=>$model
              ];
              if ($this->has_upload) {
                 $ar=[];
@@ -501,20 +641,20 @@ class {{modelName}}Controller extends Controller
                 $data['row'] =null;
                 if(count($this->model_relations)>0)
                 {
-                    $data['row']={{modelName}}::with(array_column($this->model_relations,'name'))->findOrFail($id);
+                    $data['row']=City::with(array_column($this->model_relations,'name'))->findOrFail($id);
                 }
                 else{
-                    $data['row']={{modelName}}::findOrFail($id);
+                    $data['row']=City::findOrFail($id);
                 }
                 $data['has_image']=$this->has_upload;
                 $data['model_relations']=$this->model_relations;
                 $data['storage_folder']=$this->storage_folder;
                 $data['table_columns']=$this->table_columns;
-                  $data['plural_lowercase']='{{modelNamePluralLowerCase}}';
+                  $data['plural_lowercase']='cities';
                  $data['module'] = $this->module;
                   $data['image_field_names']=$this->form_image_field_name;
 		/***if columns shown in view is difrrent from table_columns jet
-		$columns=\DB::getSchemaBuilder()->getColumnListing('{{modelNamePluralLowerCase}}');
+		$columns=\DB::getSchemaBuilder()->getColumnListing('cities');
         natcasesort($columns);
          
 		$cols=[];
@@ -541,7 +681,7 @@ class {{modelName}}Controller extends Controller
             return createResponse(true,$html);
           }
     }
-     public function export{{modelName}}(Request $request,$type){
+     public function exportCity(Request $request,$type){
        $filter=[]; $filter_date=[];
         $date_field=null;
         foreach($_GET as $key=>$val){
@@ -557,11 +697,11 @@ class {{modelName}}Controller extends Controller
              $filter[$key]=$val;
         }
            if($type=='excel')
-        return Excel::download(new \App\Exports\{{modelName}}Export($this->model_relations,$filter,$filter_date,$date_field),'{{modelNamePluralLowerCase}}'.date("Y-m-d H:i:s").'.xlsx',\Maatwebsite\Excel\Excel::XLSX);
+        return Excel::download(new \App\Exports\CityExport($this->model_relations,$filter,$filter_date,$date_field),'cities'.date("Y-m-d H:i:s").'.xlsx',\Maatwebsite\Excel\Excel::XLSX);
         if($type=='csv')
-        return Excel::download(new \App\Exports\{{modelName}}Export($this->model_relations,$filter,$filter_date,$date_field),'{{modelNamePluralLowerCase}}'.date("Y-m-d H:i:s").'.csv',\Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new \App\Exports\CityExport($this->model_relations,$filter,$filter_date,$date_field),'cities'.date("Y-m-d H:i:s").'.csv',\Maatwebsite\Excel\Excel::CSV);
         if($type=='pdf')
-      return Excel::download(new \App\Exports\{{modelName}}Export($this->model_relations,$filter,$filter_date,$date_field),'{{modelNamePluralLowerCase}}'.date("Y-m-d H:i:s").'.pdf',\Maatwebsite\Excel\Excel::MPDF);
+      return Excel::download(new \App\Exports\CityExport($this->model_relations,$filter,$filter_date,$date_field),'cities'.date("Y-m-d H:i:s").'.pdf',\Maatwebsite\Excel\Excel::MPDF);
     
       
    
@@ -591,7 +731,7 @@ class {{modelName}}Controller extends Controller
         }
         if ($is_value_present) {
             if($row){
-                $this->toggable_group ={{toggable_group_edit}};
+                $this->toggable_group =[];
     
                }
             $data['inputs'] = $this->toggable_group[$index_of_val]['inputs'];

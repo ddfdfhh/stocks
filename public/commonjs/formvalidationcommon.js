@@ -520,13 +520,13 @@ function errorAlert(error='')
         });
       }
        /**==============Objec Data  Ajax send no loading icon no alert  =================================*/
-      function objectAjaxNoLoaderNoAlert(object,url,callbackSuccess=undefined,calbackError=undefined)
+      function objectAjaxNoLoaderNoAlert(object,url,callbackSuccess=undefined,calbackError=undefined,method='POST')
       { 
        
           let formData=object;
           $.ajax({
             url:url,
-             method:"POST",
+             method,
              dataType:'json',
              data:formData,
             

@@ -4,7 +4,20 @@ var host = "https://ecommerce.test/admin";
 //     addMore: true,
 //     allowDuplicates: falch,
 // });
-
+$(document).ready(function () {
+    $("#inp-state_id").on("change", function () {
+        let val = $(this).val();
+        // fetchHtmlContent({state:val},'inp-city',host+'/getCity');
+        showDependentSelectBox(
+            "state_id",
+            "name",
+            val,
+            "inp-city_id",
+            "city",
+            "id"
+        );
+    });
+});
 function applySelect2(elem, in_popup = true, container_id = null) {
     let options = { placeholder: "Select.." };
     if (in_popup) options["dropdownParent"] = $("#" + container_id);
@@ -160,7 +173,6 @@ function inilizeEvents() {
     });
     var myDropdown = document.getElementById("filter");
     myDropdown.addEventListener("shown.bs.dropdown", function () {
-       
         applySelect2("select", true, "filter");
     });
     if ($("#tax_form").length > 0) {

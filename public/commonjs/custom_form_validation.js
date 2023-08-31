@@ -43,7 +43,6 @@ function getModuleWiseRules(module) {
                 // pwcheck:true
             },
         };
-    } else if (module == "Login") {
     } else if (module == "User") {
         return {
             name: {
@@ -114,16 +113,67 @@ function getModuleWiseRules(module) {
             name: { required: true },
             permissions: { required: true },
         };
-    } else if (module == "Login") {
+    } else if (module == "Customer") {
         return {
+            name: {
+                required: true,
+                minlength: 2,
+            },
             email: {
                 required: true,
                 minlength: 2,
                 email: true,
             },
-            password: {
+            mobile_no: {
                 required: true,
-                minlength: 6,
+                number: true,
+            },
+            address: {
+                required: true,
+
+                maxlength: 300,
+            },
+            state_id: {
+                required: true,
+
+                number: true,
+            },
+            city_id: {
+                required: true,
+
+                number: true,
+            },
+        };
+    }
+     else if (module == "Setting") {
+        return {
+            company_name: {
+                required: true,
+                minlength: 2,
+            },
+            email: {
+                required: true,
+                minlength: 2,
+                email: true,
+            },
+            mobile_no: {
+                required: true,
+                number: true,
+            },
+            address: {
+                required: true,
+
+                maxlength: 300,
+            },
+            gst_number: {
+                required: true,
+
+                
+            },
+            pan_number: {
+                required: true,
+
+               
             },
         };
     }
@@ -279,3 +329,64 @@ if ($("#user_form").length > 0) {
 /*************=========================================*** */
 
 /**==================================================Crud Form ==================================== */
+/***=========================================================Product Form validation ==========================================*/
+if ($("#customer_form").length > 0) {
+    let rules = getModuleWiseRules("Customer");
+    url = $("#customer_form").attr("action");
+
+    let callbackSuccess = function (res) {
+        if (res["redirect_url"]) {
+            setTimeout(function () {
+                window.location.href = res["redirect_url"];
+            }, 3000);
+        }
+    };
+    formValidateFunctionTemplateImage(
+        rules,
+        {},
+        "customer_btn",
+        "customer_form",
+        url,
+        callbackSuccess
+    );
+}
+if ($("#supplier_form").length > 0) {
+    let rules = getModuleWiseRules("Customer");
+    url = $("#supplier_form").attr("action");
+
+    let callbackSuccess = function (res) {
+        if (res["redirect_url"]) {
+            setTimeout(function () {
+                window.location.href = res["redirect_url"];
+            }, 3000);
+        }
+    };
+    formValidateFunctionTemplateImage(
+        rules,
+        {},
+        "supplier_btn",
+        "supplier_form",
+        url,
+        callbackSuccess
+    );
+}
+if ($("#setting_form").length > 0) {
+    let rules = getModuleWiseRules("Setting");
+    url = $("#setting_form").attr("action");
+
+    let callbackSuccess = function (res) {
+        if (res["redirect_url"]) {
+            setTimeout(function () {
+                window.location.href = res["redirect_url"];
+            }, 3000);
+        }
+    };
+    formValidateFunctionTemplateImage(
+        rules,
+        {},
+        "setting_btn",
+        "setting_form",
+        url,
+        callbackSuccess
+    );
+}

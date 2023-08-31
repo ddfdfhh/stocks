@@ -288,7 +288,7 @@ function passwordStrengthChecker(){
             },2000);
           
           }
-          objectAjaxNoLoaderNoAlert(obj,url,callbackSuccess)
+          objectAjaxNoLoaderNoAlert(obj,url,callbackSuccess,undefined,'GET')
       
     
     }

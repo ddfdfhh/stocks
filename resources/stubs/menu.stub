@@ -1,7 +1,7 @@
 @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_{{modelNamePluralLowerCase}}'))
             <li class="menu-item @if($last_uri=='{{modelNamePluralLowerCase}}') active  @endif">
               <a href="{{route('{{modelNamePluralLowerCase}}.index')}}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-minus"></i>
+               
                 <div data-i18n="Calendar">Manage {{modelNamePluralUpperCase}}</div>
               </a>
             </li>

@@ -336,6 +336,7 @@ function getValidation()
         (object) ['label' => 'Numeric', 'value' => 'numeric'],
         (object) ['label' => 'Nullable', 'value' => 'nullable'],
         (object) ['label' => 'String', 'value' => 'string'],
+        (object) ['label' => 'Email', 'value' => 'email'],
     ];
 }
 function getInputs()
@@ -343,6 +344,7 @@ function getInputs()
 {
         return [
         (object) ['label' => 'Text', 'value' => 'text'],
+        (object) ['label' => 'Email', 'value' => 'email'],
         (object) ['label' => 'Number', 'value' => 'number'],
         (object) ['label' => 'File', 'value' => 'file'],
         (object) ['label' => 'Select', 'value' => 'select'],

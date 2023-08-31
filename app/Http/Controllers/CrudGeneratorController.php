@@ -29,7 +29,7 @@ class CrudGeneratorController extends Controller
             try
             {
                 $post = $r->all();
-                // dd($post);
+                //  dd($post);
                 $ar = [];
                 if ($post['index_page_cols'][0]) {
                     $ar['index_page_config'] = $this->formatForIndexPage($post);
@@ -42,7 +42,6 @@ class CrudGeneratorController extends Controller
                 if ($post['create_fields'][0]) {
                     $ar['create_input_config'] = $this->pickCreateInputs($post);
                 }
-
                 if ($post['toggalbe_fields'][0]) {
                     $ar['toggable_input_config'] = $this->formatForToggable($post);
                 }
@@ -135,6 +134,8 @@ class CrudGeneratorController extends Controller
 
                 return redirect()->back()->with('success', 'Successfully created');
             } catch (\Exception$ex) {
+                echo ($ex->getLine());
+
                 dd($ex->getMessage());
             }
         }
@@ -148,6 +149,7 @@ class CrudGeneratorController extends Controller
     {
 
         if (count($r->all()) > 0) {
+            //dd($r->all());
             try {
                 $post = $r->all();
                 //       dd($post);
@@ -180,6 +182,7 @@ class CrudGeneratorController extends Controller
                         $p['relationship_my_key'] = '';
                         $p['props'] = [];
                         $p['data_type'] = '';
+                        $p['enums'] = '';
 
                         $append = $index > 0 ? '__' . $index : '';
                         $p['col_name'] = $post['col_name' . $append];
@@ -196,6 +199,7 @@ class CrudGeneratorController extends Controller
                         }
                         $p['constraints'] = isset($post['contraints' . $append]) ? $post['contraints' . $append] : [];
                         $p['data_type'] = $post['data_type' . $append];
+                        $p['enums'] = $post['enums' . $append];
 
                         $ar['columns'][] = $p;
                     }
@@ -333,6 +337,7 @@ class CrudGeneratorController extends Controller
             $group['Grp0']['attrs'] = $attrs;
 
         }
+       // dd('plplo');
         foreach ($post as $key => $val) {
             if (str_contains($key, 'create_fields_')) {
                 $index = str_replace('create_fields_', '', $key);
@@ -415,12 +420,16 @@ class CrudGeneratorController extends Controller
             $input_types = $grp['types'];
             $input_ar = [];
             $i = 0;
+          //  dd($input_types);
             foreach ($field_keys as $field) {
+               
                 $input = $input_types[$field];
                 $attr = [];
                 $options = [];
                 $options_for_select = [];
                 $options_for_radio = [];
+               // echo $field;
+
                 $attr = !empty($attr_p[$field]) ? $attr_p[$field] : [];
                 $default = isset($model) ? $model->{$field} : "";
                 $options = !empty($select_box_options[$field]) ? $select_box_options[$field] : [];
@@ -441,11 +450,11 @@ class CrudGeneratorController extends Controller
                 } elseif ($input == 'textarea') {
                     $p = ['placeholder' => 'Enter ' . $field, 'name' => $field, 'label' => $label, 'tag' => 'textarea', 'type' => 'textarea', 'default' => $default, 'attr' => $attr];
                 } elseif ($input == 'select') {
-                    $is_multiple = $is_multiple[$field] == 'Yes' ? true : false;
+                    $is_multiple = isset($is_multiple[$field]) && $is_multiple[$field] == 'Yes' ? true : false;
                     $default = 'isset($model) ? formatDefaultValueForSelectEdit($model,\'' . $field . '\', true) : ""';
                     $p = ['name' => $field, 'label' => $label, 'tag' => 'select', 'type' => 'select', 'default' => $default, 'attr' => $attr, 'custom_key_for_option' => 'name', 'options' => $options, 'custom_id_for_option' => 'id', 'multiple' => $is_multiple];
                 } elseif ($input == 'radio' || $input == 'checkbox') {
-                    $is_multiple = $is_multiple[$field] == 'Yes' ? true : false;
+                    $is_multiple = isset($is_multiple[$field]) && $is_multiple[$field] == 'Yes' ? true : false;
                     $default = 'isset($model) ?
                     ($is_multiple ? formatDefaultValueForCheckbox($model,\'' . $field . '\') : $model->' . $field . ')
                     : ($is_multiple ? [] : "")';
@@ -775,6 +784,7 @@ class CrudGeneratorController extends Controller
     }
     public function makeTable($data)
     {
+      // dd($data);
         Schema::dropIfExists($data['table']);
         //  $type = ['varchar(300)', 'smallText', 'longText','Int', 'smallInt', 'mediumInt','tinyInt','enum', 'json', 'decimal(10,2)','date','timestamp','current_timestamp'];
         //  $props = ['unsigned', 'nullable', 'unique', 'index'];
@@ -782,10 +792,12 @@ class CrudGeneratorController extends Controller
         Schema::create($data['table'], function ($table) use ($data) {
             $columns = $data['columns'];
 
-            $enums = !empty($columns['enums']) ? explode(',', $columns['enums']) : [];
+        
             $table->increments('id');
             foreach ($columns as $col) {
-
+               // dd($col);
+    $enums = !empty($col['enums']) ? explode(',', $col['enums']) : [];
+   // dd($enums);
                 $constraints = $col['constraints'];
                 if ($col['data_type'] == 'varchar(300)') {
                     $column = $table->string($col['col_name'], 300);
@@ -805,7 +817,8 @@ class CrudGeneratorController extends Controller
                 } elseif ($col['data_type'] == 'tinyInt') {
                     $column = $table->tinyInteger($col['col_name']);
                 } elseif ($col['data_type'] == 'enum') {
-                    $column = $table->enum($col['col_name'], $enums);
+                    
+                    $column = $table->enum($col['col_name'], $enums)->default($enums[0]);
                 } elseif ($col['data_type'] == 'json') {
                     $column = $table->json($col['col_name']);
                 } elseif ($col['data_type'] == 'date') {

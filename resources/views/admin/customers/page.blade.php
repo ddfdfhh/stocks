@@ -11,8 +11,8 @@
         @php
             
             $deleteurl = route($plural_lowercase . '.destroy', [\Str::singular($plural_lowercase) => $r->id]);
-            $editurl = route(strtolower($module) . '.loadAjaxForm');
-            $viewurl = route(str_replace('_', '', $plural_lowercase) . '.view');
+            $editurl = route($plural_lowercase . '.edit', [\Str::singular($plural_lowercase) => $r->id]);
+            $viewurl =  route($plural_lowercase . '.show', [\Str::singular($plural_lowercase) => $r->id]);
             
         @endphp
         <tr id="row-{{ $r->id }}">
@@ -30,7 +30,7 @@
                     </td>
                 @elseif(str_contains($t, '_at') || str_contains($t, 'date'))
                     <td>{{ formateDate($r->{$t}) }}</td>
-                @elseif(isFieldPresentInRelation($model_relations, $t) >= 0)
+                  @elseif(isFieldPresentInRelation($model_relations, $t) >= 0)
                     @if (
                         $r->{$t} &&
                             (preg_match("/image$/", $t) ||
@@ -99,13 +99,13 @@
             @endforeach
             <td>
                 <a class="btn btn-success btn-icon" title="View"
-                    href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
-                    <i class="bx bx-dice-4"></i> 
+                    href="javascript:viewRecord('{!! $r->id !!}','{!! $viewurl !!}','{!!strtolower($module)!!}')">
+                    <i class="bx bx-dice-4"></i>
                 </a>
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
                     <a class="btn  btn-info btn-icon" title="Edit"
-                        href="javascript:load_form('{!! $module !!}','edit','{!! $editurl !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
+                        href="{{ $editurl }}">
                         <i class="bx bx-edit"></i> </a>
                 @endif
                 @if (auth()->user()->hasRole(['Admin']) ||
