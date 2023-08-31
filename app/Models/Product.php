@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
-    protected $table='Product';
+    protected $table='product';
     public $timestamps=0;
      public function getFillable(){
         return  $this->getTableColumns();
