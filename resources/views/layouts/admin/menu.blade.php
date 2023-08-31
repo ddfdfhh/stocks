@@ -1,7 +1,7 @@
 @php
 
     $last_uri = request()->segment(2);
-  //  dd($last_uri);
+ echo $last_uri;
     $routes_arr = ['products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
 @endphp
 
