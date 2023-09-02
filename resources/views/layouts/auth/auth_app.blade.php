@@ -91,7 +91,7 @@
 </svg>
 
 </span>
-              <span class="app-brand-text demo h3 mb-0 fw-bold">Company</span>
+              <span class="app-brand-text demo h3 mb-0 fw-bold">RKB</span>
             </a>
           </div>
          
