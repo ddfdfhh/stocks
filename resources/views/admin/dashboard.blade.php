@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-
+ 
         <div class="row">
             <!-- Statistics Cards -->
             <div class="col-sm-6 col-xl-3 ">
