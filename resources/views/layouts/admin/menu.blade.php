@@ -94,14 +94,14 @@
               </a>
             </li>
      @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_demo_table'))
+     {{--@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_demo_table'))
             <li class="menu-item @if($last_uri=='demo_table') active  @endif">
               <a href="{{route('demo_tables.index')}}" class="menu-link">
                
                 <div data-i18n="Calendar">Manage Demo  Table</div>
               </a>
             </li>
-     @endif
+     @endif--}}
      @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_vehicles'))
             <li class="menu-item @if($last_uri=='vehicles') active  @endif">
               <a href="{{route('vehicles.index')}}" class="menu-link">
