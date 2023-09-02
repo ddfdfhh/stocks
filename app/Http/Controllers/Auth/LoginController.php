@@ -64,4 +64,8 @@ class LoginController extends Controller
     {
         return redirect()->intended();
     }
+    public function logout(){
+          Auth::logout();
+          return redirect(route('login'));
+    }
 }

@@ -71,6 +71,7 @@ Route::post('/fieldExist', [CommonController::class, 'field_exist']);
 Route::post('/getDependentSelectData', [CommonController::class, 'getDependentSelectData']);
 Route::post('/getDependentSelectDataMultipleVal', [CommonController::class, 'getDependentSelectDataMultipleVal']);
 Route::group(['middleware' => ['auth']], function () {
+Route::get('/logout',[App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('auth.logout');
 
     Route::post('delete_file_from_table', [CommonController::class, 'deleteFileFromTable'])->name('deleteTableFile');
     Route::post('assignUser', [CommonController::class, 'assignUser'])->name('assignUser');
