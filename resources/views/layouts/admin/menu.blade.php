@@ -2,7 +2,7 @@
 
     $last_uri = request()->segment(2);
 
-    $routes_arr = ['products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
+    $routes_arr = ['raw_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -91,6 +91,30 @@
               <a href="{{route('suppliers.index')}}" class="menu-link">
                
                 <div data-i18n="Calendar">Manage Suppliers</div>
+              </a>
+            </li>
+     @endif
+     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_demo_table'))
+            <li class="menu-item @if($last_uri=='demo_table') active  @endif">
+              <a href="{{route('demo_tables.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Demo  Table</div>
+              </a>
+            </li>
+     @endif
+     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_vehicles'))
+            <li class="menu-item @if($last_uri=='vehicles') active  @endif">
+              <a href="{{route('vehicles.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Vehicles</div>
+              </a>
+            </li>
+     @endif
+     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_drivers'))
+            <li class="menu-item @if($last_uri=='drivers') active  @endif">
+              <a href="{{route('drivers.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Drivers</div>
               </a>
             </li>
      @endif

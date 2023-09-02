@@ -127,10 +127,13 @@ function getForeignKeyFieldValue($rel_ar, $row, $field, $key_toget_as_per_relati
 {
     // dd($field);
     $resp = '';
+    $item['name'] = 'category';
+   // $field = 'category_id';
     foreach ($rel_ar as $item) {
-        $field = $field == $item['name'] . '_id' ? $item['name'] : $field;
+          $field = $field == $item['name'] . '_id' ? $item['name'] : $field;
         //dd($field);
         $get_by_field = isset($key_toget_as_per_relation[$item['type']]) ? $key_toget_as_per_relation[$item['type']] : 'name';
+        //dd($field.'==='.$item['name']);
         if ($field == $item['name']) {
 
             if ($item['type'] == 'BelongsTo' || $item['type'] == 'HasOne') {
@@ -202,56 +205,84 @@ function getPivotTableName($model1, $model2)
 function formatPostForJsonColumn($post)
 {
 
-    $json_cols = [];
-    $json_keys = [];
+    $json_cols = [];/****like storing first part in json field */
+    $json_keys = [];/****like storing last part in json field */
     $ar_val = [];
     $no_of_values_in_arr = 0;
     foreach ($post as $key => $val) {
-        if (is_array($post[$key])) {if (count($post[$key]) > 0) {if (str_contains($key, '__json__')) /***if key is associative array  */ {
+        if (is_array($post[$key])) {
+            if (count($post[$key]) > 0) {
+                if (str_contains($key, '__json__')) {
 
-            $spl = explode("__json__", $key);
-            $no_of_values_in_arr = count($post[$key]);
+                    $spl = explode("__json__", $key);
+                     $col_name = $spl[0];
+                     $key_name = $spl[1];
 
-            $col_name = $spl[0];
-            $json_cols[] = $col_name;
-            $key_name = $spl[1];
+                   // $no_of_values_in_arr = count($post[$key]);
+                    if(!isset($post[$col_name])){
+                       
+                        $json_cols[] = $col_name;
+                        
 
-            $json_keys[] = $key_name;
+                        $json_keys[] = $key_name; /***like storing size */
+                    }
+                    else{/****kyunki json column toggle mein bhi hota hai to unko unset karo psot se  */
+                        $val=$post[$key];
+                        unset($post[$key]);
+                        $post[$key_name]=$val[0];/*toggable div ke case mein ham kewal first val store kara rahe hai not array u can change***/
+                    }
 
-        } else { /***if key is index array  */
-            $post[$key] = json_encode($post[$key]);
-        }
-        } else { /***if key val is empty  */
-            $post[$key] = null;
-        }
+                } else { /***if key is index array  */
+                    $post[$key] = json_encode($post[$key]);
+                }
+            } else { /***if key val is empty  */
+                $post[$key] = null;
+            }
 
         }
     }
 
     $json_cols = array_unique($json_cols);
-    // dd($json_cols);
+  
     foreach ($json_cols as $colname) {
         if (count($json_keys) > 0) {
 
-            for ($i = 0; $i < $no_of_values_in_arr; $i++) {
+           $p=[];
                 foreach ($json_keys as $key) {
-                    $values = $post[$colname . '__json__' . $key];
-                    $p[$key] = $values[$i];
+                   
+                    if(isset($post[$colname . '__json__' . $key])){
+                        $values = $post[$colname . '__json__' . $key];
+                        $p[$key] = $values;
+                    }
                 }
                 $ar_val[$colname][] = $p;
 
-            }
+            
         }
+      
     }
-
     if (count($ar_val) > 0) {
         foreach ($ar_val as $key => $val) {
+             $keys=array_keys($val[0]);
+             $val_count=count($val[0][$keys[0]]);
+           
+             $t=[];
+             for($i=0;$i<($val_count);$i++){
+                $x = [];
 
-            $post[$key] = json_encode($val);
+                   foreach ($keys as $k) {
+                           $x[$k]=$val[0][$k][$i];
+                            
+
+                        }
+             $t[]=$x;
+             }
+            // dd($t);
+            $post[$key] = json_encode($t);
 
         }
     }
-
+//dd($post);
     return $post;
 }
 function showArrayInColumn($arr = [], $row_index = 0)
@@ -264,7 +295,12 @@ function showArrayInColumn($arr = [], $row_index = 0)
         if (!is_array($arr[0])) {
 
             return implode(',', $arr);
-        } elseif (!isArrayEmpty($arr)) {
+        }
+        elseif (isset($arr[0]) && !is_array($arr[0])) {
+
+            return implode(',', $arr);
+        }
+         elseif (!isArrayEmpty($arr)) {
 
             $keys = array_keys($arr[0]);
             $header = '<tr>';
@@ -340,17 +376,17 @@ function getValidation()
     ];
 }
 function getInputs()
-
 {
-        return [
+    return [
         (object) ['label' => 'Text', 'value' => 'text'],
         (object) ['label' => 'Email', 'value' => 'email'],
+        (object) ['label' => 'Textarea', 'value' => 'textarea'],
         (object) ['label' => 'Number', 'value' => 'number'],
         (object) ['label' => 'File', 'value' => 'file'],
         (object) ['label' => 'Select', 'value' => 'select'],
         (object) ['label' => 'Radio', 'value' => 'radio'],
         (object) ['label' => 'Checkbox', 'value' => 'checkbox'],
-        
+
     ];
 }
 
@@ -467,15 +503,15 @@ function getFieldValuesFromModelAsArray($model, $field, $where = [])
     }
     return $list4;
 }
-function getRadioOptions($model, $where = [],$by_field='name')
+function getRadioOptions($model, $where = [], $by_field = 'name')
 {
     $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where('status', 'Active')->where($where);
     }
-    $field_to_get=!empty($by_field)?$by_field:'name';
-    $lists = $lists->get(['id',$field_to_get]);
+    $field_to_get = !empty($by_field) ? $by_field : 'name';
+    $lists = $lists->get(['id', $field_to_get]);
     $alist = [];
     foreach ($lists as $list) {
         $ar = (object) ['label' => $list[$field_to_get], 'value' => $list['id']];
@@ -493,33 +529,32 @@ function getListFromIndexArray($arr = []) /* for optinos in select not from mode
     }
     return $list3;
 }
-function getList($model, $where = [])
+function getList($model, $where = [], $by_field = 'name')
 {
     $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where('status', 'Active')->where($where);
     }
-    $lists = $lists->get(['id', 'name']);
+    $lists = $lists->get(['id', $by_field]);
 
     $list2 = [];
     foreach ($lists as $list) {
-        $ar = (object) ['id' => $list['id'], 'name' => $list['name']];
+        $ar = (object) ['id' => $list['id'], 'name' => $list[$by_field]];
         array_push($list2, $ar);
     }
     return $list2;
 }
-function getListOnlyNonIdValue($model, $where = [],$by_field='name')
+function getListOnlyNonIdValue($model, $where = [], $by_field = 'name')
 {
     $model_class = "\App\Models" . '\\' . $model;
-   
+
     $lists = $model_class::query();
     if (count($where) > 0) {
         $lists = $lists->where($where);
     }
     $lists = $lists->pluck($by_field)->toArray();
 
-    
     return $lists;
 }
 /******remove below thing any time  */

@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CrudGeneratorController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -13,8 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/home', function () { /*home is redirect route defined in fortservice provider after logi auth  from here divert route based on role,dont use separate admin rout files now  */
     if (auth()->user()->hasRole(['Admin'])) {
         return redirect(route('admin.dashboard'));
-    }
-     else if (auth()->user()->hasRole(['User'])) {
+    } else if (auth()->user()->hasRole(['User'])) {
         return redirect(route('user.dashboard'));
     }
 
@@ -90,7 +88,6 @@ Route::group(['middleware' => ['auth']], function () {
 });
 Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
 
-    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/crud', [CrudGeneratorController::class, 'index'])->name('admin.crud');
 
@@ -99,11 +96,10 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::match (['get', 'post'], '/addTableRelationship', [CrudGeneratorController::class, 'addTableRelationship'])->name('admin.addTableRelationship');
 /******Modules Routes From Here */
 
-   
-Route::resource('roles', 'RoleController');
-Route::post('roles/view', [App\Http\Controllers\RoleController::class, 'view'])->name('roles.view');
-Route::post("role/load_form", [App\Http\Controllers\RoleController::class, "loadAjaxForm"])->name("role.loadAjaxForm");
-Route::get("export_roles/{type}", [App\Http\Controllers\RoleController::class, "exportRole"])->name("role.export");
+    Route::resource('roles', 'RoleController');
+    Route::post('roles/view', [App\Http\Controllers\RoleController::class, 'view'])->name('roles.view');
+    Route::post("role/load_form", [App\Http\Controllers\RoleController::class, "loadAjaxForm"])->name("role.loadAjaxForm");
+    Route::get("export_roles/{type}", [App\Http\Controllers\RoleController::class, "exportRole"])->name("role.export");
 
     Route::resource('permissions', 'PermissionController');
     Route::post('permissions/view', [PermissionController::class, 'view'])->name('permissions.view');
@@ -124,31 +120,49 @@ Route::get("export_roles/{type}", [App\Http\Controllers\RoleController::class, "
     Route::post('products/view', [App\Http\Controllers\ProductController::class, 'view'])->name('products.view');
     Route::get("export_products/{type}", [App\Http\Controllers\ProductController::class, "exportProduct"])->name("product.export");
 
+    Route::resource('states', 'StateController');
+    Route::post('states/view', [App\Http\Controllers\StateController::class, 'view'])->name('states.view');
+    Route::post("state/load_form", [App\Http\Controllers\StateController::class, "loadAjaxForm"])->name("state.loadAjaxForm");
+    Route::get("export_states/{type}", [App\Http\Controllers\StateController::class, "exportState"])->name("state.export");
+
+    Route::resource('cities', 'CityController');
+    Route::post('cities/view', [App\Http\Controllers\CityController::class, 'view'])->name('cities.view');
+    Route::post("city/load_form", [App\Http\Controllers\CityController::class, "loadAjaxForm"])->name("city.loadAjaxForm");
+    Route::get("export_cities/{type}", [App\Http\Controllers\CityController::class, "exportCity"])->name("city.export");
+
+    Route::resource('customers', 'CustomerController');
+    Route::post('customers/view', [App\Http\Controllers\CustomerController::class, 'view'])->name('customers.view');
+    Route::get("export_customers/{type}", [App\Http\Controllers\CustomerController::class, "exportCustomer"])->name("customer.export");
+
+    Route::resource('suppliers', 'SupplierController');
+    Route::post('suppliers/view', [App\Http\Controllers\SupplierController::class, 'view'])->name('suppliers.view');
+    Route::get("export_suppliers/{type}", [App\Http\Controllers\SupplierController::class, "exportSupplier"])->name("supplier.export");
+
+    Route::resource('settings', 'SettingController');
+    Route::post('settings/view', [App\Http\Controllers\SettingController::class, 'view'])->name('settings.view');
+    Route::post("setting/load_form", [App\Http\Controllers\SettingController::class, "loadAjaxForm"])->name("setting.loadAjaxForm");
+    Route::get("export_settings/{type}", [App\Http\Controllers\SettingController::class, "exportSetting"])->name("setting.export");
+
+    Route::resource('demo_tables', 'DemoTableController');
+    Route::post('demo_tables/view', [App\Http\Controllers\DemoTableController::class, 'view'])->name('demotables.view');
+    Route::post('demo_tables/view', [App\Http\Controllers\DemoTableController::class, 'view'])->name('demotables.view');
+    Route::post('demotable/load_snippets', [App\Http\Controllers\DemoTableController::class, 'load_toggle'])->name('demotables.load_toggle');
+    Route::post("demotable/load_form", [App\Http\Controllers\DemoTableController::class, "loadAjaxForm"])->name("demotable.loadAjaxForm");
+    Route::get("export_demotables/{type}", [App\Http\Controllers\DemoTableController::class, "exportDemoTable"])->name("demotable.export");
+
+
     
-Route::resource('states', 'StateController');
-Route::post('states/view', [App\Http\Controllers\StateController::class,'view'])->name('states.view');
-Route::post("state/load_form", [App\Http\Controllers\StateController::class,"loadAjaxForm"])->name("state.loadAjaxForm");
-Route::get("export_states/{type}", [App\Http\Controllers\StateController::class,"exportState"])->name("state.export");
+Route::resource('vehicles', 'VehicleController');
+Route::post('vehicles/view', [App\Http\Controllers\VehicleController::class, 'view'])->name('vehicles.view');
+Route::post("vehicle/load_form", [App\Http\Controllers\VehicleController::class, "loadAjaxForm"])->name("vehicle.loadAjaxForm");
+Route::get("export_vehicles/{type}", [App\Http\Controllers\VehicleController::class, "exportVehicle"])->name("vehicle.export");
 
 
-Route::resource('cities', 'CityController');
-Route::post('cities/view', [App\Http\Controllers\CityController::class,'view'])->name('cities.view');
-Route::post("city/load_form", [App\Http\Controllers\CityController::class,"loadAjaxForm"])->name("city.loadAjaxForm");
-Route::get("export_cities/{type}", [App\Http\Controllers\CityController::class,"exportCity"])->name("city.export");
+Route::resource('drivers', 'DriverController');
+Route::post('drivers/view', [App\Http\Controllers\DriverController::class, 'view'])->name('drivers.view');
+Route::post("driver/load_form", [App\Http\Controllers\DriverController::class, "loadAjaxForm"])->name("driver.loadAjaxForm");
+Route::get("export_drivers/{type}", [App\Http\Controllers\DriverController::class, "exportDriver"])->name("driver.export");
 
-
-Route::resource('customers', 'CustomerController');
-Route::post('customers/view', [App\Http\Controllers\CustomerController::class, 'view'])->name('customers.view');
-Route::get("export_customers/{type}", [App\Http\Controllers\CustomerController::class, "exportCustomer"])->name("customer.export");
-
-Route::resource('suppliers', 'SupplierController');
-Route::post('suppliers/view', [App\Http\Controllers\SupplierController::class, 'view'])->name('suppliers.view');
-Route::get("export_suppliers/{type}", [App\Http\Controllers\SupplierController::class, "exportSupplier"])->name("supplier.export");
-
-Route::resource('settings', 'SettingController');
-Route::post('settings/view', [App\Http\Controllers\SettingController::class, 'view'])->name('settings.view');
-Route::post("setting/load_form", [App\Http\Controllers\SettingController::class, "loadAjaxForm"])->name("setting.loadAjaxForm");
-Route::get("export_settings/{type}", [App\Http\Controllers\SettingController::class, "exportSetting"])->name("setting.export");
 
 
 });

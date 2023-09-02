@@ -204,29 +204,29 @@ function inilizeEvents() {
         $("#add_variant").toggle();
     });
 }
+
 function showToggableDivOnLoadIfPresent() {
     if ($(".toggable_div").length > 0) {
+    
         $(".toggable_div").each(function () {
             let id = $(this).attr("id");
+            let colname = $(this).attr("data-colname");
+            
             let inputidforval = $(this).data("inputidforvalue");
             let rowid = $(this).data("rowid");
             console.log(inputidforval);
             if (inputidforval.length > 0) {
-                let val = $("#" + inputidforval).val();
-                //  console.log(val)
-                if (val.length > 1) {
-                    let module = $(this).data("module");
+                let val = inputidforval;
 
-                    if (inputidforval.length > 2) {
-                        objectAjaxNoLoaderNoAlert(
-                            { val: val, row_id: rowid },
-                            `/admin/${module}/load_snippets`,
-                            (htmlLoadcallback = function (res) {
-                                $("#" + id).html(res["message"]);
-                            })
-                        );
-                    }
-                }
+                let module = $(this).data("module");
+
+                objectAjaxNoLoaderNoAlert(
+                    { val: val, row_id: rowid, colname },
+                    `/admin/${module.toLowerCase()}/load_snippets`,
+                    (htmlLoadcallback = function (res) {
+                        $("#" + id).html(res["message"]);
+                    })
+                );
             }
         });
     }
@@ -288,10 +288,15 @@ function initializeFormAjaxSubmitAndValidation() {
         );
     });
 }
-$(document).ready(function () {
-    if ($(".summernote") > 0) {
-        $("#summernote").summernote();
+function initialiseSummernote() {
+    if ($(".summernote").length > 0) {
+        $(".summernote").each(function (el) {
+            $(this).summernote();
+        });
     }
+}
+$(document).ready(function () {
+    initialiseSummernote();
     inilizeEvents();
 
     showToggableDivOnLoadIfPresent();
@@ -314,12 +319,12 @@ function removeRow() {
         parent.children(".copy_row").last().remove();
 }
 /*=======================Toggle Div Display based on input val================================*/
-function toggleDivDisplay(val, module, container_id, row_id = null) {
+function toggleDivDisplay(field, val, module, container_id, row_id = null) {
     /*here modeule is plural_lowercae*/
 
     objectAjaxNoLoaderNoAlert(
-        { val: val, row_id },
-        `/admin/${module}/load_snippets`,
+        { val: val, row_id, colname: field },
+        `/admin/${module.toLowerCase()}/load_snippets`,
         (htmlLoadcallback = function (res) {
             console.log(res);
             $("#" + container_id).html(res["message"]);
@@ -380,6 +385,8 @@ function load_form(module, form_type, url, id = null, properName) {
     let htmlLoadcallback = function (res) {
         $("#offcanvasEnd .offcanvas-body").removeClass("text-center");
         $("#offcanvasEnd .offcanvas-body").html(res["message"]);
+
+        initialiseSummernote();
 
         applySelect2("select", (in_popup = true), "offcanvasEnd");
         initiateSelect2ChangeEvents(true, "offcanvasEnd");

@@ -1,4 +1,4 @@
-@props(['inputs', 'column'])
+@props(['inputs', 'column','row'])
 
 @php
     
@@ -34,13 +34,17 @@
             if (isset($r['event'])) {
                 $attrs[$r['event']['name']] = $r['event']['function'];
             }
-            
+             $spl = explode("__json__", $r['name']);
+            $col_name = $spl[0];
+            $key_name = rtrim($spl[1],'[]');
+
+            $r['default']=!empty($row)?$row->{$key_name}:'';
         @endphp
 
         <div class="col-md-{{ $col }} mb-3">
 
             @if ($r['tag'] == 'input')
-                @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'file')
+                @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'email' || $r['type'] == 'file')
                     {!! Form::text($r['name'], $r['label'])->value($r['default'])->type($r['type'])->placeholder($r['placeholder'])->attrs($attrs) !!}
                     @if ($r['type'] == 'file' && !empty($r['default']))
                         <div class="d-flex">
@@ -118,6 +122,7 @@
         @if ($has_toggle_div)
             <div class="col-md-{{ $col }} mb-3 toggable_div" id="{{ $r['has_toggle_div']['toggle_div_id'] }}"
                 data-module="{{ $r['has_toggle_div']['plural_lowercase'] }}"
+                data-colname="{{ $r['has_toggle_div']['colname'] }}"
                 data-inputidforvalue="{{ $r['has_toggle_div']['inputidforvalue'] }}">
 
             </div>

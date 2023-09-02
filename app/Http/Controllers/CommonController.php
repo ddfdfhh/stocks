@@ -16,314 +16,309 @@ class CommonController extends Controller
         }
 
     }
-    function getColumnsFromTable(Request $r){
-        $table=$r->table;
-        \Session::put('table',$table);
-        $field_name=$r->field_name;
-        $type=$r->type;
-        $multiple=$type=='checkbox'?'multiple':'';
-        $event_call=$r->has('event')?$r->event:'';
-        $cols=\Schema::getColumnListing($table);
-        $resp='';
-        $resp='<div class="form-group"><label  class="form-label">Select Fields</label>
-        <select name="'.$field_name.'[]" '. $multiple.' class="form-control"  tabindex="-1" aria-hidden="true" onchange="'.$event_call.'">';
-         $options=' <option value="" selected="" >Select input type</option>';
+    public function getColumnsFromTable(Request $r)
+    {
+        $table = $r->table;
+        \Session::put('table', $table);
+        $field_name = $r->field_name;
+        $type = $r->type;
+        $multiple = $type == 'checkbox' ? 'multiple' : '';
+        $event_call = $r->has('event') ? $r->event : '';
+        $cols = \Schema::getColumnListing($table);
+        $resp = '';
+        $resp = '<div class="form-group"><label  class="form-label">Select Fields</label>
+        <select name="' . $field_name . '[]" ' . $multiple . ' class="form-control"  tabindex="-1" aria-hidden="true" onchange="' . $event_call . '">';
+        $options = ' <option value="" selected="" >Select input type</option>';
 
-        foreach($cols as $col){
-        $options.=' <option value="'.$col.'" >'.$col.'</option>';
+        foreach ($cols as $col) {
+            $options .= ' <option value="' . $col . '" >' . $col . '</option>';
         }
-        $resp.=$options.'</select> </div>';
-        
-         return createResponse(true,$resp);
-       }
-       function getColumnsFromTableCheckbox(Request $r){
-        $table=$r->table;
-        $field_name=$r->field_name;
-        $cols=\Schema::getColumnListing($table);
-        $resp='';
-        $resp='';
-        foreach($cols as $col){
-        $resp.='<div class="form-check form-check-inline">
-        <input type="checkbox" name="'.$field_name.'[]" value="'.$col.'"
+        $resp .= $options . '</select> </div>';
+
+        return createResponse(true, $resp);
+    }
+    public function getColumnsFromTableCheckbox(Request $r)
+    {
+        $table = $r->table;
+        $field_name = $r->field_name;
+        $cols = \Schema::getColumnListing($table);
+        $resp = '';
+        $resp = '';
+        foreach ($cols as $col) {
+            $resp .= '<div class="form-check form-check-inline">
+        <input type="checkbox" name="' . $field_name . '[]" value="' . $col . '"
            class="form-check-input" aria-invalid="false">
-        <label class="form-check-label">'.$col.'</label>
+        <label class="form-check-label">' . $col . '</label>
             </div>';
         }
-        
-         return createResponse(true,$resp);
-       }
-  
-  
-       function getValidationHtml(Request $r){
-       
-        $field_name=$r->field_name;
-       
-        $cols=getValidation();
-       
-        $resp='';
-         foreach($cols as $col){
-                  $resp.='<div class="form-check form-check-inline">
-                  <input  type="checkbox" name="'.$field_name.'_rules[]"  value="'.$col->value.'" class="form-check-input" aria-invalid="false">
-                  <label  class="form-check-label">'.$col->label.'</label>
+
+        return createResponse(true, $resp);
+    }
+
+    public function getValidationHtml(Request $r)
+    {
+
+        $field_name = $r->field_name;
+
+        $cols = getValidation();
+
+        $resp = '';
+        foreach ($cols as $col) {
+            $resp .= '<div class="form-check form-check-inline">
+                  <input  type="checkbox" name="' . $field_name . '_rules[]"  value="' . $col->value . '" class="form-check-input" aria-invalid="false">
+                  <label  class="form-check-label">' . $col->label . '</label>
                   </div>';
 
+        }
 
-         }
-       
-         return createResponse(true,$resp);
-       }
-       function getToggableGroupHtml(Request $r){
-       
-        $field_name=$r->field_name;
-        $table=\Session::get('table');
-        $cols=\Schema::getColumnListing($table);
-        $toggable_val='';
-        $select_inputs='<div class="form-group"><label  class="form-label">Select Inputs</label>
-        <select name="'.$field_name.'_inputtype[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
-        $options=' <option value="" selected="" >Select input type</option>';
-        foreach(getInputs() as $inp){
-                $options.=' <option value="'.$inp->value.'" >'.$inp->label.'</option>';
-       }
-       
-        $select_inputs.=$options.'</select> </div>';
-        $select_fields='<div class="form-group"><label  class="form-label">Select Fields</label>
-        <select name="'.$field_name.'_fields[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
-        $options=' <option value="" selected="" >Select fields</option>';
-        foreach($cols as $col){
-                $options.=' <option value="'.$col.'" >'.$col.'</option>';
-       }
-       
-        $select_fields.=$options.'</select> </div>';
-      
-            
-       $resp='<fieldset class="form-group border p-3 fieldset">
+        return createResponse(true, $resp);
+    }
+    public function getToggableGroupHtml(Request $r)
+    {
+
+        $field_name = $r->field_name;
+        $table = \Session::get('table');
+        $cols = \Schema::getColumnListing($table);
+        $toggable_val = '';
+        $select_inputs = '<div class="form-group"><label  class="form-label">Select Inputs</label>
+        <select name="' . $field_name . '_inputtype[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
+        $options = ' <option value="" selected="" >Select input type</option>';
+        foreach (getInputs() as $inp) {
+            $options .= ' <option value="' . $inp->value . '" >' . $inp->label . '</option>';
+        }
+
+        $select_inputs .= $options . '</select> </div>';
+        $select_fields = '<div class="form-group"><label  class="form-label">Select Fields</label>
+        <select name="' . $field_name . '_fields[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
+        $options = ' <option value="" selected="" >Select fields</option>';
+        foreach ($cols as $col) {
+            $options .= ' <option value="' . $col . '" >' . $col . '</option>';
+        }
+
+        $select_fields .= $options . '</select> </div>';
+
+        $resp = '<fieldset class="form-group border p-3 fieldset">
        <legend class="w-auto px-2 legend">Inputs Generation </legend>
        <div id="nested_togggle" class="repeatable3" style="margin-bottom:5px">
            <div class="row">
-   
+
                <div class="col-md-12">
                    <div class="d-flex justify-content-end">
-   
+
                        <button type="button" class="btn btn-success btn-xs mr-5"
                            onclick="addPlusToggleNested()">+</button>
-   
-   
+
+
                        <button type="button" class="btn btn-danger btn-xs"
                            onclick="removeMinusToggleNested()">-</button>
-   
+
                    </div>
                </div>
            </div>
            <div class="row copy_row1 border-1">
-           <div class="col-md-2 mb-3">'.$select_fields.'
+           <div class="col-md-2 mb-3">' . $select_fields . '
            </div>
-               <div class="col-md-2 mb-3">'.$select_inputs.'
+               <div class="col-md-2 mb-3">' . $select_inputs . '
                </div>
-               
-              
-               
-   
+
+
+
+
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Options(Comma seprated) </label>
-                       <input type="text" id="module" name="'.$field_name.'_options[]" value=""
+                       <input type="text" id="module" name="' . $field_name . '_options[]" value=""
                            class="form-control valid is-valid" placeholder="toption1,option2,option3..">
-   
+
                    </div>
                </div>
-   
+
                <div class="col-md-2 mb-3">
                    <p>Is Multiple?
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple[]" value="Yes"
+                       <input type="checkbox" name="' . $field_name . '_multiple[]" value="Yes"
                            class="form-check-input valid is-valid" aria-invalid="false">
                        <label class="form-check-label">Yes</label>
                    </div>
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple[]" value="No"
+                       <input type="checkbox" name="' . $field_name . '_multiple[]" value="No"
                            class="form-check-input valid is-valid" aria-invalid="false">
                        <label class="form-check-label">No</label>
                    </div>
                </div>
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Atrr.(Options(Comma seprated)) </label>
-                       <input type="text" id="module" name="'.$field_name.'_attributes[]" value=""
+                       <input type="text" id="module" name="' . $field_name . '_attributes[]" value=""
                            class="form-control valid is-valid" placeholder="multiple=>true,onChange=>somfunciton">
-   
+
                    </div>
                </div>
-   
+
            </div>
            <hr>
      </div>
-   
-   </fieldset>';
-       
-           
 
-           $toggable_val='<label for="name" class="form-label">Value</label>
-           <input type="text"  name="'.$field_name.'_toggable_val[]" class="form-control valid is-valid" placeholder="Enter conditional value" />';
-         return createResponse(true,['label'=>$toggable_val,'html'=>$resp]);
-       }  
-    function getRepeatableHtml(Request $r){
-       
-        $field_name=$r->field_name;
-       
-        $label='';
-        $select='<div class="form-group"><label  class="form-label">Select Inputs</label>
-        <select name="'.$field_name.'_inputtype[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
-        $options=' <option value="" selected="" >Select input type</option>';
-        foreach(getInputs() as $inp){
-                $options.=' <option value="'.$inp->value.'" >'.$inp->label.'</option>';
-       }
-       
-        $select.=$options.'</select> </div>';
-      
-            
-       $resp='<fieldset class="form-group border p-3 fieldset">
+   </fieldset>';
+
+        $toggable_val = '<label for="name" class="form-label">Value</label>
+           <input type="text"  name="' . $field_name . '_toggable_val[]" class="form-control valid is-valid" placeholder="Enter conditional value" />';
+        return createResponse(true, ['label' => $toggable_val, 'html' => $resp]);
+    }
+    public function getRepeatableHtml(Request $r)
+    {
+
+        $field_name = $r->field_name;
+
+        $label = '';
+        $select = '<div class="form-group"><label  class="form-label">Select Inputs</label>
+        <select name="' . $field_name . '_inputtype[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
+        $options = ' <option value="" selected="" >Select input type</option>';
+        foreach (getInputs() as $inp) {
+            $options .= ' <option value="' . $inp->value . '" >' . $inp->label . '</option>';
+        }
+
+        $select .= $options . '</select> </div>';
+
+        $resp = '<fieldset class="form-group border p-3 fieldset">
        <legend class="w-auto px-2 legend">Inputs Generation </legend>
        <div  class="repeatable3" style="margin-bottom:5px">
            <div class="row">
-   
+
                <div class="col-md-12">
                    <div class="d-flex justify-content-end">
-   
+
                        <button type="button" class="btn btn-success btn-xs mr-5"
                            onclick="addPlusRepeatable()">+</button>
-   
-   
+
+
                        <button type="button" class="btn btn-danger btn-xs"
                            onclick="removeMinusRepeatable()">-</button>
-   
+
                    </div>
                </div>
            </div>
            <div class="row copy_row1 border-1">
-               <div class="col-md-2 mb-3">'.$select.'
+               <div class="col-md-2 mb-3">' . $select . '
                </div>
                <div class="col-md-2 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Key Name</label>
-                       <input type="text" id="module" name="'.$field_name.'_keys[]" value=""
+                       <input type="text" id="module" name="' . $field_name . '_keys[]" value=""
                            class="form-control valid is-valid" placeholder="Enter keyy name for json">
-   
+
                    </div>
                </div>
-   
+
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Options(Comma seprated) </label>
-                       <input type="text" id="module" name="'.$field_name.'_options[]" value=""
+                       <input type="text" id="module" name="' . $field_name . '_options[]" value=""
                            class="form-control valid is-valid" placeholder="toption1,option2,option3..">
-   
+
                    </div>
                </div>
-   
+
                <div class="col-md-2 mb-3">
                    <p>Is Multiple?
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple[]" value="Yes"
+                       <input type="checkbox" name="' . $field_name . '_multiple[]" value="Yes"
                            class="form-check-input valid is-valid" aria-invalid="false">
                        <label class="form-check-label">Yes</label>
                    </div>
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple[]" value="No"
+                       <input type="checkbox" name="' . $field_name . '_multiple[]" value="No"
                            class="form-check-input valid is-valid" aria-invalid="false">
                        <label class="form-check-label">No</label>
                    </div>
                </div>
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Atrr.(Options(Comma seprated)) </label>
-                       <input type="text" id="module" name="'.$field_name.'_attributes[]" value=""
+                       <input type="text" id="module" name="' . $field_name . '_attributes[]" value=""
                            class="form-control valid is-valid" placeholder="multiple=>true,onChange=>somfunciton">
-   
+
                    </div>
                </div>
-   
+
            </div>
            <hr>
      </div>
-   
-   </fieldset>';
-       
-           
 
-           $label='<label for="name" class="form-label">Label</label>
-           <input type="text"  name="'.$field_name.'_label[]" class="form-control valid is-valid" placeholder="Enter fiedset label" />';
-         return createResponse(true,['label'=>$label,'html'=>$resp]);
-       }
-       function getCreateInputOptionHtml(Request $r){
-       
-        $field_name=$r->field_name;
-        $index=$r->cur_index;
-       
-        $label='';
-        $select='<div class="form-group"><label  class="form-label">Select Inputs</label>
-        <select name="'.$field_name.'_inputtype_create_'.$index.'[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
-        $options=' <option value="" selected="" >Select input type</option>';
-        foreach(getInputs() as $inp){
-                $options.=' <option value="'.$inp->value.'" >'.$inp->label.'</option>';
-       }
-       
-        $select.=$options.'</select> </div>';
-      
-            
-       $resp=' <div class="row copy_row1 border-1">
-               <div class="col-md-2 mb-3">'.$select.'
+   </fieldset>';
+
+        $label = '<label for="name" class="form-label">Label</label>
+           <input type="text"  name="' . $field_name . '_label[]" class="form-control valid is-valid" placeholder="Enter fiedset label" />';
+        return createResponse(true, ['label' => $label, 'html' => $resp]);
+    }
+    public function getCreateInputOptionHtml(Request $r)
+    {
+
+        $field_name = $r->field_name;
+        $index = $r->cur_index;
+
+        $label = '';
+        $select = '<div class="form-group"><label  class="form-label">Select Inputs</label>
+        <select name="' . $field_name . '_inputtype_create_' . $index . '[]"  class="form-control"  tabindex="-1" aria-hidden="true" >';
+        $options = ' <option value="" selected="" >Select input type</option>';
+        foreach (getInputs() as $inp) {
+            $options .= ' <option value="' . $inp->value . '" >' . $inp->label . '</option>';
+        }
+
+        $select .= $options . '</select> </div>';
+
+        $resp = ' <div class="row copy_row1 border-1">
+               <div class="col-md-2 mb-3">' . $select . '
                </div>
-              
-   
+
+
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Options(Comma seprated) </label>
-                       <input type="text" name="'.$field_name.'_options_create_'.$index.'[]" value=""
+                       <input type="text" name="' . $field_name . '_options_create_' . $index . '[]" value=""
                            class="form-control valid is-valid" placeholder="toption1,option2,option3..">
-   
+
                    </div>
                </div>
-   
+
                <div class="col-md-3 mb-3">
                    <p>Is Multiple?
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple_create_'.$index.'[]" value="Yes"
+                       <input type="checkbox" name="' . $field_name . '_multiple_create_' . $index . '[]" value="Yes"
                            class="form-check-input >
                        <label class="form-check-label">Yes</label>
                    </div>
                    <div class="form-check form-check-inline">
-                       <input type="checkbox" name="'.$field_name.'_multiple_create_'.$index.'[]" value="No"
+                       <input type="checkbox" name="' . $field_name . '_multiple_create_' . $index . '[]" value="No"
                            class="form-check-input  aria-invalid="false">
                        <label class="form-check-label">No</label>
                    </div>
                </div>
                <div class="col-md-3 mb-3">
-   
+
                    <div class="form-group">
                        <label for="name" class="form-label">Atrr.(Options(Comma seprated)) </label>
-                       <input type="text" name="'.$field_name.'_attributes_create_'.$index.'[]" value=""
+                       <input type="text" name="' . $field_name . '_attributes_create_' . $index . '[]" value=""
                            class="form-control valid is-valid" placeholder="multiple=>true,onChange=>somfunciton">
-   
+
                    </div>
                </div>
-   
+
            </div>
            ';
-       
-           
 
-           $label='<label for="name" class="form-label">Label</label>
-           <input type="text"  name="'.$field_name.'_label_create_'.$index.'[]" class="form-control valid is-valid" placeholder="Enter fiedset label" />';
-         return createResponse(true,['label'=>$label,'html'=>$resp]);
-       }
-   
-       public function table_field_update(Request $r)
+        $label = '<label for="name" class="form-label">Label</label>
+           <input type="text"  name="' . $field_name . '_label_create_' . $index . '[]" class="form-control valid is-valid" placeholder="Enter fiedset label" />';
+        return createResponse(true, ['label' => $label, 'html' => $resp]);
+    }
+
+    public function table_field_update(Request $r)
     {
         $table = $r->table;
         $field = $r->field;
@@ -356,9 +351,9 @@ class CommonController extends Controller
         $folder = $r->folder;
         $id = $r->row_id;
         $file_name = $r->file_name;
-        $model_name=$r->modelName;
-        $model_instance=app("App\\Models\\".$model_name);
-        $model_instance->whereId($id)->update([ $field_name=>null]);
+        $model_name = $r->modelName;
+        $model_instance = app("App\\Models\\" . $model_name);
+        $model_instance->whereId($id)->update([$field_name => null]);
         if ($file_name) {
             $path = storage_path('app/public/' . $folder . '/' . $file_name);
             if (\File::exists($path)) {
@@ -404,7 +399,7 @@ class CommonController extends Controller
 
         $dependee_key = $r->dependee_key;
         $dependent_key = $r->dependent_key;
-      
+
         $table = $r->table;
         $table_id = $r->table_id;
         $value = [];
@@ -416,7 +411,7 @@ class CommonController extends Controller
         $t = \DB::table($table)->whereIn($dependee_key, $value)->get();
         $str = '';
         foreach ($t as $r) {
-            $str .= "<option value='" . $r->{$table_id} ."-".$r->name. "'>" . $r->{$dependent_key} . "</option>";
+            $str .= "<option value='" . $r->{$table_id} . "-" . $r->name . "'>" . $r->{$dependent_key} . "</option>";
         }
         return response()->json(['success' => true, 'message' => $str]);
 
@@ -434,21 +429,20 @@ class CommonController extends Controller
         }
         return response()->json($ar);
     }
-  public function assignUser(Request $r){
-    try{
-    $rowids=json_decode($r->ids,true);
-   
-    $selected_user=$r->selected_users;
-    $set_in_table=$r->set_in_table;
-    $field_to_set=$r->field_to_set;
-    \DB::table($set_in_table)->whereIn('id',$rowids)->update([$field_to_set=>$selected_user]);
-     return response()->json(['success' => true, 'message' => "Assigned successfully"]);
-    }
-    catch(\Exception $ex){
-        return response()->json(['success' => false, 'message' =>$ex->getMessage()]);
+    public function assignUser(Request $r)
+    {
+        try {
+            $rowids = json_decode($r->ids, true);
+
+            $selected_user = $r->selected_users;
+            $set_in_table = $r->set_in_table;
+            $field_to_set = $r->field_to_set;
+            \DB::table($set_in_table)->whereIn('id', $rowids)->update([$field_to_set => $selected_user]);
+            return response()->json(['success' => true, 'message' => "Assigned successfully"]);
+        } catch (\Exception $ex) {
+            return response()->json(['success' => false, 'message' => $ex->getMessage()]);
+
+        }
 
     }
-
-
-  }
 }

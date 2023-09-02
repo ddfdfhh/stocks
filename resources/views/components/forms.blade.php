@@ -171,6 +171,7 @@
                 <div class="col-md-{{ $col }} mb-3 toggable_div" id="{{ $r['has_toggle_div']['toggle_div_id'] }}"
                     data-rowid="{{ !empty($r['has_toggle_div']['rowid']) ? $r['has_toggle_div']['rowid'] : '' }}"
                     data-module="{{ $r['has_toggle_div']['plural_lowercase'] }}"
+                    data-colname="{{ $r['has_toggle_div']['colname'] }}"
                     data-inputidforvalue="{{ $r['has_toggle_div']['inputidforvalue'] }}">
 
                 </div>

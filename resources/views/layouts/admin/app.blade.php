@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-filestyle.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('commonjs/jquery.filer.css') }}" />
+    <link rel="stylesheet" href="{{ asset('commonjs/summernote.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 
     <!-- Vendors CSS -->
@@ -40,7 +41,7 @@
     <!-- Page CSS -->
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-   
+
     <script src="{{ asset('assets/js/config.js') }}"></script> @yield('css')
 </head>
 <style>
@@ -105,8 +106,7 @@
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar  ">
         <div class="layout-container">
-            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme"
-                data-bg-class="bg-menu-theme">
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" data-bg-class="bg-menu-theme">
                 <div class="app-brand demo ">
                     <a href="index-2.html" class="app-brand-link"> <span class="app-brand-logo demo">
                             <svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1"
@@ -145,7 +145,8 @@
                             </svg>
 
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size:21px">Company</span> </a>
+                        <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size:21px">Company</span>
+                    </a>
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto"> <i
                             class="bx menu-toggle-icon d-none d-xl-block fs-4 align-middle"></i> <i
                             class="bx bx-x d-block d-xl-none bx-sm align-middle"></i> </a>

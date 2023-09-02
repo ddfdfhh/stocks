@@ -4,9 +4,15 @@ So any more relations can be added in model_relations variable in controller and
   to code automatically fetch karega images taking into account model_relations array of controller.
 3-try to keep belongsTo field with _id appende
 5- always create model first then generte module  
--during creating input group ,agar filed select type ka hai to hum options mein 'getList('model_name')' bhi de sakte hai dynamic ;
+-during creating input group ,agar filed select,radio,checkbox type ka hai to hum options mein 'getList('model_name')',getRadioOptions bhi de sakte hai dynamic ;
 6-jab hum kisi relationsio field ko dispaly karte hai to  we use this fun isme last mein jo array hai wo ye decide karta hai ki kis field se us relation ke reocrd fetch kar ke display karna hai
 getForeignKeyFieldValue($model_relations, $row, $field, ['BelongsTo' => 'name'])
+relations format in contrller   is ---$this->model_relations = [
+            [
+                'name' => 'category',
+                'class' => 'App\\Models\\Product',
+                'type' => 'HasOne',
+            ],
 so here it means agar field/column belongsTo relation rakhta hai to use display karne ke liye uske name column ko fetch karke show karenge 
 7-HasMany relationship ke 2 table need to be created second one will have parant table key as foreign key 
 So generate table mein jaake pahle second table create karo then first parentt wala 
@@ -40,4 +46,5 @@ to prevent join on json
 
 20-agar koi fild json wala ai to usko validation ke filed mein add na karo in gui form of crud generatorautomatically __json
  karke validation add hota ai
- 21- multiple image wale table mein image will be stor in "name" column like in Productimage table 
+ 21- multiple image wale table mein image will be stor in "name" column like in Productimage table
+ 22- jis textrea mein summentoe show karna hai uske attr mein just add class=>'summernote' 
