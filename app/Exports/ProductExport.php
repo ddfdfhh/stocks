@@ -24,12 +24,7 @@ class ProductExport  implements FromQuery,WithColumnFormatting, WithMapping,With
         $this->filter_date = $filter_date;
          $this->model_relations = $model_relations;
         $this->date_field = $date_field;
-        $this->export_columns=[
-    'category_id',
-    'created_at',
-    'name',
-    'price'
-];
+        $this->export_columns=[];
         
     }
    public function query()

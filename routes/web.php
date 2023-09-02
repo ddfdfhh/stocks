@@ -116,9 +116,11 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post("category/load_form", [App\Http\Controllers\CategoryController::class, "loadAjaxForm"])->name("category.loadAjaxForm");
     Route::get("export_categories/{type}", [App\Http\Controllers\CategoryController::class, "exportCategory"])->name("category.export");
 
-    Route::resource('products', 'ProductController');
-    Route::post('products/view', [App\Http\Controllers\ProductController::class, 'view'])->name('products.view');
-    Route::get("export_products/{type}", [App\Http\Controllers\ProductController::class, "exportProduct"])->name("product.export");
+    
+Route::resource('products', 'ProductController');
+Route::post('products/view', [App\Http\Controllers\ProductController::class,'view'])->name('products.view');
+Route::post("product/load_form", [App\Http\Controllers\ProductController::class,"loadAjaxForm"])->name("product.loadAjaxForm");
+Route::get("export_products/{type}", [App\Http\Controllers\ProductController::class,"exportProduct"])->name("product.export");
 
     Route::resource('states', 'StateController');
     Route::post('states/view', [App\Http\Controllers\StateController::class, 'view'])->name('states.view');

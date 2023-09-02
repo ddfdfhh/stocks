@@ -50,7 +50,7 @@
             <li class="menu-item @if($last_uri=='products') active  @endif">
               <a href="{{route('products.index')}}" class="menu-link">
                
-                <div data-i18n="Calendar">Manage Products</div>
+                <div data-i18n="Calendar">Output Products</div>
               </a>
             </li>
             @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_settings'))
@@ -143,4 +143,3 @@
     <!-- User interface -->
 
 </ul>
-

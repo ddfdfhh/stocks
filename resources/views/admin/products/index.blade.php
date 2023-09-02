@@ -1,23 +1,38 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-       
-
+        <h4 class="py-3 breadcrumb-wrapper mb-4">
+            <span class="text-muted fw-light">{{ properPluralName($plural_lowercase) }} /</span> List
+        </h4>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasEndLabel" class="offcanvas-title" style="text-transform:capitalize;">
+                    {{ properPluralName($plural_lowercase) }}</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body mx-0 flex-grow-0">
+                <p class="text-center">Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out
+                    print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century
+                    who is thought to have scrambled parts of Cicero's De Finibus Bonorum et Malorum for use in a type
+                    specimen book.</p>
+                <button type="button" class="btn btn-primary mb-2 d-grid w-100">Continue</button>
+                <button type="button" class="btn btn-label-secondary d-grid w-100"
+                    data-bs-dismiss="offcanvas">Cancel</button>
+            </div>
+        </div>
         <!-- Basic Bootstrap Table -->
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
                     <h5>All {{ properPluralName($plural_lowercase) }}</h5>
-                    <div class="d-flex ">
+                    <div class="d-flex">
+
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            @if (!auth()->user()->hasRole(['Admin']) ||
-                                    !auth()->user()->can('create_' . $plural_lowercase))
-                                <button type="button" class="btn btn-primary text-white">
-                                    <a href="{{ route($plural_lowercase . '.create') }}"
-                                        class="text-decoration-none text-white">
-                                        <i class="bx bx-plus me-sm-2"></i>Add
-                                        {{ properSingularName($plural_lowercase) }}</a>
-                                </button>
+                            @if (auth()->user()->hasRole(['Admin']) ||
+                                    auth()->user()->can('create_' . $plural_lowercase))
+                               <button class="btn btn-primary" type="button"
+                                    onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
+                                    aria-controls="offcanvasEnd">Create {{ properSingularName($plural_lowercase) }}</button>
                             @endif
 
                             @if ($has_export)
@@ -46,7 +61,6 @@
                             @endif
 
                         </div>
-
                     </div>
                 </div>
              
