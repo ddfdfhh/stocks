@@ -2,7 +2,7 @@
 
     $last_uri = request()->segment(2);
 
-    $routes_arr = ['raw_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
+    $routes_arr = ['units','input_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -115,6 +115,24 @@
               <a href="{{route('drivers.index')}}" class="menu-link">
                
                 <div data-i18n="Calendar">Manage Drivers</div>
+              </a>
+            </li>
+     @endif
+     
+@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_input_materials'))
+            <li class="menu-item @if($last_uri=='input_materials') active  @endif">
+              <a href="{{route('input_materials.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Input  Materials</div>
+              </a>
+            </li>
+     @endif
+     
+@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_units'))
+            <li class="menu-item @if($last_uri=='units') active  @endif">
+              <a href="{{route('units.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Units</div>
               </a>
             </li>
      @endif

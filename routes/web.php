@@ -164,5 +164,15 @@ Route::post("driver/load_form", [App\Http\Controllers\DriverController::class, "
 Route::get("export_drivers/{type}", [App\Http\Controllers\DriverController::class, "exportDriver"])->name("driver.export");
 
 
+Route::resource('input_materials', 'InputMaterialController');
+Route::post('input_materials/view', [App\Http\Controllers\InputMaterialController::class,'view'])->name('inputmaterials.view');
+Route::post("inputmaterial/load_form", [App\Http\Controllers\InputMaterialController::class,"loadAjaxForm"])->name("inputmaterial.loadAjaxForm");
+Route::get("export_inputmaterials/{type}", [App\Http\Controllers\InputMaterialController::class,"exportInputMaterial"])->name("inputmaterial.export");
+
+Route::resource('units', 'UnitController');
+Route::post('units/view', [App\Http\Controllers\UnitController::class,'view'])->name('units.view');
+Route::post("unit/load_form", [App\Http\Controllers\UnitController::class,"loadAjaxForm"])->name("unit.loadAjaxForm");
+Route::get("export_units/{type}", [App\Http\Controllers\UnitController::class,"exportUnit"])->name("unit.export");
+
 
 });
