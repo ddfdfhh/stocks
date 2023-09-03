@@ -27,6 +27,11 @@ class ProductController extends Controller
         'sortable' => 'Yes'
     ],
     [
+        'column' => 'price',
+        'label' => 'Price',
+        'sortable' => 'Yes'
+    ],
+    [
         'column' => 'created_at',
         'label' => 'Created Date',
         'sortable' => 'Yes'
