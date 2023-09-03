@@ -7,7 +7,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
-                    <h5>All {{ properPluralName($plural_lowercase) }}</h5>
+                    <h5>All Generated Products</h5>
                     <div class="d-flex">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             @if (auth()->user()->hasRole(['Admin']) ||
@@ -15,8 +15,7 @@
                                 <button type="button" class="btn btn-primary text-white">
                                     <a href="{{ route($plural_lowercase . '.create') }}"
                                         class="text-decoration-none text-white">
-                                        <i class="bx bx-plus me-sm-2"></i>Add
-                                        {{ properSingularName($plural_lowercase) }}</a>
+                                        <i class="bx bx-plus me-sm-2"></i>Generate Product</a>
                                 </button>
                             @endif
 
