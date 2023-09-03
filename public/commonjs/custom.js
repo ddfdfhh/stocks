@@ -311,7 +311,14 @@ function setUnitOnMaterialSelect(material_id) {
     );
 }
 function generateInvoice(order_id) {
-    console.log("working");
+    
+       const myModalEl = new bootstrap.Modal(
+                document.getElementById("invoiceModal")
+            );
+    myModalEl.toggle();
+ $("#invoiceModal #invoice-body").html(
+     '<div class="spinner-border text-muted mx-auto mt-3"></div>'
+ );
     const callbackError=function(res){
         console.log(res);
     }
@@ -319,10 +326,7 @@ function generateInvoice(order_id) {
         { order_id },
         `/admin/generate_invoice`,
         (htmlLoadcallback = function (res) {
-            const myModalEl = new bootstrap.Modal(
-                document.getElementById("invoiceModal")
-            );
-            myModalEl.toggle();
+         
             $("#invoiceModal #invoice-body").html(res["message"]);
         }),
         callbackError,
