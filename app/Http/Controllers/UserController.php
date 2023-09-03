@@ -401,7 +401,7 @@ class UserController extends Controller
             ];
 
             if (count($this->columns_with_select_field) > 0) {
-                $counries=$this->getList('Country');
+               
                 foreach ($this->columns_with_select_field as $t) {
                     $input = ['name' => $t['field_name'], 'label' => $t['label'], 'tag' => 'select', 'type' => 'select', 'default' =>[1,3],
                         'custom_key_for_option' => 'name', 'options' => $this->getList($t['label']), 'custom_id_for_option' => 'id', 'multiple' => $t['multiple'],

@@ -8,6 +8,14 @@ function getModuleWiseRules(module) {
             stock: { required: true, number: true },
             category_id: { required: true, number: true },
         };
+    } 
+    if (module == "GeneratedProductStock") {
+        return {
+           
+            product_id: { required: true },
+            quantity: { required: true, number: true },
+           
+        };
     } else if (module == "Registration") {
         return {
             name: {
@@ -144,8 +152,7 @@ function getModuleWiseRules(module) {
                 number: true,
             },
         };
-    }
-     else if (module == "Setting") {
+    } else if (module == "Setting") {
         return {
             company_name: {
                 required: true,
@@ -167,13 +174,9 @@ function getModuleWiseRules(module) {
             },
             gst_number: {
                 required: true,
-
-                
             },
             pan_number: {
                 required: true,
-
-               
             },
         };
     }
@@ -386,6 +389,26 @@ if ($("#setting_form").length > 0) {
         {},
         "setting_btn",
         "setting_form",
+        url,
+        callbackSuccess
+    );
+}
+if ($("#generatedproductstock_form").length > 0) {
+    let rules = getModuleWiseRules("GeneratedProductStock");
+    url = $("#generatedproductstock_form").attr("action");
+
+    let callbackSuccess = function (res) {
+        if (res["redirect_url"]) {
+            setTimeout(function () {
+                window.location.href = res["redirect_url"];
+            }, 3000);
+        }
+    };
+    formValidateFunctionTemplateImage(
+        rules,
+        {},
+        "generatedproductstock_btn",
+        "generatedproductstock_form",
         url,
         callbackSuccess
     );

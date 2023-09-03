@@ -45,6 +45,7 @@ function applySelect2(elem, in_popup = true, container_id = null) {
         }
     }
 }
+
 function applySelect2ChangeEventPopulateOther(data = {}) {
     /**
      * data={
@@ -180,7 +181,11 @@ function inilizeEvents() {
         formInitiate("tax", rules);
     }
     //if ($("form#try").length > 0) applySelect2("select",true,true,"form#try",);
-
+    if ($("#image").length > 0) {
+        $("#image").on("change", function () {
+            multiImagePreview(this, "gallery1");
+        });
+    }
     /***** */
     if ($("#image").length > 0) {
         $("#image").on("change", function () {
@@ -207,11 +212,10 @@ function inilizeEvents() {
 
 function showToggableDivOnLoadIfPresent() {
     if ($(".toggable_div").length > 0) {
-    
         $(".toggable_div").each(function () {
             let id = $(this).attr("id");
             let colname = $(this).attr("data-colname");
-            
+
             let inputidforval = $(this).data("inputidforvalue");
             let rowid = $(this).data("rowid");
             console.log(inputidforval);
@@ -294,6 +298,36 @@ function initialiseSummernote() {
             $(this).summernote();
         });
     }
+}
+function setUnitOnMaterialSelect(material_id) {
+    console.log("working");
+    objectAjaxNoLoaderNoAlert(
+        { material_id },
+        `/getUnitByMeterialId`,
+        (htmlLoadcallback = function (res) {
+            console.log(res);
+            $("#unit").html(res["message"]);
+        })
+    );
+}
+function generateInvoice(order_id) {
+    console.log("working");
+    const callbackError=function(res){
+        console.log(res);
+    }
+    objectAjaxNoLoaderNoAlert(
+        { order_id },
+        `/admin/generate_invoice`,
+        (htmlLoadcallback = function (res) {
+            const myModalEl = new bootstrap.Modal(
+                document.getElementById("invoiceModal")
+            );
+            myModalEl.toggle();
+            $("#invoiceModal #invoice-body").html(res["message"]);
+        }),
+        callbackError,
+        "POST"
+    );
 }
 $(document).ready(function () {
     initialiseSummernote();

@@ -72,6 +72,7 @@ Route::post('/getDependentSelectData', [CommonController::class, 'getDependentSe
 Route::post('/getDependentSelectDataMultipleVal', [CommonController::class, 'getDependentSelectDataMultipleVal']);
 Route::group(['middleware' => ['auth']], function () {
 Route::get('/logout',[App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('auth.logout');
+Route::post('/getUnitByMeterialId',[App\Http\Controllers\CommonController::class, 'getUnitByMeterialId']);
 
     Route::post('delete_file_from_table', [CommonController::class, 'deleteFileFromTable'])->name('deleteTableFile');
     Route::post('assignUser', [CommonController::class, 'assignUser'])->name('assignUser');
@@ -176,6 +177,22 @@ Route::resource('units', 'UnitController');
 Route::post('units/view', [App\Http\Controllers\UnitController::class,'view'])->name('units.view');
 Route::post("unit/load_form", [App\Http\Controllers\UnitController::class,"loadAjaxForm"])->name("unit.loadAjaxForm");
 Route::get("export_units/{type}", [App\Http\Controllers\UnitController::class,"exportUnit"])->name("unit.export");
+
+
+Route::resource('create_material_stocks', 'CreateMaterialStockController');
+Route::post('create_material_stocks/view', [App\Http\Controllers\CreateMaterialStockController::class,'view'])->name('creatematerialstocks.view');
+Route::post("creatematerialstock/load_form", [App\Http\Controllers\CreateMaterialStockController::class,"loadAjaxForm"])->name("creatematerialstock.loadAjaxForm");
+Route::get("export_creatematerialstocks/{type}", [App\Http\Controllers\CreateMaterialStockController::class,"exportCreateMaterialStock"])->name("creatematerialstock.export");
+
+
+Route::resource('generated_product_stocks', 'GeneratedProductStockController');
+Route::post('generated_product_stocks/view', [App\Http\Controllers\GeneratedProductStockController::class, 'view'])->name('generatedproductstocks.view');
+Route::get("export_generatedproductstocks/{type}", [App\Http\Controllers\GeneratedProductStockController::class, "exportGeneratedProductStock"])->name("generatedproductstock.export");
+
+Route::resource('create_orders', 'CreateOrderController');
+Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class,'view'])->name('createorders.view');
+Route::post('generate_invoice/', [App\Http\Controllers\CreateOrderController::class,'generateInvoice'])->name('createorders.generateInvoice');
+Route::get("export_createorders/{type}", [App\Http\Controllers\CreateOrderController::class,"exportCreateOrder"])->name("createorder.export");
 
 
 });

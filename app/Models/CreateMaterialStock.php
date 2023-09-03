@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-class RawMaterialStock extends Model
+class CreateMaterialStock extends Model
 {
-    protected $table='raw_material_stock';
+    protected $table='create_material_stock';
     public $timestamps=0;
      public function getFillable(){
         return  $this->getTableColumns();
@@ -22,13 +22,16 @@ class RawMaterialStock extends Model
    
   
 
-	public function raw_material():BelongsTo
+	public function material():BelongsTo
 {
   return $this->belongsTo(InputMaterial::class,'material_id','id')->withDefault();
 } 
- 
-	public function unit():BelongsTo
+	public function driver():BelongsTo
 {
-  return $this->belongsTo(Unit::class,'unit_id','id')->withDefault();
+  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault();
+} 
+	public function supplier():BelongsTo
+{
+  return $this->belongsTo(Supplier::class,'supplier_id','id')->withDefault();
 } 
  }

@@ -445,4 +445,23 @@ class CommonController extends Controller
         }
 
     }
+    public function getModelFieldValueById(Request $r){
+        if($r->ajax()){
+             $model=$r->model;
+             $id=$r->id;
+             $field=$r->field;
+             $response=getFieldById($model, $id, $field);
+             return createResponse(true,$response);
+        }
+    }
+     public function getUnitByMeterialId(Request $r){
+        if($r->ajax()){
+             $id=$r->material_id;
+             $row=\DB::table('input_material AS A')->select('B.name')->join('unit AS B','B.id','=','A.unit_id')->where('A.id',$id)->first();
+            
+            
+             $response=$row?$row->name:'';
+             return createResponse(true,$response);
+        }
+    }
 }

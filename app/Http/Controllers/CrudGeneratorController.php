@@ -682,6 +682,7 @@ class CrudGeneratorController extends Controller
                             } elseif ($input == 'textarea') {
                                 $p = ['placeholder' => 'Enter ' . $field_keys[$i], 'name' => $item . '__json__' . $field_keys[$i] . '[]\'', 'label' => ucfirst($field_keys[$i]), 'tag' => 'textarea', 'type' => 'textarea', 'default' => '', 'attr' => $attr];
                             } elseif ($input == 'select') {
+                               // dd($is_multiple);
                                 $is_multiple = $is_multiple[$i] == 'Yes' ? true : false;
                                 $p = ['name' => $item . '__json__' . $field_keys[$i] . '[]', 'label' => ucfirst($field_keys[$i]), 'tag' => 'select', 'type' => 'select', 'default' => '', 'attr' => $attr, 'custom_key_for_option' => 'name', 'options' => $options_for_select, 'custom_id_for_option' => 'id', 'multiple' => $is_multiple];
                             } elseif ($input == 'radio' || $input == 'checkbox') {

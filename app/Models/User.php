@@ -20,7 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email','phone','country','state','city','pincode','address','image','status',
+        'email','phone','state','city','pincode','address','image','status',
         'password',
     ];
 
@@ -52,16 +52,12 @@ class User extends Authenticatable
 
     //     });
     // }
-    public function withCountry(){
-        return $this->belongsTo(\App\Models\Country::class,'country','id')->withDefault();
-    }
+    
     public function withState(){
         return $this->belongsTo(\App\Models\Country::class,'country','id')->withDefault();
     }
     public function withCity(){
         return $this->belongsTo(\App\Models\Country::class,'country','id')->withDefault();
     }
-    public function withPincode(){
-        return $this->belongsTo(\App\Models\Country::class,'country','id')->withDefault();
-    }
+   
 }

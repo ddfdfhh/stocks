@@ -89,7 +89,7 @@
 
             <div class="col-md-{{ $col }} mb-3">
                 @if ($r['tag'] == 'input')
-                    @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'email'  || $r['type'] == 'date')
+                    @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'email'  || $r['type'] == 'date'  || $r['type']=='datetime-local')
                         {!! Form::text($r['name'], $r['label'])->value($r['default'])->type($r['type'])->placeholder($r['placeholder'])->attrs($attrs) !!}
                     @elseif($r['type'] == 'file')
                         {!! Form::text($r['name'], $r['label'])->value($r['default'])->type($r['type'])->placeholder($r['placeholder'])->attrs(array_merge($attrs,['class' => 'form-control'])) !!}

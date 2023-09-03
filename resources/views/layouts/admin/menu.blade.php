@@ -2,7 +2,7 @@
 
     $last_uri = request()->segment(2);
 
-    $routes_arr = ['units','input_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
+    $routes_arr = ['create_order','generated_product_stocks','create_material_stocks','units','input_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -133,6 +133,34 @@
               <a href="{{route('units.index')}}" class="menu-link">
                
                 <div data-i18n="Calendar">Manage Units</div>
+              </a>
+            </li>
+     @endif
+     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_create_material_stocks'))
+            <li class="menu-item @if($last_uri=='create_material_stocks') active  @endif">
+              <a href="{{route('create_material_stocks.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Create  Material  Stocks</div>
+              </a>
+            </li>
+     @endif
+     
+
+
+
+@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_generated_product_stocks'))
+            <li class="menu-item @if($last_uri=='generated_product_stocks') active  @endif">
+              <a href="{{route('generated_product_stocks.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Generated  Product  Stocks</div>
+              </a>
+            </li>
+     @endif
+     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_create_orders'))
+            <li class="menu-item @if($last_uri=='create_orders') active  @endif">
+              <a href="{{route('create_orders.index')}}" class="menu-link">
+               
+                <div data-i18n="Calendar">Manage Create  Orders</div>
               </a>
             </li>
      @endif

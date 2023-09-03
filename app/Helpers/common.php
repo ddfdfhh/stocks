@@ -13,9 +13,9 @@ if (!function_exists('adminUrl')) {
     }
 }
 if (!function_exists('formateDate')) {
-    function formateDate($v)
+    function formateDate($v,$show_time=false)
     {
-        return date('j F,Y', strtotime($v));
+        return $show_time?date('j M,Y h:i a', strtotime($v)):date('j M,Y', strtotime($v));
     }
 }
 function getFieldById($model, $id, $field)
@@ -545,6 +545,7 @@ function getList($model, $where = [], $by_field = 'name')
     }
     return $list2;
 }
+
 function getListOnlyNonIdValue($model, $where = [], $by_field = 'name')
 {
     $model_class = "\App\Models" . '\\' . $model;
