@@ -11,10 +11,8 @@ function getModuleWiseRules(module) {
     } 
     if (module == "GeneratedProductStock") {
         return {
-           
             product_id: { required: true },
             quantity: { required: true, number: true },
-           
         };
     } else if (module == "Registration") {
         return {
@@ -178,6 +176,20 @@ function getModuleWiseRules(module) {
             pan_number: {
                 required: true,
             },
+        };
+    } else if (module == "CreateOrder") {
+        return {
+           
+            product_id: {
+                required: true,
+                number: true,
+               
+            },
+            quantity: {
+                required: true,
+                number: true,
+            }
+            
         };
     }
 }
@@ -409,6 +421,26 @@ if ($("#generatedproductstock_form").length > 0) {
         {},
         "generatedproductstock_btn",
         "generatedproductstock_form",
+        url,
+        callbackSuccess
+    );
+}
+if ($("#createorder_form").length > 0) {
+    let rules = getModuleWiseRules("CreateOrder");
+    url = $("#createorder_form").attr("action");
+
+    let callbackSuccess = function (res) {
+        if (res["redirect_url"]) {
+            setTimeout(function () {
+                window.location.href = res["redirect_url"];
+            }, 3000);
+        }
+    };
+    formValidateFunctionTemplateImage(
+        rules,
+        {},
+        "createorder_btn",
+        "createorder_form",
         url,
         callbackSuccess
     );
