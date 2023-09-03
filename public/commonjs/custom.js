@@ -316,6 +316,7 @@ function generateInvoice(order_id) {
                 document.getElementById("invoiceModal")
             );
     myModalEl.toggle();
+    $("#invoiceModal #invoice-body").css('textAlign','center');
  $("#invoiceModal #invoice-body").html(
      '<div class="spinner-border text-muted mx-auto mt-3"></div>'
  );
@@ -326,7 +327,7 @@ function generateInvoice(order_id) {
         { order_id },
         `/admin/generate_invoice`,
         (htmlLoadcallback = function (res) {
-         
+         $("#invoiceModal #invoice-body").css("textAlign", "left");
             $("#invoiceModal #invoice-body").html(res["message"]);
         }),
         callbackError,

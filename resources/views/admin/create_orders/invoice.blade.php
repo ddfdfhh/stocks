@@ -50,16 +50,16 @@
                  <p class="mb-0">ramashishs@gmail.com</p>
              </div>
          </div>
-<hr/>
+
 
          <table class="table border-top m-0">
              <thead>
-                 <tr>
-                     <th>Item</th>
+                 <tr style="background-color:black">
+                     <th style="color:white">Item</th>
 
-                     <th>Code</th>
-                     <th>Qty</th>
-                     <th>Price</th>
+                     <th style="color:white">Code</th>
+                     <th style="color:white">Qty</th>
+                     <th style="color:white">Price</th>
                  </tr>
              </thead>
              <tbody>

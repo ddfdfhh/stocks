@@ -108,13 +108,13 @@
         <div class="modal-content ">
 
             <!-- Modal Header -->
-            <div class="modal-header text-center">
+            <div class="modal-header ">
                 <h3 class="modal-title" style="margin-left:auto">Invoice</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Modal body -->
-            <div class="modal-body" id="invoice-body" style="text-align:center;padding-top:0;margin-top:0">
+            <div class="modal-body" id="invoice-body" style="padding-top:0;margin-top:0">
            
 
 
