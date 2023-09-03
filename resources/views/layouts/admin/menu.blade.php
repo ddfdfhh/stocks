@@ -1,8 +1,10 @@
 @php
-
+    
     $last_uri = request()->segment(2);
-
-    $routes_arr = ['create_order','generated_product_stocks','create_material_stocks','units','input_materials','drivers','vehicles','products','settings','suppliers','customers','roles','states','cities', 'permissions', 'users', 'categories'];
+    
+    $routes_arr = ['create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
+    $raw_arr = ['create_material_stocks', 'units', 'input_materials'];
+    $product_arr = ['generated_product_stocks', 'products'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -21,152 +23,154 @@
         </a>
 
         <ul class="menu-sub ">
-       {{--     @if (auth()->user()->hasRole(['Admin']) ||
-                    auth()->user()->can('list_roles'))
-                <li class="menu-item @if ($last_uri == 'roles') active @endif">
-                    <a href="{{ route('roles.index') }}" class="menu-link">
-                       
-                        <div data-i18n="Calendar">Manage Roles</div>
-                    </a>
-                </li>
-            @endif
-            
+
+
+
+
             @if (auth()->user()->hasRole(['Admin']) ||
-                    auth()->user()->can('list_permissions'))
-                <li class="menu-item @if ($last_uri == 'permissions') active @endif">
-                    <a href="{{ route('permissions.index') }}" class="menu-link">
-                      
-                        <div data-i18n="Calendar">Manage Permissions</div>
+                    auth()->user()->can('list_states'))
+                <li class="menu-item @if ($last_uri == 'states') active @endif">
+                    <a href="{{ route('states.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage States</div>
                     </a>
                 </li>
             @endif
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_cities'))
+                <li class="menu-item @if ($last_uri == 'cities') active @endif">
+                    <a href="{{ route('cities.index') }}" class="menu-link">
 
-            <li class="menu-item @if ($last_uri == 'categories') active @endif">
-                <a href="{{ route('categories.index') }}" class="menu-link">
-                   
-                    <div data-i18n="Calendar">Manage Categories</div>
-                </a>
-            </li>
-            --}}
-            <li class="menu-item @if($last_uri=='products') active  @endif">
-              <a href="{{route('products.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage O/P Products</div>
-              </a>
-            </li>
-            @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_settings'))
-            <li class="menu-item @if($last_uri=='settings') active  @endif">
-              <a href="{{route('settings.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Settings</div>
-              </a>
-            </li>
-     @endif
-            @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_states'))
-            <li class="menu-item @if($last_uri=='states') active  @endif">
-              <a href="{{route('states.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage States</div>
-              </a>
-            </li>
-     @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_cities'))
-            <li class="menu-item @if($last_uri=='cities') active  @endif">
-              <a href="{{route('cities.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Cities</div>
-              </a>
-            </li>
-     @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_customers'))
-            <li class="menu-item @if($last_uri=='customers') active  @endif">
-              <a href="{{route('customers.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Customers</div>
-              </a>
-            </li>
-     @endif
-     
-@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_suppliers'))
-            <li class="menu-item @if($last_uri=='suppliers') active  @endif">
-              <a href="{{route('suppliers.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Suppliers</div>
-              </a>
-            </li>
-     @endif
-     {{--@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_demo_table'))
-            <li class="menu-item @if($last_uri=='demo_table') active  @endif">
-              <a href="{{route('demo_tables.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Demo  Table</div>
-              </a>
-            </li>
-     @endif--}}
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_vehicles'))
-            <li class="menu-item @if($last_uri=='vehicles') active  @endif">
-              <a href="{{route('vehicles.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Vehicles</div>
-              </a>
-            </li>
-     @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_drivers'))
-            <li class="menu-item @if($last_uri=='drivers') active  @endif">
-              <a href="{{route('drivers.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Drivers</div>
-              </a>
-            </li>
-     @endif
-     
-@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_input_materials'))
-            <li class="menu-item @if($last_uri=='input_materials') active  @endif">
-              <a href="{{route('input_materials.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Input  Materials</div>
-              </a>
-            </li>
-     @endif
-     
-@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_units'))
-            <li class="menu-item @if($last_uri=='units') active  @endif">
-              <a href="{{route('units.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Units</div>
-              </a>
-            </li>
-     @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_create_material_stocks'))
-            <li class="menu-item @if($last_uri=='create_material_stocks') active  @endif">
-              <a href="{{route('create_material_stocks.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage   Material  Stocks</div>
-              </a>
-            </li>
-     @endif
-     
-
-
-
-@if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_generated_product_stocks'))
-            <li class="menu-item @if($last_uri=='generated_product_stocks') active  @endif">
-              <a href="{{route('generated_product_stocks.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage Generated  Product  Stocks</div>
-              </a>
-            </li>
-     @endif
-     @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_create_orders'))
-            <li class="menu-item @if($last_uri=='create_orders') active  @endif">
-              <a href="{{route('create_orders.index')}}" class="menu-link">
-               
-                <div data-i18n="Calendar">Manage   Orders</div>
-              </a>
-            </li>
-     @endif
+                        <div data-i18n="Calendar">Manage Cities</div>
+                    </a>
+                </li>
+            @endif
         </ul>
     </li>
+   
+
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_customers'))
+        <li class="menu-item @if ($last_uri == 'customers') active @endif">
+            <a href="{{ route('customers.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-pin"></i>
+                <div data-i18n="Calendar">Manage Customers</div>
+            </a>
+        </li>
+    @endif
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_suppliers'))
+        <li class="menu-item @if ($last_uri == 'suppliers') active @endif">
+            <a href="{{ route('suppliers.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cabinet"></i>
+                <div data-i18n="Calendar">Manage Suppliers</div>
+            </a>
+        </li>
+    @endif
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_vehicles'))
+        <li class="menu-item @if ($last_uri == 'vehicles') active @endif">
+            <a href="{{ route('vehicles.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-car"></i>
+                <div data-i18n="Calendar">Manage Vehicles</div>
+            </a>
+        </li>
+    @endif
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_drivers'))
+        <li class="menu-item @if ($last_uri == 'drivers') active @endif">
+            <a href="{{ route('drivers.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Calendar">Manage Drivers</div>
+            </a>
+        </li>
+    @endif
+    <li class="menu-item @if (in_array($last_uri, $raw_arr)) open @endif">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-cylinder"></i>
+            <div data-i18n="Authentications">Manage Raw Materials</div>
+        </a>
+
+        <ul class="menu-sub ">
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_input_materials'))
+                <li class="menu-item @if ($last_uri == 'input_materials') active @endif">
+                    <a href="{{ route('input_materials.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Input Materials</div>
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_units'))
+                <li class="menu-item @if ($last_uri == 'units') active @endif">
+                    <a href="{{ route('units.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Units</div>
+                    </a>
+                </li>
+            @endif
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_create_material_stocks'))
+                <li class="menu-item @if ($last_uri == 'create_material_stocks') active @endif">
+                    <a href="{{ route('create_material_stocks.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Material Stocks</div>
+                    </a>
+                </li>
+            @endif
+
+        </ul>
+    </li>
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_create_orders'))
+        <li class="menu-item @if ($last_uri == 'create_orders') active @endif">
+            <a href="{{ route('create_orders.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <div data-i18n="Calendar">Manage Orders</div>
+            </a>
+        </li>
+    @endif
+    <li class="menu-item @if (in_array($last_uri, $product_arr)) open @endif">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-cuboid"></i>
+            <div data-i18n="Authentications">Manage O/P Product</div>
+        </a>
+
+        <ul class="menu-sub ">
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_products'))
+                <li class="menu-item @if ($last_uri == 'products') active @endif">
+                    <a href="{{ route('products.index') }}" class="menu-link">
+                      
+                        <div data-i18n="Calendar">Product List</div>
+                    </a>
+                </li>
+            @endif
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_generated_product_stocks'))
+                <li class="menu-item @if ($last_uri == 'generated_product_stocks') active @endif">
+                    <a href="{{ route('generated_product_stocks.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Generate Product</div>
+                    </a>
+                </li>
+            @endif
+
+
+        </ul>
+    </li>
+ @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_settings'))
+        <li class="menu-item @if ($last_uri == 'settings') active @endif">
+            <a href="{{ route('settings.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div data-i18n="Calendar">Settings</div>
+            </a>
+        </li>
+    @endif
+
 
 
     <!-- User interface -->

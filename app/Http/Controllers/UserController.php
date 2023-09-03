@@ -24,12 +24,12 @@ class UserController extends Controller
         $this->image_model_name = '';
         $this->has_upload = 1;
         $this->pagination_count = 100;
-        $this->columns_with_select_field = [['label' => 'Country', 'field_name' => 'country', 'onChange' => 'showStates(this.value)', 'multiple' => false]];
+        $this->columns_with_select_field = [];
         $this->table_columns = [['column' => 'name', 'label' => 'Name', 'sortable' => 'Yes'],
             ['column' => 'email', 'label' => 'Email', 'sortable' => 'Yes'],
             ['column' => 'phone', 'label' => 'Phone', 'sortable' => 'Yes'],
             ['column' => 'address', 'label' => 'Address', 'sortable' => 'Yes'],
-            ['column' => 'country', 'label' => 'Country', 'sortable' => 'Yes'],
+          
             ['column' => 'status', 'label' => 'Status', 'sortable' => 'Yes'],
             ['column' => 'role', 'label' => 'Role', 'sortable' => 'No'],
             ['column' => 'image', 'label' => 'Profile', 'sortable' => 'No'],
@@ -63,7 +63,8 @@ class UserController extends Controller
     {
 
         $searchable_fields = [['name' => 'name', 'label' => 'Name'], ['name' => 'email', 'label' => 'Email'], ['name' => 'phone', 'label' => 'Phone']];
-        $filterable_fields = [['name' => 'created_at', 'label' => 'Date', 'type' => 'date'], ['name' => 'country', 'label' => 'Country', 'type' => 'select'], ['name' => 'state', 'label' => 'State', 'type' => 'select']];
+        $filterable_fields = [['name' => 'created_at', 'label' => 'Date', 'type' => 'date'],
+        ['name' => 'state', 'label' => 'State', 'type' => 'select']];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -77,7 +78,7 @@ class UserController extends Controller
                 $search_by = 'name';
             }
 
-            $list = User::with('withCountry')->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
+            $list = User::when(!empty($search_val), function ($query) use ($search_val, $search_by) {
                 return $query->where($search_by, 'like', '%' . $search_val . '%');
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
@@ -98,7 +99,7 @@ class UserController extends Controller
             ];
             return view('admin.' . $this->view_folder . '.page', with($data));
         } else {
-            $query = User::with(['withCountry']);
+            $query = User::query();
             $query = $this->buildFilter($request, $query);
             $list = $query->paginate($this->pagination_count);
 
@@ -490,7 +491,7 @@ class UserController extends Controller
 
         }
         if ($form_type == 'view') {
-            $data['row'] = User::with('withCountry')->findOrFail($id);
+            $data['row'] = User::findOrFail($id);
             $data['has_image'] = $this->has_upload;
             $data['is_multiple'] = $this->is_multiple_upload;
             $data['storage_folder'] = $this->storage_folder;

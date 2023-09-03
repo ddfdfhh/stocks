@@ -6,14 +6,14 @@
 <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
 <!-- endbuild -->
 <!-- Vendors JS -->
-<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+{{-- <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script> --}}
 <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
 <!-- Main JS -->
 <script src="{{ asset('assets/vendor/libs/block-ui/block-ui.js') }}"></script>
 
 <script src="{{ asset('assets/js/main.js') }}"></script>
 <!-- Page JS -->
-<script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
+{{-- <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script> --}}
 <!----my own js-->
 
 <script type="text/javascript">
@@ -39,7 +39,7 @@
 <script src="{{ asset('commonjs/commonjs_functions.js') }}"></script>
 <script src="{{ asset('commonjs/index_table_sort_pagination.js') }}"></script>
 <script src="{{ asset('commonjs/summernote.min.js') }}"></script>
-<script src="{{ asset('commonjs/custom.js') }}"></script>
+<script src="{{ asset('commonjs/custom.js') }}?v=1"></script>
 <script src="{{ asset('assets/js/lightbox.min.js') }}"></script>
 
 @stack('scripts')

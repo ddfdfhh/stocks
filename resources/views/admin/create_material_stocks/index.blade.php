@@ -2,7 +2,7 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <h4 class="py-3 breadcrumb-wrapper mb-4">
-            <span class="text-muted fw-light">{{ properPluralName($plural_lowercase) }} /</span> List
+            <span class="text-muted fw-light">Material Stock/</span> List
         </h4>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
             <div class="offcanvas-header">
@@ -24,7 +24,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
-                    <h5>All {{ properPluralName($plural_lowercase) }}</h5>
+                    <h5>All Raw Materials</h5>
                     <div class="d-flex">
 
                         <div class="btn-group" role="group" aria-label="Basic example">
@@ -32,7 +32,7 @@
                                     auth()->user()->can('create_' . $plural_lowercase))
                                <button class="btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
-                                    aria-controls="offcanvasEnd">Create {{ properSingularName($plural_lowercase) }}</button>
+                                    aria-controls="offcanvasEnd"> Create Raw Material</button>
                             @endif
 
                             @if ($has_export)
