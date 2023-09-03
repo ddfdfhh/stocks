@@ -40,13 +40,14 @@
                     </a>
                 </li>
             @endif
---}}
+
             <li class="menu-item @if ($last_uri == 'categories') active @endif">
                 <a href="{{ route('categories.index') }}" class="menu-link">
                    
                     <div data-i18n="Calendar">Manage Categories</div>
                 </a>
             </li>
+            --}}
             <li class="menu-item @if($last_uri=='products') active  @endif">
               <a href="{{route('products.index')}}" class="menu-link">
                

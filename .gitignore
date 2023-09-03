@@ -2,7 +2,9 @@
 /public/hot
 
 /vendor
-
+/resources/stubs/
+/app/Http/Controllers/CrudGeneratorController.php
+/app/Console/Commands/CrudGenerator.php
 .env.backup
 .phpunit.result.cache
 docker-compose.override.yml
