@@ -135,11 +135,11 @@ class CreateMaterialStockController extends Controller
     ],
     [
         'name' => 'material_id',
-        'label' => 'Material Id'
+        'label' => 'Material'
     ],
     [
         'name' => 'supplier_id',
-        'label' => 'Supplier Id'
+        'label' => 'Supplier'
     ],
     [
         'name' => 'vehicle_number',
@@ -229,7 +229,7 @@ class CreateMaterialStockController extends Controller
         'inputs' => [
             [
                 'name' => 'supplier_id',
-                'label' => 'Supplier Id',
+                'label' => 'Supplier',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'supplier_id', true) :getList('Supplier')[0]->id,
@@ -241,7 +241,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'driver_id',
-                'label' => 'Driver Id',
+                'label' => 'Driver',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'driver_id', true) :getList('Driver')[0]->id,
@@ -280,7 +280,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'material_id',
-                'label' => 'Material Id',
+                'label' => 'Material',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'material_id', true) :getList('InputMaterial')[0]->id,
@@ -396,7 +396,7 @@ class CreateMaterialStockController extends Controller
         'inputs' => [
             [
                 'name' => 'supplier_id',
-                'label' => 'Supplier Id',
+                'label' => 'Supplier',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'supplier_id', true) :getList('Supplier')[0]->id,
@@ -408,7 +408,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'driver_id',
-                'label' => 'Driver Id',
+                'label' => 'Driver',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'driver_id', true) :getList('Driver')[0]->id,
@@ -447,7 +447,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'material_id',
-                'label' => 'Material Id',
+                'label' => 'Material',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'material_id', true) :getList('InputMaterial')[0]->id,
@@ -693,7 +693,7 @@ class CreateMaterialStockController extends Controller
         'inputs' => [
             [
                 'name' => 'supplier_id',
-                'label' => 'Supplier Id',
+                'label' => 'Supplier',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'supplier_id', true) :getList('Supplier')[0]->id,
@@ -705,7 +705,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'driver_id',
-                'label' => 'Driver Id',
+                'label' => 'Driver',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'driver_id', true) :getList('Driver')[0]->id,
@@ -753,7 +753,7 @@ class CreateMaterialStockController extends Controller
              ],
             [
                 'name' => 'material_id',
-                'label' => 'Material Id',
+                'label' => 'Material',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'material_id', true) :getList('InputMaterial')[0]->id,
@@ -797,7 +797,7 @@ class CreateMaterialStockController extends Controller
         'inputs' => [
             [
                 'name' => 'supplier_id',
-                'label' => 'Supplier Id',
+                'label' => 'Supplier',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'supplier_id', true) :getList('Supplier')[0]->id,
@@ -809,7 +809,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'driver_id',
-                'label' => 'Driver Id',
+                'label' => 'Driver',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'driver_id', true) :getList('Driver')[0]->id,
@@ -848,7 +848,7 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'material_id',
-                'label' => 'Material Id',
+                'label' => 'Material',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'material_id', true) :getList('InputMaterial')[0]->id,

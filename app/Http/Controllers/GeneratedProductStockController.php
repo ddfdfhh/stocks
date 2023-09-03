@@ -46,7 +46,7 @@ class GeneratedProductStockController extends Controller
                 'inputs' => [
                     [
                         'name' => 'raw_materials__json__material_id[]',
-                        'label' => 'Material_id',
+                        'label' => 'Material',
                         'tag' => 'select',
                         'type' => 'select',
                         'default' => '',
@@ -124,7 +124,7 @@ class GeneratedProductStockController extends Controller
         $filterable_fields = [
             [
                 'name' => 'product_id',
-                'label' => 'Product Id',
+                'label' => 'Product',
                 'type' => 'select',
             ],
         ];
@@ -196,11 +196,11 @@ class GeneratedProductStockController extends Controller
     {
         $data = [
             [
-                'label' => 'FInal Product',
+                'label' => 'Final Product',
                 'inputs' => [
                     [
                         'name' => 'product_id',
-                        'label' => 'Product Id',
+                        'label' => 'Product',
                         'tag' => 'select',
                         'type' => 'select',
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
@@ -293,11 +293,11 @@ class GeneratedProductStockController extends Controller
 
         $data = [
             [
-                'label' => 'FInal Product',
+                'label' => 'Final Product',
                 'inputs' => [
                     [
                         'name' => 'product_id',
-                        'label' => 'Product Id',
+                        'label' => 'Product',
                         'tag' => 'select',
                         'type' => 'select',
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
@@ -510,11 +510,11 @@ class GeneratedProductStockController extends Controller
         if ($form_type == 'add') {
             $data1 = [
                 [
-                    'label' => 'FInal Product',
+                    'label' => 'Final Product',
                     'inputs' => [
                         [
                             'name' => 'product_id',
-                            'label' => 'Product Id',
+                            'label' => 'Product',
                             'tag' => 'select',
                             'type' => 'select',
                             'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
@@ -559,11 +559,11 @@ class GeneratedProductStockController extends Controller
 
             $data1 = [
                 [
-                    'label' => 'FInal Product',
+                    'label' => 'Final Product',
                     'inputs' => [
                         [
                             'name' => 'product_id',
-                            'label' => 'Product Id',
+                            'label' => 'Product',
                             'tag' => 'select',
                             'type' => 'select',
                             'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,

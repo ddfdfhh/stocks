@@ -246,7 +246,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -258,7 +258,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'city_id',
-                'label' => 'City Id',
+                'label' => 'City',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'city_id', true) : "",
@@ -430,7 +430,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -442,7 +442,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'city_id',
-                'label' => 'City Id',
+                'label' => 'City',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'city_id', true) : "",
@@ -746,7 +746,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -758,7 +758,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'city_id',
-                'label' => 'City Id',
+                'label' => 'City',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'city_id', true) : "",
@@ -871,7 +871,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -883,7 +883,7 @@ class CustomerController extends Controller
             ],
             [
                 'name' => 'city_id',
-                'label' => 'City Id',
+                'label' => 'City',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'city_id', true) : "",
