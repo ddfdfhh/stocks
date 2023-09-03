@@ -9,10 +9,10 @@
 
                      <span class="app-brand-text h3 mb-0 fw-bold">{{ ucwords($settings->company_name) }}</span>
                  </div>
-                 <p class="mb-1">{{ ucwords($settings->address) }}</p>
+                 <p class="mb-1"><span class="me-1 fw-bold">Address:</span> {{ ucwords($settings->address) }}</p>
 
-                 <p class="mb-0">+91 {{ $settings->mobile_number }}</p>
-                 <p class="mb-0"> {{ $settings->gst_number }}</p>
+                 <p class="mb-0"><span class="me-1 fw-bold">Phone No:</span> +91{{ $settings->mobile_number }}</p>
+                 <p class="mb-0"><span class="me-1 fw-bold">GSTIN:</span>{{ $settings->gst_number }}</p>
              </div>
              <div>
                  <h4>Invoice #{{ $row->id }}</h4>
@@ -33,13 +33,13 @@
              <div class="col-sm-6 w-50">
                  <h6>Invoice To:</h6>
                  <p class="mb-1">{{ ucwords($customer->name) }}</p>
-                 <p class="mb-1">{{ ucwords($customer->address) }}</p>
+                 <p class="mb-1"><span class="me-1 fw-bold">Address-</span> {{ ucwords($customer->address) }}</p>
                  <p class="mb-1">{{ ucwords($customer->city->name) }},{{ ucwords($customer->state->name) }},INDIA
                  </p>
 
-                 <p class="mb-1">+91 {{ $customer->mobile_no }}</p>
-                 <p class="mb-0">{{ $customer->email }}</p>
-                 <p class="mb-0">{{ $customer->gst_number }}</p>
+                 <p class="mb-1"><span class="me-1 fw-bold">Phone No-</span> +91 {{ $customer->mobile_no }}</p>
+                 <p class="mb-0"><span class="me-1 fw-bold">Email-</span>{{ $customer->email }}</p>
+                 <p class="mb-0"><span class="me-1 fw-bold">GSTIN-</span>{{ $customer->gst_number }}</p>
              </div>
              <div class="col-sm-6 w-50 " style="text-align:right">
                  <h6>Bill To:</h6>
