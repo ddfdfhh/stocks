@@ -51,7 +51,7 @@
             <li class="menu-item @if($last_uri=='products') active  @endif">
               <a href="{{route('products.index')}}" class="menu-link">
                
-                <div data-i18n="Calendar">Output Products</div>
+                <div data-i18n="Calendar">Manage O/P Products</div>
               </a>
             </li>
             @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_settings'))
@@ -141,7 +141,7 @@
             <li class="menu-item @if($last_uri=='create_material_stocks') active  @endif">
               <a href="{{route('create_material_stocks.index')}}" class="menu-link">
                
-                <div data-i18n="Calendar">Manage Create  Material  Stocks</div>
+                <div data-i18n="Calendar">Manage   Material  Stocks</div>
               </a>
             </li>
      @endif
@@ -161,7 +161,7 @@
             <li class="menu-item @if($last_uri=='create_orders') active  @endif">
               <a href="{{route('create_orders.index')}}" class="menu-link">
                
-                <div data-i18n="Calendar">Manage Create  Orders</div>
+                <div data-i18n="Calendar">Manage   Orders</div>
               </a>
             </li>
      @endif
