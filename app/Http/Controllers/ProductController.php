@@ -521,6 +521,15 @@ class ProductController extends Controller
                 'type' => 'text',
                 'default' => isset($model) ? $model->name : "",
                 'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter price',
+                'name' => 'price',
+                'label' => 'Price',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->price : "",
+                'attr' => []
             ]
         ]
     ]
@@ -560,6 +569,16 @@ class ProductController extends Controller
                 'tag' => 'input',
                 'type' => 'text',
                 'default' => isset($model) ? $model->name : "",
+                'attr' => []
+            ]
+            ,
+            [
+                'placeholder' => 'Enter price',
+                'name' => 'price',
+                'label' => 'Price',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->price : "",
                 'attr' => []
             ]
         ]
