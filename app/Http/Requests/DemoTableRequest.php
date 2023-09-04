@@ -14,12 +14,9 @@ class DemoTableRequest extends FormRequest
     public function rules()
     {
         return [
-    'name' => 'required',
+    'has_attributes__json__size[]\'' => 'nullable',
     'has_attributes' => 'nullable',
-    'category_id' => 'required',
-    'features' => 'nullable',
-    'features__json__longitude[]\'' => 'nullable',
-    'features__json__latitude[]\'' => 'nullable'
+    'has_attributes__json__color[]\'' => 'nullable'
 ];
     }
 }

@@ -63,25 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <div class="d-flex justify-content-between flex-wrap">
-
-                    <div class="dropdown mb-2">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                            Update Status
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item"
-                                    href="javascript:multiSelectCheckBoxAction('Approved','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Approve</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                    href="javascript:multiSelectCheckBoxAction('Rejected','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Reject</a>
-                            </li>
-
-                        </ul>
-                    </div>
-                    <x-search :searchableFields="$searchable_fields" />
-                </div>
+              
 
 
 

@@ -39,12 +39,13 @@
             $key_name = rtrim($spl[1],'[]');
 
             $r['default']=!empty($row)?$row->{$key_name}:'';
+            $r['label']=str_replace(' Id', '', $r['label']);
         @endphp
 
         <div class="col-md-{{ $col }} mb-3">
 
             @if ($r['tag'] == 'input')
-                @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'email' || $r['type'] == 'file')
+                @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'email' || $r['type'] == 'file'|| $r['type'] == 'date'|| $r['type'] == 'datetime-local')
                     {!! Form::text($r['name'], $r['label'])->value($r['default'])->type($r['type'])->placeholder($r['placeholder'])->attrs($attrs) !!}
                     @if ($r['type'] == 'file' && !empty($r['default']))
                         <div class="d-flex">

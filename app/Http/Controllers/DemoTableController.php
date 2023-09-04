@@ -24,90 +24,54 @@ class DemoTableController extends Controller
 
         $this->table_columns = [
             [
-                'column' => 'name',
-                'label' => 'Name',
-                'sortable' => 'Yes',
-            ],
-            [
                 'column' => 'details',
                 'label' => 'Details',
-                'sortable' => 'Yes',
-            ],
-            [
-                'column' => 'category_id',
-                'label' => 'Category',
-                'sortable' => 'Yes',
-            ],
-            [
-                'column' => 'features',
-                'label' => 'Features',
-                'sortable' => 'Yes',
-            ],
-            [
-                'column' => 'has_attributes',
-                'label' => 'HasAttributes',
-                'sortable' => 'Yes',
-            ],
-            [
-                'column' => 'size',
-                'label' => 'Size',
                 'sortable' => 'Yes',
             ],
         ];
         $this->form_image_field_name = [];
         $this->repeating_group_inputs = [
             [
-                'colname' => 'features',
-                'label' => 'Features',
-                'inputs' => [
-                    [
-                        'placeholder' => 'Enter longitude',
-                        'name' => 'features__json__longitude[]',
-                        'label' => 'Longitude',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => '',
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter latitude',
-                        'name' => 'features__json__latitude[]',
-                        'label' => 'Latitude',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => '',
-                        'attr' => [],
-                    ],
-                ],
-            ],
-        ];
-        $this->toggable_group = [
-            [
                 'colname' => 'has_attributes',
-                'conditional_val' => 'Yes',
                 'label' => 'Has Attributes',
                 'inputs' => [
                     [
-                        'placeholder' => 'Enter size',
                         'name' => 'has_attributes__json__size[]',
-                        'label' => 'Size',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => '',
+                        'label' => 'Select Size',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'size', true) : (!empty(getList('Category')) ? getList('Category')[0]->id : ''),
                         'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('Category'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => true,
                     ],
                     [
-                        'placeholder' => 'Enter color',
                         'name' => 'has_attributes__json__color[]',
-                        'label' => 'Color',
+                        'label' => 'Choose Color',
                         'tag' => 'input',
-                        'type' => 'text',
-                        'default' => '',
+                        'type' => 'radio',
+                        'default' => 'Red',
                         'attr' => [],
+                        'value' => [
+                            (object) [
+                                'label' => 'Red',
+                                'value' => 'Red',
+                            ],
+                            (object) [
+                                'label' => 'White',
+                                'value' => 'White',
+                            ],
+                        ],
+                        'inline'=>false,
+                        'has_toggle_div' => [],
+                        'multiple' => false,
                     ],
                 ],
             ],
         ];
+        $this->toggable_group = [];
         $this->model_relations = [
             [
                 'name' => 'categories',
@@ -153,14 +117,14 @@ class DemoTableController extends Controller
 
         $searchable_fields = [
             [
-                'name' => 'name',
-                'label' => 'Name',
+                'name' => 'color',
+                'label' => 'Color',
             ],
         ];
         $filterable_fields = [
             [
-                'name' => 'name',
-                'label' => 'Name',
+                'name' => 'color',
+                'label' => 'Color',
                 'type' => 'select',
             ],
         ];
@@ -235,15 +199,6 @@ class DemoTableController extends Controller
                 'label' => null,
                 'inputs' => [
                     [
-                        'placeholder' => 'Enter name',
-                        'name' => 'name',
-                        'label' => 'Name',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => isset($model) ? $model->name : "",
-                        'attr' => [],
-                    ],
-                    [
                         'placeholder' => 'Enter details',
                         'name' => 'details',
                         'label' => 'Details',
@@ -251,18 +206,6 @@ class DemoTableController extends Controller
                         'type' => 'textarea',
                         'default' => isset($model) ? $model->details : "",
                         'attr' => [],
-                    ],
-                    [
-                        'name' => 'category_id',
-                        'label' => 'Category Id',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'category_id', true) : getList('Category')[0]->id,
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getList('Category'),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
                     ],
                 ],
             ],
@@ -308,7 +251,7 @@ class DemoTableController extends Controller
     {
         try {
             $post = $request->all();
-            // dd($post);
+
             $post = formatPostForJsonColumn($post);
             if (count($this->model_relations) > 0 && in_array('BelongsToMany', array_column($this->model_relations, 'type'))) {
                 foreach (array_keys($post) as $key) {
@@ -317,6 +260,7 @@ class DemoTableController extends Controller
                     }
                 }
             }
+           // dd($post);
             $demotable = DemoTable::create($post);
 
             if ($this->has_upload) {
@@ -357,15 +301,6 @@ class DemoTableController extends Controller
                 'label' => null,
                 'inputs' => [
                     [
-                        'placeholder' => 'Enter name',
-                        'name' => 'name',
-                        'label' => 'Name',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => isset($model) ? $model->name : "",
-                        'attr' => [],
-                    ],
-                    [
                         'placeholder' => 'Enter details',
                         'name' => 'details',
                         'label' => 'Details',
@@ -373,18 +308,6 @@ class DemoTableController extends Controller
                         'type' => 'textarea',
                         'default' => isset($model) ? $model->details : "",
                         'attr' => [],
-                    ],
-                    [
-                        'name' => 'category_id',
-                        'label' => 'Category Id',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'category_id', true) : getList('Category')[0]->id,
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getList('Category'),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
                     ],
                 ],
             ],
@@ -599,47 +522,13 @@ class DemoTableController extends Controller
                     'label' => null,
                     'inputs' => [
                         [
-                            'placeholder' => 'Enter name',
-                            'name' => 'name',
-                            'label' => 'Name',
-                            'tag' => 'input',
-                            'type' => 'text',
-                            'default' => isset($model) ? $model->name : "",
-                            'attr' => [],
-                        ],
-                        [
                             'placeholder' => 'Enter details',
                             'name' => 'details',
                             'label' => 'Details',
                             'tag' => 'textarea',
                             'type' => 'textarea',
                             'default' => isset($model) ? $model->details : "",
-                            'attr' => ['class' => 'summernote'],
-                        ],
-                        [
-                            'name' => 'category_id',
-                            'label' => 'Category Id',
-                            'tag' => 'select',
-                            'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'category_id', true) : getList('Category')[0]->id,
                             'attr' => [],
-                            'custom_key_for_option' => 'name',
-                            'options' => getList('Category'),
-                            'custom_id_for_option' => 'id',
-                            'multiple' => false,
-                        ],
-                        [
-                            'name' => 'has_attributes',
-                            'label' => 'Has Attributes',
-                            'tag' => 'select',
-                            'type' => 'select',
-                            'default' => 'No',
-                            'attr' => ['onChange' => 'toggleDivDisplay(\'has_attributes\',this.value, \'DemoTable\', \'has_attributes_toggle\')'],
-                            'custom_key_for_option' => 'name',
-                            'options' => getListFromIndexArray(['Yes', 'No']),
-                            'custom_id_for_option' => 'id',
-                            'multiple' => false,
-                            'has_toggle_div' => ['colname'=>'has_attributes','toggle_div_id' => 'has_attributes_toggle', 'inputidforvalue' => '', 'plural_lowercase' => 'demo_tables', 'rowid' => ''],
                         ],
                     ],
                 ],
@@ -670,15 +559,6 @@ class DemoTableController extends Controller
                     'label' => null,
                     'inputs' => [
                         [
-                            'placeholder' => 'Enter name',
-                            'name' => 'name',
-                            'label' => 'Name',
-                            'tag' => 'input',
-                            'type' => 'text',
-                            'default' => isset($model) ? $model->name : "",
-                            'attr' => [],
-                        ],
-                        [
                             'placeholder' => 'Enter details',
                             'name' => 'details',
                             'label' => 'Details',
@@ -687,33 +567,6 @@ class DemoTableController extends Controller
                             'default' => isset($model) ? $model->details : "",
                             'attr' => [],
                         ],
-                        [
-                            'name' => 'category_id',
-                            'label' => 'Category Id',
-                            'tag' => 'select',
-                            'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'category_id', true) : getList('Category')[0]->id,
-                            'attr' => [],
-                            'custom_key_for_option' => 'name',
-                            'options' => getList('Category'),
-                            'custom_id_for_option' => 'id',
-                            'multiple' => false,
-                        ]
-                        ,
-                        [
-                            'name' => 'has_attributes',
-                            'label' => 'Has Attributes',
-                            'tag' => 'select',
-                            'type' => 'select',
-                            'default' => $model->has_attributes,
-                            'attr' => ['onChange' => 'toggleDivDisplay(\'has_attributes\',this.value, \'DemoTable\', \'has_attributes_toggle\')'],
-                            'custom_key_for_option' => 'name',
-                            'options' => getListFromIndexArray(['Yes', 'No']),
-                            'custom_id_for_option' => 'id',
-                            'multiple' => false,
-                            'has_toggle_div' => ['colname'=>'has_attributes','toggle_div_id' => 'has_attributes_toggle', 'inputidforvalue' => $model->has_attributes, 'plural_lowercase' => 'demotable', 'rowid' => $model->id],
-                        ],
-
                     ],
                 ],
             ];
@@ -760,7 +613,7 @@ class DemoTableController extends Controller
             $data['module'] = $this->module;
             $data['image_field_names'] = $this->form_image_field_name;
             /***if columns shown in view is difrrent from table_columns jet
-        $columns=\DB::getSchemaBuilder()->getColumnListing('demo_table');
+        $columns=\DB::getSchemaBuilder()->getColumnListing('demo_tables');
         natcasesort($columns);
 
         $cols=[];
@@ -803,22 +656,21 @@ class DemoTableController extends Controller
 
         }
         if ($type == 'excel') {
-            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_table' . date("Y-m-d H:i:s") . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_tables' . date("Y-m-d H:i:s") . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
         }
 
         if ($type == 'csv') {
-            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_table' . date("Y-m-d H:i:s") . '.csv', \Maatwebsite\Excel\Excel::CSV);
+            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_tables' . date("Y-m-d H:i:s") . '.csv', \Maatwebsite\Excel\Excel::CSV);
         }
 
         if ($type == 'pdf') {
-            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_table' . date("Y-m-d H:i:s") . '.pdf', \Maatwebsite\Excel\Excel::MPDF);
+            return Excel::download(new \App\Exports\DemoTableExport($this->model_relations, $filter, $filter_date, $date_field), 'demo_tables' . date("Y-m-d H:i:s") . '.pdf', \Maatwebsite\Excel\Excel::MPDF);
         }
 
     }
     public function load_toggle(Request $r)
     {
         $value = trim($r->val);
-        $colname = trim($r->colname);
         $rowid = $r->has('row_id') ? $r->row_id : null;
         $row = null;
         if ($rowid) {
@@ -828,10 +680,9 @@ class DemoTableController extends Controller
         $index_of_val = 0;
         $is_value_present = false;
         $i = 0;
-
         foreach ($this->toggable_group as $val) {
 
-            if ($val['conditional_val'] == $value && $val['colname'] == $colname) {
+            if ($val['onval'] == $value) {
 
                 $is_value_present = true;
                 $index_of_val = $i;
@@ -841,12 +692,12 @@ class DemoTableController extends Controller
         }
         if ($is_value_present) {
             if ($row) {
-                $data['row'] = $row;
+                $this->toggable_group = [];
 
             }
             $data['inputs'] = $this->toggable_group[$index_of_val]['inputs'];
-//dd($row->toArray());
-            $v = view('admin.demo_tables.toggable_snippet', with($data))->render();
+
+            $v = view('admin.attribute_families.toggable_snippet', with($data))->render();
             return createResponse(true, $v);
         } else {
             return createResponse(true, "");

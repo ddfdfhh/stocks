@@ -325,12 +325,14 @@ function showArrayInColumn($arr = [], $row_index = 0)
             <div class="modal-content">
 
               <div class="modal-body">
+              <div class="table-responsive">
               <table class="table table-bordered">
               <thead>
               ' . $header . '
               </thead>
               <tbody>' . $body . '</tbody>
               </table>
+              </div>
               </div>
 
               <!-- Modal footer -->
@@ -486,6 +488,11 @@ function getImageList($id, $image_model, $parent_field_name)
 {
     $model = "App\\Models\\$image_model";
     return $model::where($parent_field_name, $id)->get(['id', 'name']);
+}
+function getTableNameFromModel($model)
+{
+    $model_class = app("\App\Models" . '\\' . $model);
+    return $model_class->getTable();
 }
 function getFieldValuesFromModelAsArray($model, $field, $where = [])
 {

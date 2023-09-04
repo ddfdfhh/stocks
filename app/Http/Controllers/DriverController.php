@@ -41,31 +41,7 @@ class DriverController extends Controller
         'label' => 'Photo',
         'sortable' => 'No'
     ],
-    [
-        'column' => 'adhar_image',
-        'label' => 'Adhar Image',
-        'sortable' => 'No'
-    ],
-    [
-        'column' => 'adhar_number',
-        'label' => 'Adhar Number',
-        'sortable' => 'Yes'
-    ],
-    [
-        'column' => 'dl_image',
-        'label' => 'DL Image',
-        'sortable' => 'No'
-    ],
-    [
-        'column' => 'dl_number',
-        'label' => 'DL Number',
-        'sortable' => 'Yes'
-    ],
-    [
-        'column' => 'status',
-        'label' => 'Status',
-        'sortable' => 'Yes'
-    ],
+   
     [
         'column' => 'vehicle_id',
         'label' => 'Assigned Vehicle',
@@ -160,11 +136,11 @@ class DriverController extends Controller
     ],
     [
         'name' => 'dl_number',
-        'label' => 'Dl Number'
+        'label' => 'DL Number'
     ],
     [
         'name' => 'vehicle_id',
-        'label' => 'Vehicle Id'
+        'label' => 'Vehicle'
     ]
 ];
         $filterable_fields=[
@@ -310,7 +286,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_number',
                 'name' => 'dl_number',
-                'label' => 'Dl Number',
+                'label' => 'DL Number',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_number : "",
@@ -319,7 +295,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_image',
                 'name' => 'dl_image',
-                'label' => 'Dl Image',
+                'label' => 'DL Image',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_image : "",
@@ -347,7 +323,7 @@ class DriverController extends Controller
             ],
             [
                 'name' => 'vehicle_id',
-                'label' => 'Vehicle Id',
+                'label' => 'Vehicle',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'vehicle_id', true) :getList('Vehicle')[0]->id,
@@ -509,7 +485,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_number',
                 'name' => 'dl_number',
-                'label' => 'Dl Number',
+                'label' => 'DL Number',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_number : "",
@@ -518,7 +494,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_image',
                 'name' => 'dl_image',
-                'label' => 'Dl Image',
+                'label' => 'DL Image',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_image : "",
@@ -546,7 +522,7 @@ class DriverController extends Controller
             ],
             [
                 'name' => 'vehicle_id',
-                'label' => 'Vehicle Id',
+                'label' => 'Vehicle',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'vehicle_id', true) :getList('Vehicle')[0]->id,
@@ -839,7 +815,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_number',
                 'name' => 'dl_number',
-                'label' => 'Dl Number',
+                'label' => 'DL Number',
                 'tag' => 'input',
                 'type' => 'text',
                 'default' => isset($model) ? $model->dl_number : "",
@@ -848,7 +824,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_image',
                 'name' => 'dl_image',
-                'label' => 'Dl Image',
+                'label' => 'DL Image',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_image : "",
@@ -878,7 +854,7 @@ class DriverController extends Controller
             ],
             [
                 'name' => 'vehicle_id',
-                'label' => 'Vehicle Id',
+                'label' => 'Vehicle',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'vehicle_id', true) :getList('Vehicle')[0]->id,
@@ -976,7 +952,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_number',
                 'name' => 'dl_number',
-                'label' => 'Dl Number',
+                'label' => 'DL Number',
                 'tag' => 'input',
                 'type' => 'text',
                 'default' => isset($model) ? $model->dl_number : "",
@@ -985,7 +961,7 @@ class DriverController extends Controller
             [
                 'placeholder' => 'Enter dl_image',
                 'name' => 'dl_image',
-                'label' => 'Dl Image',
+                'label' => 'DL Image',
                 'tag' => 'input',
                 'type' => 'file',
                 'default' => isset($model) ? $model->dl_image : "",
@@ -1056,6 +1032,8 @@ class DriverController extends Controller
                     $data['image_list']=$ar;/***$data['image_list'] will have fieldnames as key and corrsponsing list of image models */
                 }
             }
+
+
         }
         if($form_type=='view'){
                 $data['row'] =null;
@@ -1073,22 +1051,26 @@ class DriverController extends Controller
                   $data['plural_lowercase']='drivers';
                  $data['module'] = $this->module;
                   $data['image_field_names']=$this->form_image_field_name;
-		/***if columns shown in view is difrrent from table_columns jet
-		$columns=\DB::getSchemaBuilder()->getColumnListing('drivers');
-        natcasesort($columns);
-         
-		$cols=[];
-		$exclude_cols=['id','from_area','branch','to_area','coupon_id','user_id','delivery_type_id','signature','map','otp_code','incentive_checked','franchisee_id'];
-		foreach($columns as $col){
-			if($col=='order_unique_id')
-			  $col="order_tracking_id";
-			$label=ucwords(str_replace('_',' ',$col));
-			
-			if(!in_array($col,$exclude_cols))
-			array_push($cols,['column'=>$col,'label'=>$label,'sortable'=>'No']);
-		}
-		$data['table_columns']=$cols;
-		***/
+                   $table = getTableNameFromModel($this->module);
+                    $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+                    //natcasesort($columns);
+
+                    $cols = [];
+                    $exclude_cols = ['id', 'updated_at'];
+                    foreach ($columns as $col) {
+
+                        $label = ucwords(str_replace('_', ' ', $col));
+                        $label=str_replace(' Id','',$label);
+
+                        if (!in_array($col, $exclude_cols)) {
+                            array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+                        }
+
+                    }
+                    
+                    $data['table_columns'] = $cols;
+
+		
         
         }
       if($form_type=='view')

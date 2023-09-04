@@ -90,7 +90,7 @@ class CityController extends Controller
     ],
     [
         'name' => 'state_id',
-        'label' => 'State Id'
+        'label' => 'State'
     ]
 ];
         $filterable_fields=[
@@ -185,7 +185,7 @@ class CityController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -298,7 +298,7 @@ class CityController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -542,7 +542,7 @@ class CityController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",
@@ -594,7 +594,7 @@ class CityController extends Controller
             ],
             [
                 'name' => 'state_id',
-                'label' => 'State Id',
+                'label' => 'State',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'state_id', true) : "",

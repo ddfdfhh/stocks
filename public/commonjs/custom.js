@@ -1,23 +1,3 @@
-var host = "https://ecommerce.test/admin";
-// $("#image").filer({
-//     showThumbs: true,
-//     addMore: true,
-//     allowDuplicates: falch,
-// });
-$(document).ready(function () {
-    $("#inp-state_id").on("change", function () {
-        let val = $(this).val();
-        // fetchHtmlContent({state:val},'inp-city',host+'/getCity');
-        showDependentSelectBox(
-            "state_id",
-            "name",
-            val,
-            "inp-city_id",
-            "city",
-            "id"
-        );
-    });
-});
 function applySelect2(elem, in_popup = true, container_id = null) {
     let options = { placeholder: "Select.." };
     if (in_popup) options["dropdownParent"] = $("#" + container_id);
@@ -135,58 +115,33 @@ function initiateSelect2ChangeEvents(in_popup = true, container_id = null) {
     };
     applySelect2ChangeEventPopulateOther(data_city);
 }
-function formInitiate(module, rules) {
-    let lowercase_name = module.toLowerCase();
-    url = $("#" + lowercase_name + "_form").attr("action");
 
-    let formSubmitcallbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            // bsOffcanvas.hide();
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        lowercase_name + "_btn",
-        lowercase_name + "_form",
-        url,
-        formSubmitcallbackSuccess
-    );
-}
 function inilizeEvents() {
-    $("#filter").on("hide.bs.dropdown", function (e) {
-        if (e.clickEvent) {
-            e.preventDefault();
-        }
-    });
+    if ($("#filter").length > 0) {
+        $("#filter").on("hide.bs.dropdown", function (e) {
+            if (e.clickEvent) {
+                e.preventDefault();
+            }
+        });
+    }
 
     //applySelect2("select", false);
     initiateSelect2ChangeEvents(false);
     // applySelect2("#inp-country",false,false)
     /****select 2 in filter and user assing modal area  */
     const myModalEl = document.getElementById("myModal");
-    myModalEl.addEventListener("shown.bs.modal", (event) => {
-        applySelect2("select", true, "myModal");
-        // do something...
-    });
-    var myDropdown = document.getElementById("filter");
-    myDropdown.addEventListener("shown.bs.dropdown", function () {
-        applySelect2("select", true, "filter");
-    });
-    if ($("#tax_form").length > 0) {
-        /***initliase form submit here*/
-        formInitiate("tax", rules);
-    }
-    //if ($("form#try").length > 0) applySelect2("select",true,true,"form#try",);
-    if ($("#image").length > 0) {
-        $("#image").on("change", function () {
-            multiImagePreview(this, "gallery1");
+    if (myModalEl) {
+        myModalEl.addEventListener("shown.bs.modal", (event) => {
+            applySelect2("select", true, "myModal");
+            // do something...
         });
     }
-    /***** */
+    var myDropdown = document.getElementById("filter");
+    if (myDropdown) {
+        myDropdown.addEventListener("shown.bs.dropdown", function () {
+            applySelect2("select", true, "filter");
+        });
+    }
     if ($("#image").length > 0) {
         $("#image").on("change", function () {
             multiImagePreview(this, "gallery1");
@@ -272,23 +227,33 @@ function initFilePreviewEvent() {
 function initializeFormAjaxSubmitAndValidation() {
     $("form").each(function () {
         let module = $(this).data("module");
+        console.log("all fom", module);
         let url = $(this).attr("action");
         let rules = getModuleWiseRules(module);
+        let has_file = false;
+        let this_form = this;
+        $(this_form)
+            .find("input")
+            .each(function (el) {
+                let input = this;
+                if ($(input).attr("type") === "file") {
+                    has_file = true;
+                    return false;
+                }
+            });
+        let messages = getModuleWiseValidationMessages(module);
         let lowercase_name = module.toLowerCase();
-        let formSubmitcallbackSuccess = function (res) {
-            if (res["redirect_url"]) {
-                setTimeout(function () {
-                    window.location.href = res["redirect_url"];
-                }, 3000);
-            }
-        };
-        formValidateFunctionTemplateImage(
+        let { callbackSuccess, callbackError } = getModuleWiseCallbacks(module);
+
+        formValidateFunctionTemplate(
             rules,
-            {},
+            messages,
             lowercase_name + "_btn",
             lowercase_name + "_form",
             url,
-            formSubmitcallbackSuccess
+            callbackSuccess,
+            callbackError,
+            has_file
         );
     });
 }
@@ -311,23 +276,22 @@ function setUnitOnMaterialSelect(material_id) {
     );
 }
 function generateInvoice(order_id) {
-    
-       const myModalEl = new bootstrap.Modal(
-                document.getElementById("invoiceModal")
-            );
+    const myModalEl = new bootstrap.Modal(
+        document.getElementById("invoiceModal")
+    );
     myModalEl.toggle();
-    $("#invoiceModal #invoice-body").css('textAlign','center');
- $("#invoiceModal #invoice-body").html(
-     '<div class="spinner-border text-muted mx-auto mt-3"></div>'
- );
-    const callbackError=function(res){
+    $("#invoiceModal #invoice-body").css("textAlign", "center");
+    $("#invoiceModal #invoice-body").html(
+        '<div class="spinner-border text-muted mx-auto mt-3"></div>'
+    );
+    const callbackError = function (res) {
         console.log(res);
-    }
+    };
     objectAjaxNoLoaderNoAlert(
         { order_id },
         `/admin/generate_invoice`,
         (htmlLoadcallback = function (res) {
-         $("#invoiceModal #invoice-body").css("textAlign", "left");
+            $("#invoiceModal #invoice-body").css("textAlign", "left");
             $("#invoiceModal #invoice-body").html(res["message"]);
         }),
         callbackError,
@@ -335,20 +299,33 @@ function generateInvoice(order_id) {
     );
 }
 $(document).ready(function () {
+    if ($("form").length > 0) initializeFormAjaxSubmitAndValidation();
+     applySelect2("select",false);
+    $("#inp-state_id").on("change", function () {
+        let val = $(this).val();
+        // fetchHtmlContent({state:val},'inp-city',host+'/getCity');
+        showDependentSelectBox(
+            "state_id",
+            "name",
+            val,
+            "inp-city_id",
+            "city",
+            "id"
+        );
+    });
     initialiseSummernote();
     inilizeEvents();
 
     showToggableDivOnLoadIfPresent();
     initFilePreviewEvent();
-    if ($("form").length > 0) initializeFormAjaxSubmitAndValidation();
 });
 //$('.multipleInputDynamic').fastselect();
 /**==============================================Add More Row of inputs ================================ */
 function addMoreRow() {
     let parent = $(event.target).closest(".repeatable");
-    console.log(parent);
+
     let copy_content = parent.find(".copy_row")[0];
-    console.log(copy_content);
+
     $(copy_content).clone().appendTo(parent);
 }
 function removeRow() {
@@ -404,14 +381,47 @@ function deleteRecord(id, url) {
         }
     });
 }
+function initializeModalFormValidation(module, bsOffcanvas) {
+    let rules = getModuleWiseRules(module);
+    let messages = getModuleWiseValidationMessages(module);
 
+    let lowercase_name = module.toLowerCase();
+    if ($("#" + lowercase_name + "_form").length > 0) {
+        let has_file = false;
+
+        $("#" + lowercase_name + "_form")
+            .find("input")
+            .each(function (el) {
+                if ($(this).attr("type") === "file") {
+                    has_file = true;
+                    return false;
+                }
+            });
+        url = $("#" + lowercase_name + "_form").attr("action");
+
+        let { callbackSuccess, callbackError } = getModuleWiseCallbacks(module);
+
+        formValidateFunctionTemplate(
+            rules,
+            messages,
+            lowercase_name + "_btn",
+            lowercase_name + "_form",
+            url,
+            callbackSuccess,
+            callbackError,
+            has_file
+        );
+    }
+}
 /*************This function when loading form in offcanvas modal from right ************** */
 
 function load_form(module, form_type, url, id = null, properName) {
     let lowercase_name = module.toLowerCase();
     var myOffcanvas = document.getElementById("offcanvasEnd");
     $("#offcanvasEnd .offcanvas-body").addClass("text-center");
-    $(".offcanvas-title").html(form_type + "&nbsp;&nbsp;" + properName);
+    properName = properName.replace("Create", "");
+
+    $("#offcanvasEndLabel").html(form_type + "&nbsp;&nbsp;" + properName);
     $("#offcanvasEnd .offcanvas-body").html(
         "<div class='spinner-border' style='position:absolute;top: 50%;left:50%'></div>"
     );
@@ -430,29 +440,9 @@ function load_form(module, form_type, url, id = null, properName) {
         applySelect2("select", (in_popup = true), "offcanvasEnd");
         initiateSelect2ChangeEvents(true, "offcanvasEnd");
         initFilePreviewEvent();
-        let rules = getModuleWiseRules(module);
-        showToggableDivOnLoadIfPresent();
-        if ($("#" + lowercase_name + "_form").length > 0) {
-            /***initliase form submit here*/
-            url = $("#" + lowercase_name + "_form").attr("action");
 
-            let formSubmitcallbackSuccess = function (res) {
-                if (res["redirect_url"]) {
-                    bsOffcanvas.hide();
-                    setTimeout(function () {
-                        window.location.href = res["redirect_url"];
-                    }, 3000);
-                }
-            };
-            formValidateFunctionTemplateImage(
-                rules,
-                {},
-                lowercase_name + "_btn",
-                lowercase_name + "_form",
-                url,
-                formSubmitcallbackSuccess
-            );
-        }
+        showToggableDivOnLoadIfPresent();
+        initializeModalFormValidation(module, bsOffcanvas);
     };
 
     objectAjaxNoLoaderNoAlert(

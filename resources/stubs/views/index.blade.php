@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-       
+
 
         <!-- Basic Bootstrap Table -->
         <div class="card">
@@ -80,9 +80,10 @@
                                 <th>#</th>
                                 @foreach ($table_columns as $t)
                                     @if ($t['sortable'] == 'Yes')
-                                        <x-row column="{{ $t['column'] }}" label="{{ $t['label'] }}" />
+                                        <x-row column="{{ $t['column'] }}"
+                                            label="{{ str_replace(' Id', '', $t['label']) }}" />
                                     @else
-                                        <th>{{ $t['label'] }}</th>
+                                        <th>{{ str_replace(' Id', '', $t['label']) }}</th>
                                     @endif
                                 @endforeach
                                 <th>Action</th>

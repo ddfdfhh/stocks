@@ -100,7 +100,7 @@ class CrudGeneratorController extends Controller
                     $inputs = $ar['create_input_config'][$add_in_grp]['inputs'];
                     foreach ($ar['image_config'] as $item) {
                         $p = ["placeholder" => "Enter name",
-                            "name" => $item['single'] ? $item["field_name"] : $item["field_name"] . '[]\'',
+                            "name" => $item['single'] ? $item["field_name"] : $item["field_name"] . ' []\'',
                             "label" => $item['single'] ? properSingularName($item["field_name"]) : properPluralName($item["field_name"]),
                             "tag" => "input",
                             "type" => "file",
@@ -376,7 +376,7 @@ class CrudGeneratorController extends Controller
                     $input_types[$field] = $inptype;
 
                     $option_string = $post[$field . '_options_create_' . $index][0];
-                    dd($option_string);
+
                     if (!empty($option_string)) {
                         if (!str_contains($option_string, 'getList') || !str_contains($option_string, 'getRadioOptions')) {
                             $optar = explode(',', $option_string);
@@ -422,7 +422,7 @@ class CrudGeneratorController extends Controller
             // dd( $select_box_options );
             $attr_p = $grp['attrs'];
             $labels_p = $grp['labels'];
-            $is_multiple = $grp['multiple'];
+            $is_multiple_p = $grp['multiple'];
             $input_types = $grp['types'];
             $input_ar = [];
             $i = 0;
@@ -434,6 +434,7 @@ class CrudGeneratorController extends Controller
                 $input = $input_types[$field];
                 $attr = [];
                 $options = null;
+                $input_label = $labels_p[$field];
                 $options_for_select = [];
                 $options_for_radio = [];
                 // echo $field;
@@ -458,32 +459,50 @@ class CrudGeneratorController extends Controller
                 } else {
                     if (!empty($options)) {
                         if ($input == 'radio' || $input == 'checkbox') {
-                            $options_first_value = rtrim($options, ';') . '[0]->value';
+
+                            $options_first_value = '(!empty(' . $option_string . ')?' . $option_string . '[0]->value:\'\')';
                         } else {
-                            $options_first_value = rtrim($options, ';') . '[0]->id';
+                            $options_first_value = rtrim($options, ';') . "[0]->id";
+                            $options_first_value = '(!empty(' . $option_string . ')?' . $option_string . '[0]->id:\'\')';
                         }
 
                     }
                 }
-                $label = ucwords(str_replace('_', ' ', $field));
+                $label = $input_label;
                 $default = 'isset($model) ? $model->' . $field . ' : ""';
 
-                if ($input == 'text' || $input == 'file' || $input == 'email' || $input == 'number' || $input == 'date') {
+                if ($input == 'text' || $input == 'file' || $input == 'email' || $input == 'number' || $input == 'date' || $input == 'datetime-local') {
 
                     $p = ['placeholder' => 'Enter ' . $field, 'name' => $field, 'label' => $label, 'tag' => 'input', 'type' => $input, 'default' => $default, 'attr' => $attr];
                 } elseif ($input == 'textarea') {
                     $p = ['placeholder' => 'Enter ' . $field, 'name' => $field, 'label' => $label, 'tag' => 'textarea', 'type' => 'textarea', 'default' => $default, 'attr' => $attr];
                 } elseif ($input == 'select') {
-                    $is_multiple = isset($is_multiple[$field]) && $is_multiple[$field] == 'Yes' ? true : false;
-                    $default = 'isset($model) ? formatDefaultValueForSelectEdit($model,\'' . $field . '\', true) :' . $options_first_value;
+                    $is_multiple = isset($is_multiple_p[$field]) && $is_multiple_p[$field] == 'Yes' ? true : false;
+
+                    $o = 'formatDefaultValueForSelectEdit($model,\'' . $field . '\', false)';
+                    $field_val = '$model->' . $field;
+                    //  $default = 'isset($model) ?('.$is_multiple ?$o:$field_val.'): ('.$is_multiple ?.' [] : ' . $options_first_value . ')';
+                    $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+
+                    if ($is_multiple) {
+                        $o = 'formatDefaultValueForSelectEdit($model,\'' . $field . '\', true)';
+
+                        $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+                    }
+
                     $p = ['name' => $field, 'label' => $label, 'tag' => 'select', 'type' => 'select', 'default' => $default, 'attr' => $attr, 'custom_key_for_option' => 'name', 'options' => $options, 'custom_id_for_option' => 'id', 'multiple' => $is_multiple];
                 } elseif ($input == 'radio' || $input == 'checkbox') {
-                    $is_multiple = isset($is_multiple[$field]) && $is_multiple[$field] == 'Yes' ? true : false;
-
-                    $default = 'isset($model) ?($is_multiple ? formatDefaultValueForCheckbox($model,\'' . $field . '\') : $model->' . $field . '): ($is_multiple ? [] : ' . $options_first_value . ')';
+                    $is_multiple = isset($is_multiple_p[$field]) && $is_multiple_p[$field] == 'Yes' ? true : false;
+                    $o = 'formatDefaultValueForCheckbox($model,\'' . $field . '\')';
+                    $field_val = '$model->' . $field;
+                    //  $default = 'isset($model) ?('.$is_multiple ?$o:$field_val.'): ('.$is_multiple ?.' [] : ' . $options_first_value . ')';
+                    $default = 'isset($model) ?' . $field_val . ':' . $options_first_value;
+                    if ($is_multiple) {
+                        $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+                    }
 
                     //$options_for_radio = $is_multiple ? (count($options) > 0 ? $options : []) : (count($options) > 0 ? $options[0] : '');
-                    $p = ['name' => $field, 'label' => $label, 'tag' => 'input', 'type' => $input, 'default' => $default, 'attr' => $attr, 'value' => $options, 'has_toggle_div' => [], 'multiple' => $is_multiple];
+                    $p = ['name' => $field, 'label' => $label, 'tag' => 'input', 'type' => $input, 'default' => $default, 'attr' => $attr, 'value' => $options, 'has_toggle_div' => [], 'multiple' => $is_multiple, 'inline' => true];
                 }
 
                 $input_ar[] = $p;
@@ -491,7 +510,7 @@ class CrudGeneratorController extends Controller
                 $i++;
             }
             $ar[] = ['label' => $grp['fieldset_label'], 'inputs' => $input_ar];
-            // dd($ar);
+            //dd($ar);
         };
         return $ar;
     }
@@ -612,9 +631,10 @@ class CrudGeneratorController extends Controller
         $repeating_cols = getValOfArraykey($post, 'repeatable_cols', false);
 
         if ($repeating_cols) {
+            //dd($repeating_cols);
             foreach ($repeating_cols as $item) {
                 $item = $item[0];
-
+                // dd($post);
                 if ($item) {
                     $col_name = $item;
                     if (empty($post[$item . '_label'][0])) {
@@ -624,12 +644,12 @@ class CrudGeneratorController extends Controller
                     $label = $post[$item . '_label'][0];
 
                     $input_types = $post[$item . '_inputtype'];
-                    $input_types = $post[$item . '_inputtype'];
+
                     $field_keys = $post[$item . '_keys'];
                     // dd($field_keys);
                     $select_box_options = $post[$item . '_options'];
                     $input_attrs = $post[$item . '_attributes'];
-                    $is_multiple = false;
+                    $is_multipl_p = $post[$item . '_multiple'];
                     // if (empty($is_multiple)) {
                     //     dd('Please select multiple checkbox in repeatable column for ' . $item);
                     // }
@@ -647,6 +667,7 @@ class CrudGeneratorController extends Controller
                             $options_for_select = [];
                             $options_for_radio = [];
                             $attr_string = $input_attrs[$i];
+                            $is_multiple = $is_multipl_p[$i];
                             if (!empty($attr_string)) {
                                 $attrp = explode(',', $attr_string);
                                 foreach ($attrp as $x) {
@@ -656,9 +677,11 @@ class CrudGeneratorController extends Controller
                                 }
                             }
                             $option_string = $select_box_options[$i];
+
                             $options_first_value = null;
                             if (!empty($option_string)) {
-                                if (is_array($option_string)) {
+
+                                if (!str_contains($option_string, 'getList') && !str_contains($option_string, 'getRadioOptions')) {
                                     $options = explode(',', $option_string);
                                     $options_for_select = array_map(function ($it) {
                                         return (object) ['id' => $it, 'name' => $it];
@@ -666,29 +689,53 @@ class CrudGeneratorController extends Controller
                                     $options_for_radio = array_map(function ($it) {
                                         return (object) ['label' => $it, 'value' => $it];
                                     }, $options);
-                                    $options_first_value = $options_for_radio[0]->value;
+                                    $options_first_value = !empty($options_for_radio) ? $options_for_radio[0]->value : '';
                                 } else {
+                                    $options_for_select = $option_string;
+                                    $options_for_radio = $option_string;
+                                    $option_string = rtrim($option_string, ';');
+
                                     if ($input == 'radio' || $input == 'checkbox') {
-                                        $options_first_value = rtrim($options, ';') . '[0]->value';
+                                        $options_first_value = '(!empty(' . $option_string . ')?' . $option_string . '[0]->value:\'\')';
                                     } else {
-                                        $options_first_value = rtrim($options, ';') . '[0]->id';
+                                        //  dd('here');
+                                        $options_first_value = '(!empty(' . $option_string . ')?' . $option_string . '[0]->id:\'\')';
                                     }
 
                                 };
 
                             }
-                            if ($input == 'text' || $input == 'file' || $input == 'number' || $input == 'date') {
+                            if ($input == 'text' || $input == 'file' || $input == 'number' || $input == 'date' || $input == 'datetime-local') {
+                                $default = 'isset($model)?$model->' . $field_keys[$i] . ':\'\'';
                                 $p = ['placeholder' => 'Enter ' . $field_keys[$i], 'name' => $item . '__json__' . $field_keys[$i] . '[]\'', 'label' => ucfirst($field_keys[$i]), 'tag' => 'input', 'type' => $input, 'default' => '', 'attr' => $attr];
                             } elseif ($input == 'textarea') {
+                                $default = 'isset($model)?$model->' . $field_keys[$i] . ':\'\'';
+
                                 $p = ['placeholder' => 'Enter ' . $field_keys[$i], 'name' => $item . '__json__' . $field_keys[$i] . '[]\'', 'label' => ucfirst($field_keys[$i]), 'tag' => 'textarea', 'type' => 'textarea', 'default' => '', 'attr' => $attr];
                             } elseif ($input == 'select') {
-                               // dd($is_multiple);
-                                $is_multiple = $is_multiple[$i] == 'Yes' ? true : false;
-                                $p = ['name' => $item . '__json__' . $field_keys[$i] . '[]', 'label' => ucfirst($field_keys[$i]), 'tag' => 'select', 'type' => 'select', 'default' => '', 'attr' => $attr, 'custom_key_for_option' => 'name', 'options' => $options_for_select, 'custom_id_for_option' => 'id', 'multiple' => $is_multiple];
+
+                                $is_multiple = $is_multiple == 'Yes' ? true : false;
+                                $o = 'formatDefaultValueForSelectEdit($model,\'' . $field_keys[$i] . '\', false)';
+                                $field_val = '$model->' . $field_keys[$i];
+                                //  $default = 'isset($model) ?('.$is_multiple ?$o:$field_val.'): ('.$is_multiple ?.' [] : ' . $options_first_value . ')';
+                                $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+
+                                if ($is_multiple) {
+                                    $o = 'formatDefaultValueForMultipleSelectEdit($model,\'' . $field_keys[$i] . '\', true)';
+
+                                    $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+                                }
+                                $p = ['name' => $item . '__json__' . $field_keys[$i] . '[]\'', 'label' => 'Select ' . ucfirst($field_keys[$i]), 'tag' => 'select', 'type' => 'select', 'default' => $default, 'attr' => $attr, 'custom_key_for_option' => 'name', 'options' => $options_for_select, 'custom_id_for_option' => 'id', 'multiple' => $is_multiple];
                             } elseif ($input == 'radio' || $input == 'checkbox') {
-                                $is_multiple = $is_multiple[$i] == 'Yes' ? true : false;
-                                // $options_for_radio = $is_multiple ? (count($options_for_radio) > 0 ? $options_for_radio : []) : (count($options_for_radio) > 0 ? $options_for_radio[0] : '');
-                                $p = ['name' => $item . '__json__' . $field_keys[$i] . '[]', 'label' => ucfirst($field_keys[$i]), 'tag' => 'input', 'type' => 'select', 'default' => $options_first_value, 'attr' => $attr, 'value' => $options_for_radio, 'has_toggle_div' => [], 'multiple' => $is_multiple];
+                                $is_multiple = $is_multiple == 'Yes' ? true : false;
+                                $o = 'formatDefaultValueForCheckbox($model,\'' . $field_keys[$i] . '\')';
+                                $field_val = '$model->' . $field_keys[$i];
+                                //  $default = 'isset($model) ?('.$is_multiple ?$o:$field_val.'): ('.$is_multiple ?.' [] : ' . $options_first_value . ')';
+                                $default = 'isset($model) ?' . $field_val . ':' . $options_first_value;
+                                if ($is_multiple) {
+                                    $default = 'isset($model) ?' . $o . ':' . $options_first_value;
+                                }
+                                $p = ['name' => $item . '__json__' . $field_keys[$i] . '[]\'', 'label' => 'Choose ' . ucfirst($field_keys[$i]), 'tag' => 'input', 'type' => 'radio', 'default' => $options_first_value, 'attr' => $attr, 'value' => $options_for_radio, 'has_toggle_div' => [], 'multiple' => $is_multiple];
                             }
 
                             array_push($input_ar, $p);
@@ -703,7 +750,7 @@ class CrudGeneratorController extends Controller
                 }
             }
         }
-
+        // dd($repeating_group);
         return $repeating_group;
     }
     public function formatForToggable($post)
@@ -936,7 +983,7 @@ class CrudGeneratorController extends Controller
             $related_model = $model;
             $lowercase_related_model = strtolower($related_model);
             $lowercase_cur_model = strtolower($cur_model);
-            $relationsip_name = empty($relationship_names[$i]) ? \Str::plural(strtolower($model)) : $relationship_names[$i];
+            $relationsip_name = empty($relationship_names[$i])?\Str::plural(strtolower($model)) : $relationship_names[$i];
             $pivot_table = getPivotTableName($lowercase_related_model, $lowercase_cur_model);
             $fn_stub_content = file_get_contents(resource_path("stubs/model_relation/manytoMany.stub"));
             $actual_function_code = str_replace(
@@ -969,7 +1016,7 @@ class CrudGeneratorController extends Controller
             // $related_model = $model;
             $lowercase_related_model = strtolower($related_model);
             $lowercase_cur_model = strtolower($cur_model);
-            $relationsip_name = empty($relationship_names[$i]) ? \Str::plural(strtolower($model)) : $relationship_names[$i];
+            $relationsip_name = empty($relationship_names[$i])?\Str::plural(strtolower($model)) : $relationship_names[$i];
 
             $fk = $data['has_many_fk'][$i];
 
@@ -1005,7 +1052,7 @@ class CrudGeneratorController extends Controller
 
             $lowercase_related_model = strtolower($related_model);
             $lowercase_cur_model = strtolower($cur_model);
-            $relationsip_name = empty($relationship_names[$i]) ? \Str::plural(strtolower($model)) : $relationship_names[$i];
+            $relationsip_name = empty($relationship_names[$i])?\Str::plural(strtolower($model)) : $relationship_names[$i];
 
             $fk = $data['has_one_fk'][$i];
 
@@ -1082,8 +1129,8 @@ class CrudGeneratorController extends Controller
         $data['other_has_relation'] = [];
         // dd($data);
         /****format for sesion rellationship */
-        $manymany = \Session::has('relationships_manymany') ? \Session::has('relationships_manymany') : null;
-        $other_rel = \Session::has('relationships') ? \Session::get('relationships') : null;
+        $manymany = \Session::has('relationships_manymany')?\Session::has('relationships_manymany') : null;
+        $other_rel = \Session::has('relationships')?\Session::get('relationships') : null;
         if ($manymany) {
             foreach ($manymany as $name => $rel) {
                 $grp_no = $rel['add_in_grp'];

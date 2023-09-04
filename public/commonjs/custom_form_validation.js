@@ -1,15 +1,10 @@
-var host = "https://ecommerce.test/admin";
 function getModuleWiseRules(module) {
     if (module == "Product") {
         return {
-            "image[]": { required: true },
             name: { required: true },
             price: { required: true, number: true },
-            stock: { required: true, number: true },
-            category_id: { required: true, number: true },
         };
-    } 
-    if (module == "GeneratedProductStock") {
+    } else if (module == "GeneratedProductStock") {
         return {
             product_id: { required: true },
             quantity: { required: true, number: true },
@@ -85,7 +80,8 @@ function getModuleWiseRules(module) {
         };
     } else if (module == "Login") {
         return {
-            name: { required: true },
+            email: { required: true, email: true },
+            password: { required: true, minlength: 8 },
         };
     } else if (module == "Category") {
         return {
@@ -179,30 +175,35 @@ function getModuleWiseRules(module) {
         };
     } else if (module == "CreateOrder") {
         return {
-           
             product_id: {
                 required: true,
                 number: true,
-               
             },
             quantity: {
                 required: true,
                 number: true,
-            }
-            
+            },
         };
+    } else if (module == "Supplier") {
+        return {
+            name: {
+                required: true,
+            },
+            email: {
+                required: true,
+                email: true,
+            },
+            mobile_no: {
+                required: true,
+                number: true,
+            },
+        };
+    } else {
+        return {};
     }
 }
 function getModuleWiseValidationMessages(module) {
-    if (module == "Product") {
-        return {
-            "image[]": { required: true },
-            name: { required: true },
-            price: { required: true, number: true },
-            stock: { required: true, number: true },
-            category_id: { required: true, number: true },
-        };
-    } else if (module == "Registration") {
+    if (module == "Registration") {
         return {
             // email:{
             //     remote:'Email already exist'
@@ -223,64 +224,9 @@ function getModuleWiseValidationMessages(module) {
                 pwcheck: "Enter strong password",
             },
         };
-    }
+    } else return {};
 }
-/**===============================Registration form submit======================== */
-
-if ($("#registration").length > 0) {
-    let rules = getModuleWiseRules("Registration");
-    let messages = getModuleWiseValidationMessages("Registration");
-    let callbackSuccess = function (res) {
-        window.location.replace(res["url"]);
-    };
-    formValidateFunctionTemplate(
-        rules,
-        messages,
-        "registration_btn",
-        "registration",
-        "/register",
-        callbackSuccess
-    );
-}
-/****===================================Reset Password Form validation========================== */
-if ($("#password").length > 0) {
-    let rules = getModuleWiseRules("ResetPassword");
-    let messages = getModuleWiseValidationMessages("ResetPassword");
-    formValidateFunctionTemplate(
-        rules,
-        messages,
-        "btn",
-        "pwd",
-        host + "/reset_password"
-    );
-}
-/***==============================================Login Form validation(Prefered non ajax better) ==========================================*/
-if ($("#login_form").length > 0) {
-    let rules = getModuleWiseRules("Login");
-    let callback = function (res) {
-        window.location.replace(res["redirect_url"]);
-    };
-    let error = function (res) {
-        $(".login_error_msg").html(res);
-        $("#login_btn").html("Sign in");
-    };
-
-    //formAjaxWithBtnAndLoader('login_btn','login_form','/login',callback)
-    formValidateFunctionTemplateLogin(
-        rules,
-        {},
-        "login_btn",
-        "login_form",
-        "/login",
-        callback,
-        error
-    );
-}
-/***=========================================================Product Form validation ==========================================*/
-if ($("#product_form").length > 0) {
-    let rules = getModuleWiseRules("Product");
-    url = $("#product_form").attr("action");
-
+function getModuleWiseCallbacks(module) {
     let callbackSuccess = function (res) {
         if (res["redirect_url"]) {
             setTimeout(function () {
@@ -288,160 +234,14 @@ if ($("#product_form").length > 0) {
             }, 3000);
         }
     };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "product_btn",
-        "product_form",
-        url,
-        callbackSuccess
-    );
-}
-
-/***=========================================================Category Form validation ==========================================*/
-
-if ($("#category_form").length > 0) {
-    let rules = getModuleWiseRules("Category");
-    url = $("#category_form").attr("action");
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
+    let callbackError = function (error = "") {
+        console.log("eorrr", error);
     };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "category_btn",
-        "category_form",
-        url,
-        callbackSuccess
-    );
-}
-/***=========================================================User Form validation ==========================================*/
-if ($("#user_form").length > 0) {
-    let rules = getModuleWiseRules("User");
-    url = $("#user_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "user_btn",
-        "user_form",
-        url,
-        callbackSuccess
-    );
-}
-
-/*************=========================================*** */
-
-/**==================================================Crud Form ==================================== */
-/***=========================================================Product Form validation ==========================================*/
-if ($("#customer_form").length > 0) {
-    let rules = getModuleWiseRules("Customer");
-    url = $("#customer_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "customer_btn",
-        "customer_form",
-        url,
-        callbackSuccess
-    );
-}
-if ($("#supplier_form").length > 0) {
-    let rules = getModuleWiseRules("Customer");
-    url = $("#supplier_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "supplier_btn",
-        "supplier_form",
-        url,
-        callbackSuccess
-    );
-}
-if ($("#setting_form").length > 0) {
-    let rules = getModuleWiseRules("Setting");
-    url = $("#setting_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "setting_btn",
-        "setting_form",
-        url,
-        callbackSuccess
-    );
-}
-if ($("#generatedproductstock_form").length > 0) {
-    let rules = getModuleWiseRules("GeneratedProductStock");
-    url = $("#generatedproductstock_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "generatedproductstock_btn",
-        "generatedproductstock_form",
-        url,
-        callbackSuccess
-    );
-}
-if ($("#createorder_form").length > 0) {
-    let rules = getModuleWiseRules("CreateOrder");
-    url = $("#createorder_form").attr("action");
-
-    let callbackSuccess = function (res) {
-        if (res["redirect_url"]) {
-            setTimeout(function () {
-                window.location.href = res["redirect_url"];
-            }, 3000);
-        }
-    };
-    formValidateFunctionTemplateImage(
-        rules,
-        {},
-        "createorder_btn",
-        "createorder_form",
-        url,
-        callbackSuccess
-    );
+    if (module == "Login") {
+        let error = function (res) {
+            $(".login_error_msg").html(res);
+            $("#login_btn").html("Sign in");
+        };
+        return { callbackSuccess, callbackError: error };
+    } else return { callbackSuccess, callbackError };
 }

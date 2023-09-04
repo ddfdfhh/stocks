@@ -31,21 +31,7 @@ class CreateMaterialStockController extends Controller
         'label' => 'Driver',
         'sortable' => 'Yes'
     ],
-    [
-        'column' => 'driver_name',
-        'label' => 'Driver Name',
-        'sortable' => 'Yes'
-    ],
-    [
-        'column' => 'eway_bill_image',
-        'label' => 'EwayBill',
-        'sortable' => 'No'
-    ],
-    [
-        'column' => 'vehicle_number',
-        'label' => 'Vehicle Number',
-        'sortable' => 'Yes'
-    ],
+   
     [
         'column' => 'material_id',
         'label' => 'Material',
@@ -916,22 +902,26 @@ class CreateMaterialStockController extends Controller
                   $data['plural_lowercase']='create_material_stocks';
                  $data['module'] = $this->module;
                   $data['image_field_names']=$this->form_image_field_name;
-		/***if columns shown in view is difrrent from table_columns jet
-		$columns=\DB::getSchemaBuilder()->getColumnListing('create_material_stocks');
-        natcasesort($columns);
-         
-		$cols=[];
-		$exclude_cols=['id','from_area','branch','to_area','coupon_id','user_id','delivery_type_id','signature','map','otp_code','incentive_checked','franchisee_id'];
-		foreach($columns as $col){
-			if($col=='order_unique_id')
-			  $col="order_tracking_id";
-			$label=ucwords(str_replace('_',' ',$col));
-			
-			if(!in_array($col,$exclude_cols))
-			array_push($cols,['column'=>$col,'label'=>$label,'sortable'=>'No']);
-		}
-		$data['table_columns']=$cols;
-		***/
+                   $table = getTableNameFromModel($this->module);
+$columns = \DB::getSchemaBuilder()->getColumnListing($table);
+//natcasesort($columns);
+
+$cols = [];
+$exclude_cols = ['id', 'updated_at'];
+foreach ($columns as $col) {
+
+    $label = ucwords(str_replace('_', ' ', $col));
+    $label = str_replace(' Id', '', $label);
+
+    if (!in_array($col, $exclude_cols)) {
+        array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+    }
+
+}
+
+$data['table_columns'] = $cols;
+
+		
         
         }
       if($form_type=='view')
