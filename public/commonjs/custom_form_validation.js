@@ -235,7 +235,7 @@ function getModuleWiseCallbacks(module) {
         }
     };
     let callbackError = function (error = "") {
-        console.log("eorrr", error);
+        $("#login_btn").html("Sign-In");
     };
     if (module == "Login") {
         return { callbackSuccess, callbackError };

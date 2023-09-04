@@ -192,7 +192,7 @@ function handleFormSubmitSuccess(
         if (callbackSuccess) callbackSuccess(res);
     } else {
         loaderRef.hide();
-        alert(res["message"]);
+      
         showValidationErrorsNoAlert(res["message"]);
         if (callbackError) callbackError(res);
     }
