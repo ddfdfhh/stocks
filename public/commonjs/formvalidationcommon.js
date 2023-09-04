@@ -131,7 +131,7 @@ function formatErrorMessage(
         );
     }
 }
-showValidationErrorsNoAlert(error){ 
+function showValidationErrorsNoAlert(error){ 
     $("#validation-errors").html("");
 
             $("#validation-errors").append(
