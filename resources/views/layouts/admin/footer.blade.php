@@ -33,13 +33,13 @@
 <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
 
 <script src="{{ asset('assets/js/bootstrap-filestyle.min.js') }}"></script>
-<script src="{{ asset('commonjs/formvalidationcommon.js') }}"></script>
+<script src="{{ asset('commonjs/formvalidationcommon.js') }}?v=2"></script>
 
-<script src="{{ asset('commonjs/custom_form_validation.js') }}"></script>
+<script src="{{ asset('commonjs/custom_form_validation.js') }}?v=2"></script>
 <script src="{{ asset('commonjs/commonjs_functions.js') }}"></script>
 <script src="{{ asset('commonjs/index_table_sort_pagination.js') }}"></script>
 <script src="{{ asset('commonjs/summernote.min.js') }}"></script>
-<script src="{{ asset('commonjs/custom.js') }}"></script>
+<script src="{{ asset('commonjs/custom.js') }}?v=2"></script>
 <script src="{{ asset('assets/js/lightbox.min.js') }}"></script>
 
 @stack('scripts')
