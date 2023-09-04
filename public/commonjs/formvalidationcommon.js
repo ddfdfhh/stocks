@@ -131,7 +131,13 @@ function formatErrorMessage(
         );
     }
 }
+showValidationErrorsNoAlert(error){ 
+    $("#validation-errors").html("");
 
+            $("#validation-errors").append(
+                '<div class="alert alert-danger">' + error + "</div"
+            );
+}
 function handleFormSubmitError(
     xhr,
     status,
@@ -182,12 +188,14 @@ function handleFormSubmitSuccess(
     if (res["success"]) {
         if (formid !== undefined) $("#" + formid).trigger("reset");
         if (show_server_validation_in_alert) successAlert(res["message"]);
+        
 
         if (callbackSuccess) callbackSuccess(res);
     } else {
         loaderRef.hide();
 
         if (show_server_validation_in_alert) errorAlert(res["message"]);
+        else showValidationErrorsNoAlert(res['message'])
         if (callbackError) callbackError(res);
     }
 }
