@@ -244,7 +244,9 @@ function initializeFormAjaxSubmitAndValidation() {
         let messages = getModuleWiseValidationMessages(module);
         let lowercase_name = module.toLowerCase();
         let { callbackSuccess, callbackError } = getModuleWiseCallbacks(module);
-
+        show_server_validation_in_alert = true;
+        if (module == "Login" || module == "Registration")
+            show_server_validation_in_alert = false;
         formValidateFunctionTemplate(
             rules,
             messages,
@@ -253,7 +255,8 @@ function initializeFormAjaxSubmitAndValidation() {
             url,
             callbackSuccess,
             callbackError,
-            has_file
+            has_file,
+            show_server_validation_in_alert
         );
     });
 }
@@ -300,7 +303,7 @@ function generateInvoice(order_id) {
 }
 $(document).ready(function () {
     if ($("form").length > 0) initializeFormAjaxSubmitAndValidation();
-     applySelect2("select",false);
+    applySelect2("select", false);
     $("#inp-state_id").on("change", function () {
         let val = $(this).val();
         // fetchHtmlContent({state:val},'inp-city',host+'/getCity');

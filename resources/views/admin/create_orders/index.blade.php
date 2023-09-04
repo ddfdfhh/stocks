@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-       
+
 
         <!-- Basic Bootstrap Table -->
         <div class="card">
@@ -103,29 +103,29 @@
         </div>
     </div>
     <!-- The Modal -->
-<div class="modal" id="invoiceModal">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content ">
+    <div class="modal" id="invoiceModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content ">
 
-            <!-- Modal Header -->
-            <div class="modal-header ">
-                <h3 class="modal-title" style="margin-left:auto">Invoice</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- Modal Header -->
+                <div class="modal-header ">
+                    <h3 class="modal-title" style="margin-left:auto">Invoice</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" id="invoice-body" style="padding-top:0;margin-top:0;overflow-x:auto">
+
+
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+
             </div>
-
-            <!-- Modal body -->
-            <div class="modal-body" id="invoice-body" style="padding-top:0;margin-top:0">
-           
-
-
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
-
         </div>
     </div>
-</div>
 @endsection

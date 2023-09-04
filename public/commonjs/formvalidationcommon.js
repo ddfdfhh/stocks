@@ -156,10 +156,17 @@ function handleFormSubmitError(
             );
         }
     } else {
-        formatErrorMessage(xhr, errorThrown);
+        formatErrorMessage(xhr, errorThrown, show_server_validation_in_alert);
     }
 }
-function handleFormSubmitSuccess(res, xhr) {
+function handleFormSubmitSuccess(
+    formid = undefined,
+    res,
+    xhr,
+    callbackSuccess = undefined,
+    callbackError = undefined,
+    show_server_validation_in_alert = true
+) {
     /* if (res["success"] || xhr.status === 200 || xhr.status === 201) {
                
                 $("#" + formid).trigger("reset");
@@ -173,14 +180,14 @@ function handleFormSubmitSuccess(res, xhr) {
                 if (callbackError) callbackError(res);
             }*/
     if (res["success"]) {
-        $("#" + formid).trigger("reset");
-        successAlert(res["message"]);
+        if (formid !== undefined) $("#" + formid).trigger("reset");
+        if (show_server_validation_in_alert) successAlert(res["message"]);
 
         if (callbackSuccess) callbackSuccess(res);
     } else {
         loaderRef.hide();
 
-        errorAlert(res["message"]);
+        if (show_server_validation_in_alert) errorAlert(res["message"]);
         if (callbackError) callbackError(res);
     }
 }
@@ -277,7 +284,14 @@ function formAjaxSubmitWithServerValidationError(
         success: function (res, textStatus, xhr) {
             enableBtn(btn);
 
-            handleFormSubmitSuccess(res, xhr);
+            handleFormSubmitSuccess(
+                formid,
+                res,
+                xhr,
+                callbackSuccess,
+                callbackError,
+                show_server_validation_in_alert
+            );
         },
         complete: function () {
             enableBtn(btn);
@@ -322,7 +336,14 @@ function formAjaxSubmitWithImageWithServerValidationError(
         },
         success: function (res, textStatus, xhr) {
             enableBtn(btn);
-            handleFormSubmitSuccess(res, xhr);
+            handleFormSubmitSuccess(
+                formid,
+                res,
+                xhr,
+                callbackSuccess,
+                callbackError,
+                show_server_validation_in_alert
+            );
         },
         complete: function () {
             enableBtn(btn);
@@ -362,7 +383,14 @@ function objectAjaxWithBtnAndLoader(
         },
         success: function (res, textStatus, xhr) {
             enableBtn(btn);
-            handleFormSubmitSuccess(res, xhr);
+            handleFormSubmitSuccess(
+                undefined,
+                res,
+                xhr,
+                callbackSuccess,
+                callbackError,
+                show_server_validation_in_alert
+            );
         },
         complete: function () {
             enableBtn(btn);

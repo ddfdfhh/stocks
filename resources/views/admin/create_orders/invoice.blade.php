@@ -1,8 +1,8 @@
      <div class="invoice-print p-5">
 
-         <div class="d-flex justify-content-between flex-row">
+         <div class="d-flex justify-content-between flex-row ">
              <div class="mb-4">
-                 <div class="d-flex svg-illustration mb-3 gap-2">
+                 <div class="d-flex svg-illustration mb-3 gap-2 ">
 
                      <img src="{{ asset('storage/settings/' . $settings->image) }}" style="width:50px;height:50px;" />
 
@@ -51,7 +51,7 @@
              </div>
          </div>
 
-
+   <div class="table-responsive">
          <table class="table border-top m-0">
              <thead>
                  <tr style="background-color:black">
@@ -79,11 +79,7 @@
                  @endforeach
                  <tr>
                      <td colspan="2" class="align-top px-4 py-3">
-                         <p class="mb-2">
-                             <span class="me-1 fw-bold">Salesperson:</span>
-                             <span>Alfie Solomons</span>
-                         </p>
-                         <span>Thanks for your business</span>
+                        
                      </td>
                      <td class="text-end px-4 py-3">
                          <p class="mb-2">Subtotal:</p>
@@ -102,7 +98,7 @@
                  </tr>
              </tbody>
          </table>
-
+</div>
          <div class="row">
              <div class="col-12">
                  <span class="fw-semibold">Note:</span>
