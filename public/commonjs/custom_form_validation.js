@@ -238,10 +238,6 @@ function getModuleWiseCallbacks(module) {
         console.log("eorrr", error);
     };
     if (module == "Login") {
-        let error = function (res) {
-            $(".login_error_msg").html(res);
-            $("#login_btn").html("Sign in");
-        };
-        return { callbackSuccess, callbackError: error };
+        return { callbackSuccess, callbackError };
     } else return { callbackSuccess, callbackError };
 }

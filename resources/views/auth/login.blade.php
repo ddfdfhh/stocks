@@ -9,13 +9,13 @@
     <div id="validation_errors"></div>
     <form data-module="Login" class="mb-3" action="{{ route('login') }}" id="login_form" method="POST">
         @csrf
-        <div class="mb-3">
+        <div class="mb-3 form-group">
 
             <label for="email" class="form-label">Email </label>
             <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email "
                 autofocus>
         </div>
-        <div class="mb-3 form-password-toggle">
+        <div class="mb-3 form-password-toggle form-group">
             <div class="d-flex justify-content-between">
                 <label class="form-label" for="password">Password</label>
                 {{-- <a href="auth-forgot-password-basic.html">
@@ -29,14 +29,7 @@
                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
             </div>
         </div>
-        <div class="mb-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember-me">
-                <label class="form-check-label" for="remember-me">
-                    Remember Me
-                </label>
-            </div>
-        </div>
+
         <div class="mb-3">
             <button class="btn btn-primary d-grid w-100" type="submit" id="login_btn">Sign in</button>
         </div>

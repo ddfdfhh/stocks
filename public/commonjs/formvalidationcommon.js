@@ -131,12 +131,12 @@ function formatErrorMessage(
         );
     }
 }
-function showValidationErrorsNoAlert(error){ 
-    $("#validation-errors").html("");
+function showValidationErrorsNoAlert(error) {
+    $("#validation_errors").html("");
 
-            $("#validation-errors").append(
-                '<div class="alert alert-danger">' + error + "</div"
-            );
+    $("#validation_errors").append(
+        '<div class="alert alert-danger">' + error + "</div"
+    );
 }
 function handleFormSubmitError(
     xhr,
@@ -188,14 +188,12 @@ function handleFormSubmitSuccess(
     if (res["success"]) {
         if (formid !== undefined) $("#" + formid).trigger("reset");
         if (show_server_validation_in_alert) successAlert(res["message"]);
-        
 
         if (callbackSuccess) callbackSuccess(res);
     } else {
         loaderRef.hide();
-
-        if (show_server_validation_in_alert) errorAlert(res["message"]);
-        else showValidationErrorsNoAlert(res['message'])
+        alert(res["message"]);
+        showValidationErrorsNoAlert(res["message"]);
         if (callbackError) callbackError(res);
     }
 }
@@ -229,9 +227,6 @@ function formValidateFunctionTemplate(
             $(element).removeClass("is-invalid");
         },
 
-        onkeydown: function (element) {
-            $(element).valid();
-        },
         rules,
         messages,
         focusCleanup: true,
