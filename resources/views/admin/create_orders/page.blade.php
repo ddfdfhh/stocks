@@ -120,7 +120,7 @@
                         <i class="bx bx-trash"></i></a>
                 @endif
 
-                <a class="btn  btn-warning btn-icon" title="Invoice" href="javascript:generateInvoice('{!! $r->id!!}')" 
+                <a class="btn  btn-warning btn-icon" title="Invoice" href="{{route('createorders.generateInvoice',['id'=>$r->id])}}" 
                     >
                     <i class="bx bx-receipt"></i></a>
 

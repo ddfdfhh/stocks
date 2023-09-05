@@ -51,8 +51,7 @@ class GeneratedProductStockController extends Controller
                         'type' => 'select',
                         'default' => '',
                         'attr' => [
-                            'onChange' => 'setUnitInProductCreate(this.value)',
-                            'class' => 'prod_sel',
+                          'class' => 'prod_sel',
                         ],
                         'custom_key_for_option' => 'name',
                         'options' => getList('InputMaterial'),

@@ -894,8 +894,8 @@ class CreateOrderController extends Controller
         })->toArray();
         return $ar;
     }
-    public function generateInvoice(Request $r){
-        $order_id=$r->order_id;
+    public function generateInvoice(Request $r,$id){
+        $order_id=$id;
         $row=\DB::table('create_order')->whereId($order_id)->first();
         $customer=\App\Models\Customer::with(['state','city'])->whereId($row->customer_id)->first();
         $settings=\DB::table('setting')->whereId(1)->first();
@@ -903,8 +903,8 @@ class CreateOrderController extends Controller
             $data['row']=$row;
             $data['settings']=$settings;
             $data['customer']=$customer;
-            $html=view('admin.create_orders.invoice',with($data))->render();
-            return createResponse(true,$html);
+            return view('admin.create_orders.invoice',with($data));
+           // return createResponse(true,$html);
         }
         else{
             return createResponse(false,'Order Not found');

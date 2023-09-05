@@ -191,7 +191,7 @@ Route::get("export_generatedproductstocks/{type}", [App\Http\Controllers\Generat
 
 Route::resource('create_orders', 'CreateOrderController');
 Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class,'view'])->name('createorders.view');
-Route::post('generate_invoice/', [App\Http\Controllers\CreateOrderController::class,'generateInvoice'])->name('createorders.generateInvoice');
+Route::get('generate_invoice/{id}', [App\Http\Controllers\CreateOrderController::class,'generateInvoice'])->name('createorders.generateInvoice');
 Route::get("export_createorders/{type}", [App\Http\Controllers\CreateOrderController::class,"exportCreateOrder"])->name("createorder.export");
 
 

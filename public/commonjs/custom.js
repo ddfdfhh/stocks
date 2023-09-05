@@ -328,8 +328,18 @@ function addMoreRow() {
     let parent = $(event.target).closest(".repeatable");
 
     let copy_content = parent.find(".copy_row")[0];
-
+    let has_select=$(copy_content).find(".select2").length;
+    if (has_select) {
+      $(copy_content).find(".select2").remove();
+    }
     $(copy_content).clone().appendTo(parent);
+    if (has_select) {
+        $("select").each(function (i, obj) {
+      
+            $(obj).select2();
+        
+        });
+    }
 }
 function removeRow() {
     let parent = $(event.target).closest(".repeatable");
