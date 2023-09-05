@@ -42,6 +42,11 @@ class CreateMaterialStockController extends Controller
         'label' => 'Quantity',
         'sortable' => 'Yes'
     ],
+     [
+        'column' => 'amount',
+        'label' => 'Amount',
+        'sortable' => 'Yes'
+    ],
     [
         'column' => 'entry_date',
         'label' => 'Entry Date',
@@ -737,9 +742,18 @@ class CreateMaterialStockController extends Controller
                 'default' => isset($model) ? $model->enty_date : "",
                 'attr' => []
              ],
+             [
+                'placeholder' => 'Enter amount',
+                'name' => 'amount',
+                'label' => 'Total Amount Paid ',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->amount : "",
+                'attr' => []
+             ],
             [
                 'name' => 'material_id',
-                'label' => 'Material',
+                'label' => 'Select Material',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'material_id', true) :getList('InputMaterial')[0]->id,
@@ -832,6 +846,15 @@ class CreateMaterialStockController extends Controller
                 'default' => isset($model) ? $model->vehicle_number : "",
                 'attr' => []
             ],
+             [
+                'placeholder' => 'Enter amount',
+                'name' => 'amount',
+                'label' => 'Total Amount Paid ',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->amount : "",
+                'attr' => []
+             ],
             [
                 'name' => 'material_id',
                 'label' => 'Material',

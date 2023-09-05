@@ -2,12 +2,12 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <h4 class="py-3 breadcrumb-wrapper mb-4">
-            <span class="text-muted fw-light">Material Stock/</span> List
+            <span class="text-muted fw-light">Manage Material Stock</span> 
         </h4>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasEndLabel" class="offcanvas-title" style="text-transform:capitalize;">
-                    {{ properPluralName($plural_lowercase) }}</h5>
+                    Manage Material Stock</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body mx-0 flex-grow-0">
@@ -24,7 +24,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
-                    <h5>All Raw Materials</h5>
+                    <h5>Materials Purchased Report</h5>
                     <div class="d-flex">
 
                         <div class="btn-group" role="group" aria-label="Basic example">
@@ -32,7 +32,9 @@
                                     auth()->user()->can('create_' . $plural_lowercase))
                                <button class="btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
-                                    aria-controls="offcanvasEnd"> Create Raw Material</button>
+                                    aria-controls="offcanvasEnd">
+                                    <i class="fa fa-plus-circle"></i>
+                                     Add New  Stock</button>
                             @endif
 
                             @if ($has_export)

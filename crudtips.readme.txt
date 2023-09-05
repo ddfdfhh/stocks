@@ -48,3 +48,34 @@ to prevent join on json
  karke validation add hota ai
  21- multiple image wale table mein image will be stor in "name" column like in Productimage table
  22- jis textrea mein summentoe show karna hai uske attr mein just add class=>'summernote' 
+ =================
+ 1-objectAjaxNoLoaderNoAlert----ismein agar koi custom object ko server mein send karna hai
+ without any loader and alter,but client side agar aajx error hai to alter mein show ar sakte rhai using true false in method paramter last
+2- One types of templatefunction  for validation-
+function formValidateFunctionTemplate(
+    rules,
+    messages = {},
+    btnid,
+    formid,
+    url,
+    callbackSuccess = undefined,
+    callbackError = undefined,
+	has_image=false,
+	show_server_validation_in_alert=true
+) 
+     -image wala form hoga to bhi yhi lagega kyunki has image true ho jayega automatic depdnding on file type input if form has 
+	 -doosra hai for non image form submit
+	 
+3-handleFormSubmitError,handleFormSubmitSuccess are two functions to handle form submit ke baad  or during jo hota hai error or success wo handle karte hai
+4- form validation ke liye just add rules and messages and callbacks in custom_form_validation.js bakki cheeje apne app ho jayengi
+    form tag should have following properties mentioned to apply automatic form validation with rule,messags supplied
+	<form data-module="Supplier" id="supplier_form" method="post" action="http://stock.test/admin/suppliers" enctype="multipart/form-data"  novalidate="novalidate">
+5-formatErrorFunction ko bhi huam ya to altert mein ya alert danger mein dikha sakte hai just pass paramter.to show in alter.
+6-custom_form_validation mein  Just place rules,message and callback related module cusotmisation .nothign else ye doosre file mein automatic cala ho janege
+
+7-chebox ki defaault value is empty array or array with list.so not a single value 
+8- multiple options mein never inpit radio ype but only checkbox.
+9- agar mujhe error alter mein nai show karna hai to form ke oopar mein add 
+   <div id="validation_errors"></div> ,ab form errro isme show honge not in alter 
+10 -client side vaidation error / message show ho on blur/instantly uske liye add form-control class to parent of input and label.
+11-initiateSelect2ChangeEvents  ==check this function agar select 2 optinos ke oon change pe doosre input ko popluate karana hai to

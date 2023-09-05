@@ -15,7 +15,7 @@
                                 <button type="button" class="btn btn-primary text-white">
                                     <a href="{{ route($plural_lowercase . '.create') }}"
                                         class="text-decoration-none text-white">
-                                        <i class="bx bx-plus me-sm-2"></i>Generate Product</a>
+                                      <i class="fa fa-plus-circle"></i> Generate Product</a>
                                 </button>
                             @endif
 

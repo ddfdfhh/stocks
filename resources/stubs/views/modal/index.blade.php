@@ -32,7 +32,7 @@
                                     auth()->user()->can('create_' . $plural_lowercase))
                                <button class="btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
-                                    aria-controls="offcanvasEnd">Create {{ properSingularName($plural_lowercase) }}</button>
+                                    aria-controls="offcanvasEnd"> <i class="fa fa-plus-circle"></i> Add New</button>
                             @endif
 
                             @if ($has_export)
