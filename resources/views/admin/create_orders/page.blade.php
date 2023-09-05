@@ -26,7 +26,7 @@
                 @php   ++$l;@endphp
                 @if (str_contains($t, 'status'))
                     <td>
-                        <x-status :status='$r->{$t}' />
+                       <span class="badge bg-label-info me-1">{!!$r->{$t} !!}</span>
                     </td>
                 @elseif($t == 'total')
                     <td>

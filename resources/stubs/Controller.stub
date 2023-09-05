@@ -182,7 +182,7 @@ class {{modelName}}Controller extends Controller
             $post=$request->all();
           
             $post=formatPostForJsonColumn($post);
-             if(count($this->model_relations)>0&& in_array('BelongsToMany',array_column($this->model_relations,'type'))){
+             if(count($this->model_relations)>0 && in_array('BelongsToMany',array_column($this->model_relations,'type'))){
                      foreach(array_keys($post) as $key){
                          if(isFieldBelongsToManyToManyRelation($this->model_relations,$key)>=0){
                             $post->$key->sync($post[$key]);
@@ -334,7 +334,7 @@ class {{modelName}}Controller extends Controller
             ${{modelNameSingularLowerCase}} = {{modelName}}::findOrFail($id);
              
                 $post=formatPostForJsonColumn($post);
-            if(count($this->model_relations)>0&& in_array('BelongsToMany',array_column($this->model_relations,'type'))){
+            if(count($this->model_relations)>0 && in_array('BelongsToMany',array_column($this->model_relations,'type'))){
                      foreach(array_keys($post) as $key){
                          if(isFieldBelongsToManyToManyRelation($this->model_relations,$key)>=0){
                             $post->$key->sync($post[$key]);

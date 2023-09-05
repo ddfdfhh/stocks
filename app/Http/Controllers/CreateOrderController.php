@@ -42,6 +42,16 @@ class CreateOrderController extends Controller
         'sortable' => 'Yes'
     ],
     [
+        'column' => 'dispatch_date',
+        'label' => "Dispatched Date",
+        'sortable' => 'Yes'
+    ],
+    [
+        'column' => 'status',
+        'label' => "Delivery Status",
+        'sortable' => 'Yes'
+    ],
+    [
         'column' => 'created_at',
         'label' => 'Created At',
         'sortable' => 'Yes'
@@ -384,6 +394,29 @@ class CreateOrderController extends Controller
                 'options' => getList('Driver'),
                 'custom_id_for_option' => 'id',
                 'multiple' => false
+            ],
+            
+             [
+                'name' => 'dispatch_date',
+                'label' => 'Dispatch Date',
+                'tag' => 'input',
+                'type' => 'datetime-local',
+                'default' => isset($model) ? $model->dispatch_date:'',
+                'attr' => [],
+                'placeholder'=>'Enter'
+                
+             ],
+              [
+                'name' => 'status',
+                'label' => 'Order Status',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'status', false) :getListFromIndexArray(['Pending','Dispatched','Cancelled','On The Way'])[0]->id,
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getListFromIndexArray(['Pending','Dispatched','Cancelled','On The Way']),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
             ]
         ]
     ]
@@ -480,7 +513,7 @@ class CreateOrderController extends Controller
             $createorder = CreateOrder::findOrFail($id);
              
                 $post=formatPostForJsonColumn($post);
-            if(count($this->model_relations)>0&& in_array('BelongsToMany',array_column($this->model_relations,'type'))){
+            if(count($this->model_relations)>0 && in_array('BelongsToMany',array_column($this->model_relations,'type'))){
                      foreach(array_keys($post) as $key){
                          if(isFieldBelongsToManyToManyRelation($this->model_relations,$key)>=0){
                             $post->$key->sync($post[$key]);
@@ -512,7 +545,7 @@ class CreateOrderController extends Controller
                 }
 
             }
-         return createResponse(true,$this->module.' updated successfully',$this->index_url); 
+         return createResponse(true,'Order updated successfully',$this->index_url); 
          }
        catch(\Exception $ex)
          {
@@ -686,6 +719,28 @@ class CreateOrderController extends Controller
                 'attr' => [],
                 'custom_key_for_option' => 'name',
                 'options' => getList('Driver'),
+                'custom_id_for_option' => 'id',
+                'multiple' => false
+            ],
+             [
+                'name' => 'dispatch_date',
+                'label' => 'Dispatch Date',
+                'tag' => 'input',
+                'type' => 'datetime-local',
+                'default' => isset($model) ? $model->dispatch_date:'',
+                'attr' => [],
+                'placeholder'=>'Enter'
+                
+             ],
+              [
+                'name' => 'status',
+                'label' => 'Order Status',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'status', false) :getListFromIndexArray('Pending','Dispatched','Cancelled','On The Way')[0]->id,
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => getListFromIndexArray('Pending','Dispatched','Cancelled','On The Way'),
                 'custom_id_for_option' => 'id',
                 'multiple' => false
             ]
