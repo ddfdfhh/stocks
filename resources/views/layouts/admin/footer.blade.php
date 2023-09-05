@@ -11,6 +11,7 @@
 <!-- Main JS -->
 <script src="{{ asset('assets/vendor/libs/block-ui/block-ui.js') }}"></script>
 
+  <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
 <script src="{{ asset('assets/js/main.js') }}"></script>
 <!-- Page JS -->
 {{-- <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script> --}}
