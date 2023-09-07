@@ -255,7 +255,24 @@ class CreateOrderController extends Controller
                 'options' => getList('Driver'),
                 'custom_id_for_option' => 'id',
                 'multiple' => false
-            ]
+            ],
+            [
+                'name' => 'due_amount',
+                'label' => 'Amount Due',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->due_amount:0.0,
+                
+            ],
+           
+            [
+                'name' => 'due_date',
+                'label' => ' Due Date',
+                'tag' => 'input',
+                'type' => 'date',
+                'default' => isset($model) ? $model->due_date:'',
+                
+            ],
         ]
     ]
 ];
@@ -417,7 +434,25 @@ class CreateOrderController extends Controller
                 'options' => getListFromIndexArray(['Pending','Dispatched','Cancelled','On The Way']),
                 'custom_id_for_option' => 'id',
                 'multiple' => false
-            ]
+              ],
+              
+            [
+                'name' => 'due_amount',
+                'label' => 'Amount Due',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->due_amount:0.0,
+                
+            ],
+           
+            [
+                'name' => 'due_date',
+                'label' => ' Due Date',
+                'tag' => 'input',
+                'type' => 'date',
+                'default' => isset($model) ? $model->due_date:'',
+                
+            ],
         ]
     ]
 ];
