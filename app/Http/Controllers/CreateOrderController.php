@@ -61,11 +61,11 @@ class CreateOrderController extends Controller
         $this->repeating_group_inputs=[
     [
         'colname' => 'items',
-        'label' => 'Purchase Items',
+        'label' => 'Sold Items',
         'inputs' => [
             [
                 'name' => 'items__json__product_id[]',
-                'label' => 'Product_id',
+                'label' => 'Product',
                 'tag' => 'select',
                 'type' => 'select',
                 'default' => '',
@@ -256,11 +256,28 @@ class CreateOrderController extends Controller
                 'custom_id_for_option' => 'id',
                 'multiple' => false
             ],
+             [
+                'name' => 'paid_amount',
+                'label' => 'Amount Paid',
+                'tag' => 'input',
+                'type' => 'number', 'placeholder'=>'Enter paid amount',
+                'default' => isset($model) ? $model->paid_amount:0.0,
+                
+            ],
+           
+            [
+                'name' => 'paid_date',
+                'label' => ' Payment Date',
+                'tag' => 'input',
+                'type' => 'date', 'placeholder'=>'Enter due amount',
+                'default' => isset($model) ? $model->due_date:'',
+                
+            ],
             [
                 'name' => 'due_amount',
                 'label' => 'Amount Due',
                 'tag' => 'input',
-                'type' => 'number',
+                'type' => 'number', 'placeholder'=>'Enter due amount',
                 'default' => isset($model) ? $model->due_amount:0.0,
                 
             ],
@@ -269,7 +286,7 @@ class CreateOrderController extends Controller
                 'name' => 'due_date',
                 'label' => ' Due Date',
                 'tag' => 'input',
-                'type' => 'date',
+                'type' => 'date', 'placeholder'=>'Enter due amount',
                 'default' => isset($model) ? $model->due_date:'',
                 
             ],
@@ -435,12 +452,30 @@ class CreateOrderController extends Controller
                 'custom_id_for_option' => 'id',
                 'multiple' => false
               ],
+               [
+                'name' => 'paid_amount',
+                'label' => 'Amount Paid',
+                'tag' => 'input',
+                'type' => 'number', 'placeholder'=>'Enter paid amount',
+                'default' => isset($model) ? $model->paid_amount:0.0,
+                
+            ],
+           
+            [
+                'name' => 'paid_date',
+                'label' => ' Payment Date',
+                'tag' => 'input',
+                'type' => 'date', 'placeholder'=>'Enter due amount',
+                'default' => isset($model) ? $model->due_date:'',
+                
+            ],
               
             [
                 'name' => 'due_amount',
                 'label' => 'Amount Due',
                 'tag' => 'input',
                 'type' => 'number',
+               'placeholder'=>'Enter due amount',
                 'default' => isset($model) ? $model->due_amount:0.0,
                 
             ],
@@ -449,7 +484,7 @@ class CreateOrderController extends Controller
                 'name' => 'due_date',
                 'label' => ' Due Date',
                 'tag' => 'input',
-                'type' => 'date',
+                'type' => 'date', 'placeholder'=>'Enter due amount',
                 'default' => isset($model) ? $model->due_date:'',
                 
             ],
