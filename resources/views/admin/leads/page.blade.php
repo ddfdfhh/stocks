@@ -142,7 +142,7 @@
                                 </div>
 
                                 <div class="modal-body">
-                                    <div id="resp"></div>
+                                    <div id="resp-{{$r->id}}"></div>
 
                                     <input type="hidden" name="lead_id" id="lead_id-{{$r->id}}" value="{{ $r->id }}" />
                                     <textarea type="text" required name="conversation" id="conversation-{{$r->id}}" class="form-control p-4 mt-3" placeholder="Add Conversation"

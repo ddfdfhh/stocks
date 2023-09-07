@@ -260,41 +260,6 @@ function getModuleWiseCallbacks(module) {
     if (module == "Login") {
         return { callbackSuccess, callbackError };
     }
-    if (module == "Remark") {
-        let callbackSuccess = function (res) {
-            console.log(res['message'])
-                        $("#resp").html("");
-                        {
-                if (res['success']) {
-                    $("#resp")
-                        .html(`<div class="alert alert-success text-left align-left"  style="text-align:left!important" role="alert">
-                            <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-check-square align-top me-2"></i>Success!</h6>
-                            <span>${res["message"]}</span>
-                           
-                            </div>`);
-                    $('form').trigger('reset');
-                }
-                else {
-                    $("#resp")
-                        .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important "role="alert">
-                        <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-error align-top me-2"></i>Danger!</h6>
-                        <span>${res["message"]}</span>
-                        
-                        </div>`);
-                }
-                            }
-           };
-           let callbackError = function (res) {
-              
-               $("#resp").html("");
-               $("#resp")
-                   .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important" role="alert">
-                        <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-error align-top me-2"></i>Danger!</h6>
-                        <span>${res["message"]}</span>
-                       
-                        </div>`);
-           };
-        return { callbackSuccess, callbackError };
-    }
+    
     else return { callbackSuccess, callbackError };
 }
