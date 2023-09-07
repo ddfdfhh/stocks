@@ -85,6 +85,14 @@
                                 $tr = json_decode($r->{$t}, true);
                             
                                 if ($tr !== null) {
+                                     /*  $tr = array_map(function ($v) {
+                                       
+                                        $v['date']=formateDate($v['date'],true);
+                                        return $v;
+                                    }, $tr);
+                                  
+                                   $delete_data_info=['row_id_val'=>$r->id,'table'=>'leads','json_column_name'=>'conversations','delete_url'=>route('deleteInJsonColumnData')];
+                                    echo showArrayInColumn($tr, $l,'by_user_id','lg','Remarks',true,$delete_data_info);*/
                                     echo showArrayInColumn($tr, $l);
                                 } else {
                                     echo $r->{$t};
@@ -98,10 +106,13 @@
                 @endif
             @endforeach
             <td>
+               @if (auth()->user()->hasRole(['Admin']) ||
+                        auth()->user()->can('view_' . $plural_lowercase))
                 <a class="btn btn-success btn-icon" title="View"
                     href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
                     <i class="bx bx-dice-4"></i> 
                 </a>
+                @endif
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
                     <a class="btn  btn-info btn-icon" title="Edit"

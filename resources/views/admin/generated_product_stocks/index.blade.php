@@ -48,7 +48,16 @@
 
                     </div>
                 </div>
-               
+              <br>
+                <div class="d-flex justify-content-between flex-wrap mt-3">
+                    <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
+                      
+                        <x-filter :data="$filterable_fields" />
+                    </div>
+                    <x-search :searchableFields="$searchable_fields" />
+
+                </div>
+  
 
 
 

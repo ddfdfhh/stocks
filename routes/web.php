@@ -71,10 +71,11 @@ Route::post('/fieldExist', [CommonController::class, 'field_exist']);
 Route::post('/getDependentSelectData', [CommonController::class, 'getDependentSelectData']);
 Route::post('/getDependentSelectDataMultipleVal', [CommonController::class, 'getDependentSelectDataMultipleVal']);
 Route::group(['middleware' => ['auth']], function () {
-Route::get('/logout',[App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('auth.logout');
-Route::post('/getUnitByMeterialId',[App\Http\Controllers\CommonController::class, 'getUnitByMeterialId']);
+    Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('auth.logout');
+    Route::post('/getUnitByMeterialId', [App\Http\Controllers\CommonController::class, 'getUnitByMeterialId']);
 
     Route::post('delete_file_from_table', [CommonController::class, 'deleteFileFromTable'])->name('deleteTableFile');
+    Route::post('deleteInJsonColumnData', [CommonController::class, 'deleteInJsonColumnData'])->name('deleteInJsonColumnData');
     Route::post('assignUser', [CommonController::class, 'assignUser'])->name('assignUser');
     Route::post('delete_file_self', [CommonController::class, 'deleteFileFromSelf'])->name('deleteFileSelf');
     Route::post('table_field_update', [CommonController::class, 'table_field_update'])->name('table_filed_update');
@@ -91,11 +92,12 @@ Route::post('/getUnitByMeterialId',[App\Http\Controllers\CommonController::class
 Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
 
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/unauthorized', [AdminController::class, 'unauthorized'])->name('admin.unauthorized');
     Route::get('/crud', [CrudGeneratorController::class, 'index'])->name('admin.crud');
 
-    Route::match (['get', 'post'], '/generateModule', [CrudGeneratorController::class, 'generateModule'])->name('admin.generateModule');
-    Route::match (['get', 'post'], '/generateTable', [CrudGeneratorController::class, 'generateTable'])->name('admin.generateTable');
-    Route::match (['get', 'post'], '/addTableRelationship', [CrudGeneratorController::class, 'addTableRelationship'])->name('admin.addTableRelationship');
+    Route::match(['get', 'post'], '/generateModule', [CrudGeneratorController::class, 'generateModule'])->name('admin.generateModule');
+    Route::match(['get', 'post'], '/generateTable', [CrudGeneratorController::class, 'generateTable'])->name('admin.generateTable');
+    Route::match(['get', 'post'], '/addTableRelationship', [CrudGeneratorController::class, 'addTableRelationship'])->name('admin.addTableRelationship');
 /******Modules Routes From Here */
 
     Route::resource('roles', 'RoleController');
@@ -110,6 +112,7 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post('users/view', [UserController::class, 'view'])->name('users.view');
     Route::post("user/load_form", [UserController::class, "loadAjaxForm"])->name("user.loadAjaxForm");
     Route::get("export_users/{type}", [UserController::class, "exportUser"])->name("user.export");
+    Route::post("addEditRemark", [App\Http\Controllers\LeadsController::class, "addEditRemark"])->name("addEditRemark");
 
 /**=========================Genrate rotues from here */
 
@@ -118,11 +121,10 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post("category/load_form", [App\Http\Controllers\CategoryController::class, "loadAjaxForm"])->name("category.loadAjaxForm");
     Route::get("export_categories/{type}", [App\Http\Controllers\CategoryController::class, "exportCategory"])->name("category.export");
 
-    
-Route::resource('products', 'ProductController');
-Route::post('products/view', [App\Http\Controllers\ProductController::class,'view'])->name('products.view');
-Route::post("product/load_form", [App\Http\Controllers\ProductController::class,"loadAjaxForm"])->name("product.loadAjaxForm");
-Route::get("export_products/{type}", [App\Http\Controllers\ProductController::class,"exportProduct"])->name("product.export");
+    Route::resource('products', 'ProductController');
+    Route::post('products/view', [App\Http\Controllers\ProductController::class, 'view'])->name('products.view');
+    Route::post("product/load_form", [App\Http\Controllers\ProductController::class, "loadAjaxForm"])->name("product.loadAjaxForm");
+    Route::get("export_products/{type}", [App\Http\Controllers\ProductController::class, "exportProduct"])->name("product.export");
 
     Route::resource('states', 'StateController');
     Route::post('states/view', [App\Http\Controllers\StateController::class, 'view'])->name('states.view');
@@ -154,45 +156,57 @@ Route::get("export_products/{type}", [App\Http\Controllers\ProductController::cl
     Route::post("demotable/load_form", [App\Http\Controllers\DemoTableController::class, "loadAjaxForm"])->name("demotable.loadAjaxForm");
     Route::get("export_demotables/{type}", [App\Http\Controllers\DemoTableController::class, "exportDemoTable"])->name("demotable.export");
 
+    Route::resource('vehicles', 'VehicleController');
+    Route::post('vehicles/view', [App\Http\Controllers\VehicleController::class, 'view'])->name('vehicles.view');
+    Route::post("vehicle/load_form", [App\Http\Controllers\VehicleController::class, "loadAjaxForm"])->name("vehicle.loadAjaxForm");
+    Route::get("export_vehicles/{type}", [App\Http\Controllers\VehicleController::class, "exportVehicle"])->name("vehicle.export");
 
-    
-Route::resource('vehicles', 'VehicleController');
-Route::post('vehicles/view', [App\Http\Controllers\VehicleController::class, 'view'])->name('vehicles.view');
-Route::post("vehicle/load_form", [App\Http\Controllers\VehicleController::class, "loadAjaxForm"])->name("vehicle.loadAjaxForm");
-Route::get("export_vehicles/{type}", [App\Http\Controllers\VehicleController::class, "exportVehicle"])->name("vehicle.export");
+    Route::resource('drivers', 'DriverController');
+    Route::post('drivers/view', [App\Http\Controllers\DriverController::class, 'view'])->name('drivers.view');
+    Route::post("driver/load_form", [App\Http\Controllers\DriverController::class, "loadAjaxForm"])->name("driver.loadAjaxForm");
+    Route::get("export_drivers/{type}", [App\Http\Controllers\DriverController::class, "exportDriver"])->name("driver.export");
 
+    Route::resource('input_materials', 'InputMaterialController');
+    Route::post('input_materials/view', [App\Http\Controllers\InputMaterialController::class, 'view'])->name('inputmaterials.view');
+    Route::post("inputmaterial/load_form", [App\Http\Controllers\InputMaterialController::class, "loadAjaxForm"])->name("inputmaterial.loadAjaxForm");
+    Route::get("export_inputmaterials/{type}", [App\Http\Controllers\InputMaterialController::class, "exportInputMaterial"])->name("inputmaterial.export");
 
-Route::resource('drivers', 'DriverController');
-Route::post('drivers/view', [App\Http\Controllers\DriverController::class, 'view'])->name('drivers.view');
-Route::post("driver/load_form", [App\Http\Controllers\DriverController::class, "loadAjaxForm"])->name("driver.loadAjaxForm");
-Route::get("export_drivers/{type}", [App\Http\Controllers\DriverController::class, "exportDriver"])->name("driver.export");
+    Route::resource('units', 'UnitController');
+    Route::post('units/view', [App\Http\Controllers\UnitController::class, 'view'])->name('units.view');
+    Route::post("unit/load_form", [App\Http\Controllers\UnitController::class, "loadAjaxForm"])->name("unit.loadAjaxForm");
+    Route::get("export_units/{type}", [App\Http\Controllers\UnitController::class, "exportUnit"])->name("unit.export");
 
+    Route::resource('create_material_stocks', 'CreateMaterialStockController');
+    Route::post('create_material_stocks/view', [App\Http\Controllers\CreateMaterialStockController::class, 'view'])->name('creatematerialstocks.view');
+    Route::post("creatematerialstock/load_form", [App\Http\Controllers\CreateMaterialStockController::class, "loadAjaxForm"])->name("creatematerialstock.loadAjaxForm");
+    Route::get("export_creatematerialstocks/{type}", [App\Http\Controllers\CreateMaterialStockController::class, "exportCreateMaterialStock"])->name("creatematerialstock.export");
 
-Route::resource('input_materials', 'InputMaterialController');
-Route::post('input_materials/view', [App\Http\Controllers\InputMaterialController::class,'view'])->name('inputmaterials.view');
-Route::post("inputmaterial/load_form", [App\Http\Controllers\InputMaterialController::class,"loadAjaxForm"])->name("inputmaterial.loadAjaxForm");
-Route::get("export_inputmaterials/{type}", [App\Http\Controllers\InputMaterialController::class,"exportInputMaterial"])->name("inputmaterial.export");
+    Route::resource('generated_product_stocks', 'GeneratedProductStockController');
+    Route::post('generated_product_stocks/view', [App\Http\Controllers\GeneratedProductStockController::class, 'view'])->name('generatedproductstocks.view');
+    Route::get("export_generatedproductstocks/{type}", [App\Http\Controllers\GeneratedProductStockController::class, "exportGeneratedProductStock"])->name("generatedproductstock.export");
 
-Route::resource('units', 'UnitController');
-Route::post('units/view', [App\Http\Controllers\UnitController::class,'view'])->name('units.view');
-Route::post("unit/load_form", [App\Http\Controllers\UnitController::class,"loadAjaxForm"])->name("unit.loadAjaxForm");
-Route::get("export_units/{type}", [App\Http\Controllers\UnitController::class,"exportUnit"])->name("unit.export");
+    Route::resource('create_orders', 'CreateOrderController');
+    Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class, 'view'])->name('createorders.view');
+    Route::get('generate_invoice/{id}', [App\Http\Controllers\CreateOrderController::class, 'generateInvoice'])->name('createorders.generateInvoice');
+    Route::get("export_createorders/{type}", [App\Http\Controllers\CreateOrderController::class, "exportCreateOrder"])->name("createorder.export");
 
+    Route::resource('lead_sources', 'LeadSourceController');
+    Route::post('lead_sources/view', [App\Http\Controllers\LeadSourceController::class, 'view'])->name('leadsources.view');
+    Route::post("leadsource/load_form", [App\Http\Controllers\LeadSourceController::class, "loadAjaxForm"])->name("leadsource.loadAjaxForm");
+    Route::get("export_leadsources/{type}", [App\Http\Controllers\LeadSourceController::class, "exportLeadSource"])->name("leadsource.export");
 
-Route::resource('create_material_stocks', 'CreateMaterialStockController');
-Route::post('create_material_stocks/view', [App\Http\Controllers\CreateMaterialStockController::class,'view'])->name('creatematerialstocks.view');
-Route::post("creatematerialstock/load_form", [App\Http\Controllers\CreateMaterialStockController::class,"loadAjaxForm"])->name("creatematerialstock.loadAjaxForm");
-Route::get("export_creatematerialstocks/{type}", [App\Http\Controllers\CreateMaterialStockController::class,"exportCreateMaterialStock"])->name("creatematerialstock.export");
+    Route::resource('leads', 'LeadsController');
+    Route::post('leads/view', [App\Http\Controllers\LeadsController::class, 'view'])->name('leads.view');
+    Route::get("export_leads/{type}", [App\Http\Controllers\LeadsController::class, "exportLeads"])->name("leads.export");
 
+    Route::resource('spendable_items', 'ExpsnseItemController');
+    Route::post('spendable_items/view', [App\Http\Controllers\ExpsnseItemController::class, 'view'])->name('spendableitems.view');
+    Route::post("expsnseitem/load_form", [App\Http\Controllers\ExpsnseItemController::class, "loadAjaxForm"])->name("expsnseitem.loadAjaxForm");
+    Route::get("export_expsnseitems/{type}", [App\Http\Controllers\ExpsnseItemController::class, "exportExpsnseItem"])->name("expsnseitem.export");
 
-Route::resource('generated_product_stocks', 'GeneratedProductStockController');
-Route::post('generated_product_stocks/view', [App\Http\Controllers\GeneratedProductStockController::class, 'view'])->name('generatedproductstocks.view');
-Route::get("export_generatedproductstocks/{type}", [App\Http\Controllers\GeneratedProductStockController::class, "exportGeneratedProductStock"])->name("generatedproductstock.export");
-
-Route::resource('create_orders', 'CreateOrderController');
-Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class,'view'])->name('createorders.view');
-Route::get('generate_invoice/{id}', [App\Http\Controllers\CreateOrderController::class,'generateInvoice'])->name('createorders.generateInvoice');
-Route::get("export_createorders/{type}", [App\Http\Controllers\CreateOrderController::class,"exportCreateOrder"])->name("createorder.export");
-
-
+            
+        Route::resource('expenses', 'ExpenseController');
+        Route::post('expenses/view', [App\Http\Controllers\ExpenseController::class,'view'])->name('expenses.view');
+        Route::post("expense/load_form", [App\Http\Controllers\ExpenseController::class,"loadAjaxForm"])->name("expense.loadAjaxForm");
+        Route::get("export_expenses/{type}", [App\Http\Controllers\ExpenseController::class,"exportExpense"])->name("expense.export");
 });

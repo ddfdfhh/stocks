@@ -136,6 +136,7 @@ class SupplierController extends Controller
                 'name' => 'status',
                 'label' => 'Status',
                 'type' => 'select',
+                'options'=>getListFromIndexArray(['Active','in-Active'])
             ],
         ];
         $table_columns = $this->table_columns;

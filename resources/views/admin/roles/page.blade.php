@@ -102,7 +102,7 @@
                     href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
                     <i class="bx bx-dice-4"></i>
                 </a>
-                @if (auth()->user()->hasRole(['Admin']) ||
+                @if(auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
                     <a class="btn  btn-info btn-icon" title="Edit"
                         href="javascript:load_form('{!! $module !!}','edit','{!! $editurl !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">

@@ -10,6 +10,7 @@ function addPlus(containerid){
     copyContent=$('#'+containerid+' .copy_row').last().clone();
     console.log(copyContent)
     $("#"+containerid).append(copyContent);
+ 
 
 }
 function addPlusValidation(containerid){
@@ -131,7 +132,16 @@ function addPlusTableCreate(){
 
             
         })
-        $("#f_container").append(copyContent);
+     let has_select = $(copyContent).find(".select2").length;
+     if (has_select) {
+         $(copyContent).find(".select2").remove();
+     }
+    $("#f_container").append(copyContent);
+    $("select").each(function (i, obj) {
+        if (!$(obj).data("select2")) {
+            $(obj).select2();
+        }
+    });
     
 }
     function removeMinusTableCreate(){

@@ -147,7 +147,8 @@ class DriverController extends Controller
     [
         'name' => 'status',
         'label' => 'Status',
-        'type' => 'select'
+        'type' => 'select',
+         'options'=>getListFromIndexArray(['Active','In-Active'])
     ],
     [
         'name' => 'created_at',

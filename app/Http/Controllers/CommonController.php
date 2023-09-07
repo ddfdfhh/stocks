@@ -464,4 +464,45 @@ class CommonController extends Controller
              return createResponse(true,$response);
         }
     }
+     public function deleteInJsonColumnData(Request $r)
+    {
+        if ($r->ajax()) {
+            \DB::beginTransaction();
+            try {
+               
+                $rowid = $r->row_id;
+                $json_column_name = $r->json_column_name;
+                $key = $r->by_json_key;
+                $json_key_val=$r->json_key_val;
+                $table=$r->table;
+                $t = \DB::table($table)->whereId($rowid)->first();
+                if (is_null($t)) {
+                    return createResponse(false, 'Please refresh the page and try again');
+                }
+                $existing_json_data = $t->{$json_column_name}?json_decode($t->{$json_column_name}, true):[];
+                if(!empty($existing_json_data)){
+                        $i=0;
+                        foreach($existing_json_data as $item){
+                            if($item[$key]==$json_key_val){
+                               break;
+                            }
+                            $i++;
+                        }
+                        unset($existing_json_data[$i]);
+                        
+                        $updated_data = json_encode(array_values($existing_json_data));
+                        \DB::table($table)->whereId($rowid)->update([$json_column_name=> $updated_data]);
+                 }
+                \DB::commit();
+                return createResponse(true, 'Deleted  successfullly');
+            } catch (\Exception $ex) {
+                \DB::rollback();
+                return createResponse(false, $ex->getMessage());
+
+            }
+        } else {
+            return createResponse(false, 'Invalid Request');
+        }
+
+    }
 }

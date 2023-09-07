@@ -50,6 +50,18 @@ class {{modelName}}Controller extends Controller
                         $field_name=implode('_',$field_name);
                         $query=$query->whereDate($field_name,'<=',\Carbon\Carbon::parse($value));
                     }
+                    elseif(strpos($key,'min')!==FALSE){
+                        $field_name=explode('_',$key);
+                        $x=array_shift($field_name);
+                        $field_name=implode('_',$field_name);
+                        $query=$query->where($field_name,'>=',$value);
+                    }
+                     elseif(strpos($key,'max')!==FALSE){
+                        $field_name=explode('_',$key);
+                        $x=array_shift($field_name);
+                        $field_name=implode('_',$field_name);
+                        $query=$query->where($field_name,'<=',$value);
+                    }
                     else{
                         if(!is_array($value))
                           $query=$query->where($key,$value);
@@ -66,6 +78,9 @@ class {{modelName}}Controller extends Controller
     public function index(Request $request)
     {
        
+        if (!can('list_{{modelNameSingularLowerCase}}')) {
+        return redirect(route('admin.unauthorized'));
+        }
         $searchable_fields={{searchFields}};
         $filterable_fields={{filterFields}};
         $table_columns=$this->table_columns;
@@ -176,8 +191,32 @@ class {{modelName}}Controller extends Controller
              ];
         return view('admin.'.$this->view_folder.'.add',with($view_data));
     }
+	 public function view(Request $request)
+    {
+        $id=$request->id;
+          $data['row'] =null;
+         if(count($this->model_relations)>0)
+        {
+               $data['row']={{modelName}}::with(array_column($this->model_relations,'name'))->findOrFail($id);
+        }
+        else{
+            $data['row']={{modelName}}::findOrFail($id);
+        }
+         $data['has_image']=$this->has_upload;
+        $data['model_relations']=$this->model_relations;
+        $data['storage_folder']=$this->storage_folder;
+        $data['image_field_names']=$this->form_image_field_name;
+        $data['table_columns']=$this->table_columns;
+        $data['module']=$this->module;
+        $html=view('admin.'.$this->view_folder.'.view',with($data))->render();
+        return createResponse(true,$html); 
+    }
     public function store({{modelName}}Request $request)
     {
+        if (!can('add_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission');
+        }
+        \DB::beginTransaction();
         try{
             $post=$request->all();
           
@@ -215,13 +254,16 @@ class {{modelName}}Controller extends Controller
                 }
 
             }
+            \DB::commit();
        return createResponse(true,$this->module.' created successfully',$this->index_url); 
        }
        catch(\Exception $ex)
         {
+            \DB::rollback();
              return createResponse(false,$ex->getMessage());
         }
     }
+	
  public function edit($id)
     {
        
@@ -266,6 +308,9 @@ class {{modelName}}Controller extends Controller
     }
     public function show($id)
     {
+        if (!can('view_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission for this action');
+        }
         
         $data['row'] =null;
          if(count($this->model_relations)>0)
@@ -305,28 +350,13 @@ class {{modelName}}Controller extends Controller
         return createResponse(true,view('admin.'.$this->view_folder.'.view_modal',with($data))->render());
       
     }
- public function view(Request $request)
-    {
-        $id=$request->id;
-          $data['row'] =null;
-         if(count($this->model_relations)>0)
-        {
-               $data['row']={{modelName}}::with(array_column($this->model_relations,'name'))->findOrFail($id);
-        }
-        else{
-            $data['row']={{modelName}}::findOrFail($id);
-        }
-         $data['has_image']=$this->has_upload;
-        $data['model_relations']=$this->model_relations;
-        $data['storage_folder']=$this->storage_folder;
-        $data['image_field_names']=$this->form_image_field_name;
-        $data['table_columns']=$this->table_columns;
-        $data['module']=$this->module;
-        $html=view('admin.'.$this->view_folder.'.view',with($data))->render();
-        return createResponse(true,$html); 
-    }
+
     public function update({{modelName}}Request $request, $id)
     {
+        if (!can('edit_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission');
+        }
+         \DB::beginTransaction();
         try
         {
              $post=$request->all();
@@ -366,16 +396,22 @@ class {{modelName}}Controller extends Controller
                 }
 
             }
+             \DB::commit();
          return createResponse(true,$this->module.' updated successfully',$this->index_url); 
          }
        catch(\Exception $ex)
          {
+             \DB::rollback();
             return createResponse(false,$ex->getMessage());
          }
     }
 
     public function destroy($id)
     {
+        if (!can('delete_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission to delete');
+        }
+         \DB::beginTransaction();
         try
         {
             {{modelName}}::destroy($id);
@@ -383,9 +419,11 @@ class {{modelName}}Controller extends Controller
             if($this->has_upload){
                 $this->deleteFile($id);
             }
+             \DB::commit();
            return createResponse(true,$this->module.' Deleted successfully'); 
         }
         catch(\Exception $ex){
+             \DB::rollback();
             return createResponse(false,'Failed to  Delete Properly');
         }
         
@@ -460,6 +498,9 @@ class {{modelName}}Controller extends Controller
         $form_type=$request->form_type;
         $id=$request->id;
         if($form_type=='add'){
+            if (!can('create_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission to create ');
+        }
                  $data1={{create}};
      
            
@@ -483,6 +524,9 @@ class {{modelName}}Controller extends Controller
        
         }
         if($form_type=='edit'){
+            if (!can('edit_{{modelNameSingularLowerCase}}')) {
+        return createResponse(false,'Dont have permission to update');
+        }
                $model={{modelName}}::findOrFail($id);
         
               $data1={{edit}};
@@ -554,6 +598,9 @@ class {{modelName}}Controller extends Controller
         }
       if($form_type=='view')
           { 
+            if (!can('view_{{modelNameSingularLowerCase}}')) {
+            return createResponse(false,'Dont have permission to view');
+            }
             $html=view('admin.'.$this->view_folder.'.'.$form_type.'_modal',with($data))->render();
              return createResponse(true,$html);
           }

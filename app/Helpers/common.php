@@ -13,9 +13,9 @@ if (!function_exists('adminUrl')) {
     }
 }
 if (!function_exists('formateDate')) {
-    function formateDate($v,$show_time=false)
+    function formateDate($v, $show_time = false)
     {
-        return $show_time?date('j M,Y h:i a', strtotime($v)):date('j M,Y', strtotime($v));
+        return strlen($v) > 2 ? ($show_time ? date('j M,Y h:i a', strtotime($v)) : date('j M,Y', strtotime($v))) : '';
     }
 }
 function getFieldById($model, $id, $field)
@@ -27,7 +27,7 @@ function getFieldById($model, $id, $field)
 }
 function getCount($table, $where = [])
 {
-    return count($where) > 0 ? \DB::table($table)->where($where)->count() : \DB::table($table)->count();
+    return count($where) > 0?\DB::table($table)->where($where)->count() : \DB::table($table)->count();
 
 }
 function getArrayFromModel($model, $fields_label = [])
@@ -128,9 +128,9 @@ function getForeignKeyFieldValue($rel_ar, $row, $field, $key_toget_as_per_relati
     // dd($field);
     $resp = '';
     $item['name'] = 'category';
-   // $field = 'category_id';
+    // $field = 'category_id';
     foreach ($rel_ar as $item) {
-          $field = $field == $item['name'] . '_id' ? $item['name'] : $field;
+        $field = $field == $item['name'] . '_id' ? $item['name'] : $field;
         //dd($field);
         $get_by_field = isset($key_toget_as_per_relation[$item['type']]) ? $key_toget_as_per_relation[$item['type']] : 'name';
         //dd($field.'==='.$item['name']);
@@ -205,8 +205,8 @@ function getPivotTableName($model1, $model2)
 function formatPostForJsonColumn($post)
 {
 
-    $json_cols = [];/****like storing first part in json field */
-    $json_keys = [];/****like storing last part in json field */
+    $json_cols = []; /****like storing first part in json field */
+    $json_keys = []; /****like storing last part in json field */
     $ar_val = [];
     $no_of_values_in_arr = 0;
     foreach ($post as $key => $val) {
@@ -215,21 +215,19 @@ function formatPostForJsonColumn($post)
                 if (str_contains($key, '__json__')) {
 
                     $spl = explode("__json__", $key);
-                     $col_name = $spl[0];
-                     $key_name = $spl[1];
+                    $col_name = $spl[0];
+                    $key_name = $spl[1];
 
-                   // $no_of_values_in_arr = count($post[$key]);
-                    if(!isset($post[$col_name])){
-                       
+                    // $no_of_values_in_arr = count($post[$key]);
+                    if (!isset($post[$col_name])) {
+
                         $json_cols[] = $col_name;
-                        
 
                         $json_keys[] = $key_name; /***like storing size */
-                    }
-                    else{/****kyunki json column toggle mein bhi hota hai to unko unset karo psot se  */
-                        $val=$post[$key];
+                    } else { /****kyunki json column toggle mein bhi hota hai to unko unset karo psot se  */
+                        $val = $post[$key];
                         unset($post[$key]);
-                        $post[$key_name]=$val[0];/*toggable div ke case mein ham kewal first val store kara rahe hai not array u can change***/
+                        $post[$key_name] = $val[0]; /*toggable div ke case mein ham kewal first val store kara rahe hai not array u can change***/
                     }
 
                 } else { /***if key is index array  */
@@ -243,40 +241,38 @@ function formatPostForJsonColumn($post)
     }
 
     $json_cols = array_unique($json_cols);
-  
+
     foreach ($json_cols as $colname) {
         if (count($json_keys) > 0) {
 
-           $p=[];
-                foreach ($json_keys as $key) {
-                   
-                    if(isset($post[$colname . '__json__' . $key])){
-                        $values = $post[$colname . '__json__' . $key];
-                        $p[$key] = $values;
-                    }
-                }
-                $ar_val[$colname][] = $p;
+            $p = [];
+            foreach ($json_keys as $key) {
 
-            
+                if (isset($post[$colname . '__json__' . $key])) {
+                    $values = $post[$colname . '__json__' . $key];
+                    $p[$key] = $values;
+                }
+            }
+            $ar_val[$colname][] = $p;
+
         }
-      
+
     }
     if (count($ar_val) > 0) {
         foreach ($ar_val as $key => $val) {
-             $keys=array_keys($val[0]);
-             $val_count=count($val[0][$keys[0]]);
-           
-             $t=[];
-             for($i=0;$i<($val_count);$i++){
+            $keys = array_keys($val[0]);
+            $val_count = count($val[0][$keys[0]]);
+
+            $t = [];
+            for ($i = 0; $i < ($val_count); $i++) {
                 $x = [];
 
-                   foreach ($keys as $k) {
-                           $x[$k]=$val[0][$k][$i];
-                            
+                foreach ($keys as $k) {
+                    $x[$k] = $val[0][$k][$i];
 
-                        }
-             $t[]=$x;
-             }
+                }
+                $t[] = $x;
+            }
             // dd($t);
             $post[$key] = json_encode($t);
 
@@ -285,8 +281,8 @@ function formatPostForJsonColumn($post)
 //dd($post);
     return $post;
 }
-function showArrayInColumn($arr = [], $row_index = 0)
-{
+function showArrayInColumn($arr = [], $row_index = 0,$by_json_key = 'id', $size = 'md', $title = '', $show_delete = false,
+    $delete_data_info = ['row_id_val' => '', 'table' => '', 'json_column_name' => '', 'delete_url' => '']) {
     if (!empty($arr)) {
         if (!is_array($arr)) {
             $arr = $arr->toArray();
@@ -295,38 +291,58 @@ function showArrayInColumn($arr = [], $row_index = 0)
         if (!is_array($arr[0])) {
 
             return implode(',', $arr);
-        }
-        elseif (isset($arr[0]) && !is_array($arr[0])) {
+        } elseif (isset($arr[0]) && !is_array($arr[0])) {
 
             return implode(',', $arr);
-        }
-         elseif (!isArrayEmpty($arr)) {
+        } elseif (!isArrayEmpty($arr)) {
 
             $keys = array_keys($arr[0]);
             $header = '<tr>';
             foreach ($keys as $k) {
-                $header .= '<th>' . $k . '</th>';
+                if (!str_contains($k, '_id') || $k != $by_json_key) {
+                    $header .= '<th>' . $k . '</th>';
+                }
+
             }
+            if ($show_delete) {
+                $header .= '<th>Action</th>';
+            }
+
             $header .= '</th>';
             $body = '';
+            $i = 0;
             foreach ($arr as $val) {
-                $body .= '<tr>';
+
+                $i = isset($by_json_key) && !empty($by_json_key) && isset($val[0]) ? intval($val[0][$by_json_key]) : $i + 1;
+                $body .= '<tr  id="row-' . $i . '">';
                 foreach ($val as $k => $v) {
-                    $body .= '<td>' . $v . '</td>';
+                    if (!str_contains($k, '_id') || $k != $by_json_key) {
+                        $body .= '<td style="white-space: -o-pre-wrap;
+                                        word-wrap: break-word;
+                                        white-space: pre-wrap;
+                                        white-space: -moz-pre-wrap;
+                                        white-space: -pre-wrap; ">' . $v . '</td>';
+                    }
                 }
+                if ($show_delete) {$body .= <<<STR
+                        <td><button class="btn btn-xs btn-danger" onClick="deleteJsonColumnData({$delete_data_info["row_id_val"]},'{$by_json_key}','{$delete_data_info["table"]}',{$val[$by_json_key]},'{$delete_data_info["json_column_name"]}','{$delete_data_info["delete_url"]}')"><i class="bx bx-trash"></i></button></td>
+                        STR;
+                }
+
                 $body .= '</tr>';
+
             }
 
             $str = '<button type="button" class="btn-sm btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal' . $row_index . '">
           View
         </button>
-        <div class="modal" id="myModal' . $row_index . '">
-          <div class="modal-dialog">
+        <div class="modal detail" id="myModal' . $row_index . '">
+          <div class="modal-dialog modal-' . $size . '">
             <div class="modal-content">
-
+                    <div class="modal-header"><h5 class="modal-title">' . ucwords($title) . '</h5></div>
               <div class="modal-body">
               <div class="table-responsive">
-              <table class="table table-bordered">
+              <table class="table table-bordered" >
               <thead>
               ' . $header . '
               </thead>
@@ -343,6 +359,73 @@ function showArrayInColumn($arr = [], $row_index = 0)
             </div>
           </div>
         </div>';
+            return $str;
+        }
+    } else {
+        return '';
+    }
+
+}
+function showArrayInColumnNoPopup($arr = [],$by_json_key='id',$show_delete = false,
+    $delete_data_info = ['row_id_val' => '', 'table' => '', 'json_column_name' => '', 'delete_url' => '']) {
+    if (!empty($arr)) {
+        if (!is_array($arr)) {
+            $arr = $arr->toArray();
+        }
+
+        if (!is_array($arr[0])) {
+
+            return implode(',', $arr);
+        } elseif (isset($arr[0]) && !is_array($arr[0])) {
+
+            return implode(',', $arr);
+        } elseif (!isArrayEmpty($arr)) {
+
+            $keys = array_keys($arr[0]);
+            $header = '<tr>';
+            foreach ($keys as $k) {
+                if (!str_contains($k, '_id') || $k != $by_json_key) {
+                    $header .= '<th>' . $k . '</th>';
+                }
+
+            }
+            if ($show_delete) {
+                $header .= '<th>Action</th>';
+            }
+
+            $header .= '</th>';
+            $body = '';
+            $i = 0;
+            foreach ($arr as $val) {
+
+                $i = isset($by_json_key) && !empty($by_json_key) && isset($val[0]) ? intval($val[0][$by_json_key]) : $i + 1;
+                $body .= '<tr  id="row-' . $i . '">';
+                foreach ($val as $k => $v) {
+                    if (!str_contains($k, '_id') || $k != $by_json_key) {
+                        $body .= '<td style="white-space: -o-pre-wrap;
+                                        word-wrap: break-word;
+                                        white-space: pre-wrap;
+                                        white-space: -moz-pre-wrap;
+                                        white-space: -pre-wrap; ">' . $v . '</td>';
+                    }
+                }
+                if ($show_delete) {$body .= <<<STR
+                        <td><button class="btn btn-xs btn-danger" onClick="deleteJsonColumnData({$delete_data_info["row_id_val"]},'{$by_json_key}','{$delete_data_info["table"]}',{$val[$by_json_key]},'{$delete_data_info["json_column_name"]}','{$delete_data_info["delete_url"]}')"><i class="bx bx-trash"></i></button></td>
+                        STR;
+                }
+
+                $body .= '</tr>';
+
+            }
+
+            $str = '<div class="table-responsive">
+              <table class="table table-bordered" >
+              <thead>
+              ' . $header . '
+              </thead>
+              <tbody>' . $body . '</tbody>
+              </table>
+              </div>';
             return $str;
         }
     } else {
@@ -381,6 +464,8 @@ function getInputs()
 {
     return [
         (object) ['label' => 'Text', 'value' => 'text'],
+        (object) ['label' => 'Date', 'value' => 'date'],
+        (object) ['label' => 'DateTimeLocal', 'value' => 'datetime-local'],
         (object) ['label' => 'Email', 'value' => 'email'],
         (object) ['label' => 'Textarea', 'value' => 'textarea'],
         (object) ['label' => 'Number', 'value' => 'number'],
@@ -669,4 +754,10 @@ function formatDefaultValueForCheckbox($model, $field)
 
     return $model->{$field} ? json_decode($model->{$field}, true) : [];
 
+}
+
+function can($permission)
+{
+    // dd(auth()->user());
+    return (auth()->user()->hasRole(['Admin'])) || (auth()->user()->hasAnyPermission([$permission]));
 }

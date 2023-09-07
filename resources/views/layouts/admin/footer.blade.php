@@ -40,7 +40,7 @@
 <script src="{{ asset('commonjs/commonjs_functions.js') }}"></script>
 <script src="{{ asset('commonjs/index_table_sort_pagination.js') }}"></script>
 <script src="{{ asset('commonjs/summernote.min.js') }}"></script>
-<script src="{{ asset('commonjs/custom.js') }}?v=4"></script>
+<script src="{{ asset('commonjs/custom.js') }}"></script>
 <script src="{{ asset('assets/js/lightbox.min.js') }}"></script>
 
 @stack('scripts')

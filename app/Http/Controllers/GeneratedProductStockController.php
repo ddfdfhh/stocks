@@ -125,6 +125,7 @@ class GeneratedProductStockController extends Controller
                 'name' => 'product_id',
                 'label' => 'Product',
                 'type' => 'select',
+                'options'=>getList('Product')
             ],
         ];
         $table_columns = $this->table_columns;

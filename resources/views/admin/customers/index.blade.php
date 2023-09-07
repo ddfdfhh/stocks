@@ -12,17 +12,17 @@
                         <div class="btn-group" role="group" aria-label="Basic example">
                             @if (auth()->user()->hasRole(['Admin']) ||
                                     auth()->user()->can('create_' . $plural_lowercase))
-                                <button type="button" class="btn btn-primary text-white">
+                                <button type="button" class="rounded-0 btn btn-primary text-white">
                                     <a href="{{ route($plural_lowercase . '.create') }}"
                                         class="text-decoration-none text-white">
-                                      <i class="fa fa-plus-circle"></i>  Add
+                                      <i class="bx bx-plus-circle" style="margin-top:-3px"></i>  Add
                                         New</a>
                                 </button>
                             @endif
 
                             @if ($has_export)
                                 <button type="button"
-                                    class="dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
+                                    class="rounded-0 dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span><i class="bx bx-export me-sm-2"></i> <span
                                             class="d-none d-sm-inline-block">Export</span></span>
@@ -49,25 +49,29 @@
 
                     </div>
                 </div>
-                <br>
-                <div class="d-flex justify-content-between flex-wrap">
+                 <br>
+                <div class="d-flex justify-content-between flex-wrap mt-3">
+                    <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
+                        <div class="dropdown mb-2">
+                            <button type="button" class="rounded-0 btn btn-outline-primary dropdown-toggle"  data-bs-toggle="dropdown">
+                            <i class="bx bx-check-square"></i>   Update Status
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item"
+                                        href="javascript:multiSelectCheckBoxAction('Approved','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Approve</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="javascript:multiSelectCheckBoxAction('Rejected','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Reject</a>
+                                </li>
 
-                    <div class="dropdown mb-2">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                            Update Status
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item"
-                                    href="javascript:multiSelectCheckBoxAction('Approved','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Approve</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                    href="javascript:multiSelectCheckBoxAction('Rejected','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Reject</a>
-                            </li>
-
-                        </ul>
+                            </ul>
+                        </div>
+                        <x-filter :data="$filterable_fields" />
                     </div>
                     <x-search :searchableFields="$searchable_fields" />
+
                 </div>
+
 
 
 

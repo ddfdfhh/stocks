@@ -141,6 +141,7 @@ class CrudGeneratorController extends Controller
         }
         $data['tables'] = getTables();
         $data['module'] = 'Crud';
+       // dd('ok');
         return view('admin.crud.add', with($data));
 
     }
@@ -1167,7 +1168,7 @@ class CrudGeneratorController extends Controller
         /***** */
         $modelName = $data['modelName'];
         $this->controller($data);
-        //   $this->model($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
+           $this->addPermission($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
         $this->request($data['modelName'], $data['validation']);
         $this->viewFiles($data['modelNamePluralLowerCase'], $data['isModal'], $data['has_export']);
         // $this->makeTablesWithMigration();
@@ -1208,20 +1209,15 @@ class CrudGeneratorController extends Controller
     {
         return file_get_contents(resource_path("stubs/$type.stub"));
     }
-    protected function model($name, $plural, $tableName)
+    protected function addPermission($name, $plural, $tableName)
     {
         if ($name != 'Permission' && $name != 'Role' && $name != 'User') {
-            $modelTemplate = str_replace(
-                ['{{modelName}}', '{{tableName}}'],
-                [$name, $tableName],
-                $this->getStub('Model')
-            );
-
-            file_put_contents(app_path("/Models/{$name}.php"), $modelTemplate);
+          
             $perm_label = ucwords(str_replace('_', '  ', $plural));
 
             $permissions = [
                 ['name' => 'list_' . $plural, 'label' => 'List ' . $perm_label],
+                ['name' => 'view_' . $plural, 'label' => 'View ' . $perm_label],
                 ['name' => 'edit_' . $plural, 'label' => 'Edit ' . $perm_label],
                 ['name' => 'create_' . $plural, 'label' => 'Create ' . $perm_label],
                 ['name' => 'delete_' . $plural, 'label' => 'Delete ' . $perm_label],
@@ -1229,7 +1225,7 @@ class CrudGeneratorController extends Controller
             \Artisan::call('cache:forget spatie.permission.cache');
             \Artisan::call('cache:clear');
             foreach ($permissions as $perm) {
-                Permission::create($perm);
+                \App\Models\Permission::create($perm);
             }
         }
     }

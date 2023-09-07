@@ -79,3 +79,15 @@ function formValidateFunctionTemplate(
    <div id="validation_errors"></div> ,ab form errro isme show honge not in alter 
 10 -client side vaidation error / message show ho on blur/instantly uske liye add form-control class to parent of input and label.
 11-initiateSelect2ChangeEvents  ==check this function agar select 2 optinos ke oon change pe doosre input ko popluate karana hai to
+13-Always pass default value in filter ke select mein nai to build FIlter select ki wjah se work nai karega qyuni default value will not be proper
+===============
+1- Permssion and roles table mein gurad name will be same as in auth config like web monstyl
+2- Permssions and role mein model type -\App\Models\User aisa kuch hoga 
+3-ROleContrl ,PermsisonContrl,Adminontroller,LoginRequest,RegisterRequest,UserModel,ROleModel,admin folder mein unauthorized and dashoard ,PermssionModel should not be deletedd 
+4-table name should be lowercasee,multworld table name should be small cap with _ seprated;
+5-set eunm value witthout double or single quote  like this Active,In-Active
+6- always select multiple or not in input creation for select ,radio and checkbox
+7-Relationship ka name should match the column name or without  '_id' replaced in column name tabhi fetch hoga like in bleongs to .
+7- jab bhi roles and permisison se realted  tables mein  manually koi changes karo to aloways refresh cache
+   app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+   you add this in controller index fucntion then reove after cache refresh

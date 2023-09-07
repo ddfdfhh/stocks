@@ -455,10 +455,36 @@ function load_form(module, form_type, url, id = null, properName) {
         showToggableDivOnLoadIfPresent();
         initializeModalFormValidation(module, bsOffcanvas);
     };
-
+    calbackError = function (msg) {
+        bsOffcanvas.hide();
+        errorAlert(msg);/****In case permission error to load form */
+}
     objectAjaxNoLoaderNoAlert(
         obj,
         url,
-        htmlLoadcallback
+        htmlLoadcallback,
+        calbackError,
+        "POST",
+       
     ); /**called to load form */
+}
+function addEditRemark(id) { 
+   
+   let lead_id = id;
+    let { callbackSuccess, callbackError } = getModuleWiseCallbacks("Remark");
+    let url = $("#remark_form-" + lead_id).attr("data-url");
+    
+    let conversation = $("#conversation-"+lead_id).val();
+    if (lead_id.length === 0 || conversation.length === 0) {
+        return false;
+    }
+    objectAjaxWithBtnAndLoader(
+        'remark_btn-'+lead_id,
+        {lead_id,conversation},
+        url,
+        callbackSuccess,
+        callbackError,
+        false
+    );
+    
 }

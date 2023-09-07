@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleRequest;
 use App\Models\Role;
-use App\Models\Permission;
-use File;
 use Maatwebsite\Excel\Facades\Excel;
 use \Illuminate\Http\Request;
 
@@ -83,6 +81,10 @@ class RoleController extends Controller
     }
     public function index(Request $request)
     {
+
+        // if (!can('list_role')) {
+        // return redirect(route('admin.unauthorized'));
+        // }
 
         $searchable_fields = [
             [
@@ -220,27 +222,15 @@ class RoleController extends Controller
     }
     public function store(RoleRequest $request)
     {
-        try{
-            $post=$request->all();
-           $role = Role::create(['name'=>$post['name']]);
-           $role->syncPermissions($post['permissions']);
-           if($this->has_upload)
-           {
-            
-            if($this->is_multiple_upload)
-                 $this->upload($request,$role->id);
-            else{
-                $image_name= $this->upload($request);
-                $field= $this->form_image_field_name;
-                $role->{$field}=$image_name;
-                $role->save();
-            }
-        }
-       return createResponse(true,$this->module.' created successfully',$this->index_url); 
-       }
-       catch(\Exception $ex)
-        {
-             return createResponse(false,$ex->getMessage());
+        try {
+            $post = $request->all();
+            $role = Role::create(['name' => $post['name']]);
+            $role->syncPermissions($post['permissions']);
+            //app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+            return createResponse(true, $this->module . ' created successfully', $this->index_url);
+        } catch (\Exception $ex) {
+            return createResponse(false, $ex->getMessage());
         }
     }
     public function edit($id)
@@ -303,6 +293,9 @@ class RoleController extends Controller
     public function show($id)
     {
 
+        if (!can('view_role')) {
+            return createResponse(false, 'Don\'t have permission for this action');
+        }
         $data['row'] = null;
         if (count($this->model_relations) > 0) {
             $data['row'] = Role::with(array_column($this->model_relations, 'name'))->findOrFail($id);
@@ -324,47 +317,25 @@ class RoleController extends Controller
         return view('admin.' . $this->view_folder . '.view', with($data));
 
     }
-    public function view(Request $request)
+
+    public function update(RoleRequest $request, $id)
     {
-        $id = $request->id;
-        $data['row'] = null;
-        if (count($this->model_relations) > 0) {
-            $data['row'] = Role::with(array_column($this->model_relations, 'name'))->findOrFail($id);
-        } else {
-            $data['row'] = Role::findOrFail($id);
-        }
-        $data['has_image'] = $this->has_upload;
-        $data['model_relations'] = $this->model_relations;
-        $data['storage_folder'] = $this->storage_folder;
-        $data['image_field_names'] = $this->form_image_field_name;
-        $data['table_columns'] = $this->table_columns;
-        $data['module'] = $this->module;
-        $html = view('admin.' . $this->view_folder . '.view', with($data))->render();
-        return createResponse(true, $html);
-    }
-   public function update(RoleRequest $request, $id)
-    {
+        \DB::beginTransaction();
         try
         {
             $role = Role::findOrFail($id);
-            $role->update(['name'=>$request->name]);
-            $role->syncPermissions($request->permissions);
-           if($this->has_upload){
-                if($this->is_multiple_upload)
-                    $this->upload($request,$role->id);
-                else{
-                    $image_name= $this->upload($request);
-                    $field= $this->form_image_field_name;
-                    $role->{$field}=$image_name;
-                    $role->save();
-                }
-            }
-         return createResponse(true,$this->module.' updated successfully',$this->index_url); 
-         }
-       catch(\Exception $ex)
-         {
-            return createResponse(false,$ex->getMessage());
-         }
+            $permissions = $request->except('name', '_method', '_token');
+            $role->update(['name' => $request->name]);
+            // dd(array_keys($permissions));
+            $role->syncPermissions(array_keys($permissions));
+            //  app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+            \DB::commit();
+            return createResponse(true, $this->module . ' updated successfully', $this->index_url);
+        } catch (\Exception $ex) {
+            \DB::rollback();
+            return createResponse(false, $ex->getMessage());
+        }
     }
 
     public function destroy($id)
@@ -446,6 +417,7 @@ class RoleController extends Controller
         $form_type = $request->form_type;
         $id = $request->id;
         if ($form_type == 'add') {
+
             $data1 = [
                 [
                     'label' => null,
@@ -459,22 +431,14 @@ class RoleController extends Controller
                             'default' => isset($model) ? $model->name : "",
                             'attr' => [],
                         ],
-                        [
-                            'placeholder' => 'no',
-                            'label'=>'Permissions',
-                            'name'=>'permissions',
-                            'tag' => 'input', 'type' => 'radio', 'multiple' => true,
-                            'value' => getRadioOptions('Permission',[],'label'),
-                            'inline' => false,
-                            'default' => ['Yes'],
-                            'attr' => []],
                     ],
+
                 ],
             ];
-
+//dd(\DB::table('permissions')->get());
             $data = [
                 'data' => $data1,
-
+                'permissions' => \DB::table('permissions')->get(),
                 'dashboard_url' => $this->dashboard_url,
                 'index_url' => $this->index_url,
                 'title' => 'Create ' . $this->module,
@@ -505,25 +469,16 @@ class RoleController extends Controller
                             'default' => isset($model) ? $model->name : "",
                             'attr' => [],
                         ],
-                        
-                        [
-                            'placeholder' => 'no',
-                            'label'=>'Permissions',
-                            'name'=>'permissions',
-                            'tag' => 'input', 'type' => 'checkbox', 'multiple' => true,
-                            'value' => getRadioOptions('Permission',[],'label'),
-                            'inline' => false,
-                            'default' => getListOnlyNonIdValue('Permission',[],'id'),
-                            'attr' => []
-                        ]
+
                     ],
-                    
+
                 ],
             ];
-
+//dd($model->permissions->pluck('name')->toArray());
             $data = [
                 'data' => $data1,
-
+                'role_permissions' => $model->permissions->pluck('name')->toArray(),
+                'permissions' => \DB::table('permissions')->get(),
                 'dashboard_url' => $this->dashboard_url,
                 'index_url' => $this->index_url,
                 'title' => 'Edit ' . $this->module,
@@ -549,6 +504,7 @@ class RoleController extends Controller
             }
         }
         if ($form_type == 'view') {
+
             $data['row'] = null;
             if (count($this->model_relations) > 0) {
                 $data['row'] = Role::with(array_column($this->model_relations, 'name'))->findOrFail($id);
@@ -581,10 +537,13 @@ class RoleController extends Controller
          ***/
 
         }
-       // dd(($data['row'])->toArray());
-       
+        // dd(($data['row'])->toArray());
+        //  dd($data);
         if ($form_type == 'view') {
-            $html = view('admin.' . $this->view_folder . '.' . $form_type.'_modal', with($data))->render();
+            if (!can('view_role')) {
+                return createResponse(false, 'Don\'t have permission for this action');
+            }
+            $html = view('admin.' . $this->view_folder . '.' . $form_type . '_modal', with($data))->render();
             return createResponse(true, $html);
         } else {
             $html = view('admin.' . $this->view_folder . '.modal.' . $form_type, with($data))->render();

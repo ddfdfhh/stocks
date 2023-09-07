@@ -1,9 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="py-3 breadcrumb-wrapper mb-4">
-            <span class="text-muted fw-light">{{ properPluralName($plural_lowercase) }} /</span> List
-        </h4>
+      
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasEndLabel" class="offcanvas-title" style="text-transform:capitalize;">
@@ -30,10 +28,10 @@
                         <div class="btn-group" role="group" aria-label="Basic example">
                             @if (auth()->user()->hasRole(['Admin']) ||
                                     auth()->user()->can('create_' . $plural_lowercase))
-                               <button class="btn btn-primary" type="button"
+                               <button class="rounded-0 btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
                                     aria-controls="offcanvasEnd">
-                                   <i class="fa fa-plus-circle"></i>  Add
+                                   <i class="bx bx-plus-circle" style="margin-top:-3px"></i>  Add
                                         New
                                     </button>
                             @endif
@@ -66,6 +64,16 @@
                         </div>
                     </div>
                 </div>
+                 <br>
+                <div class="d-flex justify-content-between flex-wrap mt-3">
+                    <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
+                        
+                        <x-filter :data="$filterable_fields" />
+                    </div>
+                    <x-search :searchableFields="$searchable_fields" />
+
+                </div>
+
              
 
 

@@ -378,3 +378,44 @@ function deleteFileSelf(file_name, modelName, folder_name, field_name, row_id) {
         }
     });
 }
+/****Delete data from JSON colummn  */
+function deleteJsonColumnData(
+    row_id_val,
+    inside_json_column_id,
+    table,
+    json_id_val,
+    json_column_name,
+    url
+) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let callbackSuccess = function (res) {
+                $(".detail #row-" + json_id_val).hide();
+            };
+            let callbackError = function (res) {};
+
+            objectAjaxWithBtnAndLoader(
+                "remark_btn-",
+                {
+                    json_column_name,
+                    table,
+                    by_json_key: inside_json_column_id,
+                    row_id: row_id_val,
+                    json_key_val: json_id_val,
+                },
+                url,
+                callbackSuccess,
+                callbackError,
+                true
+            );
+        }
+    });
+}

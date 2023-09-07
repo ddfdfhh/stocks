@@ -11,4 +11,8 @@ class AdminController extends Controller
     $user->assignRole('Admin');
     return view('admin.dashboard');
    }
+   public function unauthorized(){
+  
+    return view('admin.unauthorized');
+   }
 }

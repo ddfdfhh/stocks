@@ -5,6 +5,8 @@
     $routes_arr = ['create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
     $raw_arr = ['create_material_stocks', 'units', 'input_materials'];
     $product_arr = ['generated_product_stocks', 'products'];
+    $leads_arr = ['lead_sources', 'leads'];
+    $spend_arr = ['spendable_items','expenses'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -25,7 +27,23 @@
         <ul class="menu-sub ">
 
 
+            @if (auth()->user()->can('list_roles'))
+                <li class="menu-item @if ($last_uri == 'roles') active @endif">
+                    <a href="{{ route('roles.index') }}" class="menu-link">
 
+                        <div data-i18n="Calendar">Manage Roles</div>
+                    </a>
+                </li>
+            @endif
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_permissions'))
+                <li class="menu-item @if ($last_uri == 'permissions') active @endif">
+                    <a href="{{ route('permissions.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Permissions</div>
+                    </a>
+                </li>
+            @endif
 
             @if (auth()->user()->hasRole(['Admin']) ||
                     auth()->user()->can('list_states'))
@@ -47,7 +65,7 @@
             @endif
         </ul>
     </li>
-   
+
 
     @if (auth()->user()->hasRole(['Admin']) ||
             auth()->user()->can('list_customers'))
@@ -143,7 +161,7 @@
                     auth()->user()->can('list_products'))
                 <li class="menu-item @if ($last_uri == 'products') active @endif">
                     <a href="{{ route('products.index') }}" class="menu-link">
-                      
+
                         <div data-i18n="Calendar">Product List</div>
                     </a>
                 </li>
@@ -161,7 +179,7 @@
 
         </ul>
     </li>
- @if (auth()->user()->hasRole(['Admin']) ||
+    @if (auth()->user()->hasRole(['Admin']) ||
             auth()->user()->can('list_settings'))
         <li class="menu-item @if ($last_uri == 'settings') active @endif">
             <a href="{{ route('settings.index') }}" class="menu-link">
@@ -170,10 +188,70 @@
             </a>
         </li>
     @endif
+    <li class="menu-item @if (in_array($last_uri, $leads_arr)) open @endif">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-cuboid"></i>
+            <div data-i18n="Authentications">Manage Leads</div>
+        </a>
 
+        <ul class="menu-sub ">
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_lead_sources'))
+                <li class="menu-item @if ($last_uri == 'lead_sources') active @endif">
+                    <a href="{{ route('lead_sources.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Lead Sources</div>
+                    </a>
+                </li>
+            @endif
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_leads'))
+                <li class="menu-item @if ($last_uri == 'leads') active @endif">
+                    <a href="{{ route('leads.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Leads</div>
+                    </a>
+                </li>
+            @endif
+
+
+
+        </ul>
+    </li>
+    <li class="menu-item @if (in_array($last_uri, $spend_arr)) open @endif">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-cuboid"></i>
+            <div data-i18n="Authentications">Manage Expenditure</div>
+        </a>
+
+        <ul class="menu-sub ">
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_spendable_items'))
+                <li class="menu-item @if ($last_uri == 'spendable_items') active @endif">
+                    <a href="{{ route('spendable_items.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Spendable Items</div>
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->hasRole(['Admin']) ||
+                    auth()->user()->can('list_expenses'))
+                <li class="menu-item @if ($last_uri == 'expenses') active @endif">
+                    <a href="{{ route('expenses.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Manage Expenses</div>
+                    </a>
+                </li>
+            @endif
+
+
+
+
+        </ul>
+    </li>
 
 
     <!-- User interface -->
 
 </ul>
-

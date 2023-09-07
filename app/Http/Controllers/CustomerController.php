@@ -129,7 +129,8 @@ class CustomerController extends Controller
     [
         'name' => 'status',
         'label' => 'Status',
-        'type' => 'select'
+        'type' => 'select',
+        'options'=>getListFromIndexArray(['Active','In-Active'])
     ]
 ];
         $table_columns=$this->table_columns;

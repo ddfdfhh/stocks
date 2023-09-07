@@ -1,9 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="py-3 breadcrumb-wrapper mb-4">
-            <span class="text-muted fw-light">Manage Material Stock</span> 
-        </h4>
+      
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasEndLabel" class="offcanvas-title" style="text-transform:capitalize;">
@@ -33,7 +31,7 @@
                                <button class="btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
                                     aria-controls="offcanvasEnd">
-                                    <i class="fa fa-plus-circle"></i>
+                                   <i class="bx bx-plus-circle" style="margin-top:-3px"></i> 
                                      Add New  Stock</button>
                             @endif
 
@@ -65,7 +63,29 @@
                         </div>
                     </div>
                 </div>
-              
+               <br>
+                <div class="d-flex justify-content-between flex-wrap mt-3">
+                    <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
+                        <div class="dropdown mb-2">
+                            <button type="button" class="rounded-0 btn btn-outline-primary dropdown-toggle"  data-bs-toggle="dropdown">
+                            <i class="bx bx-check-square"></i>   Update Status
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item"
+                                        href="javascript:multiSelectCheckBoxAction('Approved','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Approve</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="javascript:multiSelectCheckBoxAction('Rejected','status','{!! route('table_filed_update') !!}','{!! $plural_lowercase !!}')">Reject</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <x-filter :data="$filterable_fields" />
+                    </div>
+                    <x-search :searchableFields="$searchable_fields" />
+
+                </div>
+
 
 
 

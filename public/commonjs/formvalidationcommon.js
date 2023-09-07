@@ -191,9 +191,10 @@ function handleFormSubmitSuccess(
 
         if (callbackSuccess) callbackSuccess(res);
     } else {
+        
         loaderRef.hide();
-      
-        showValidationErrorsNoAlert(res["message"]);
+ if (show_server_validation_in_alert) successAlert(res["message"]);
+        else showValidationErrorsNoAlert(res["message"]);
         if (callbackError) callbackError(res);
     }
 }
@@ -210,6 +211,7 @@ function formValidateFunctionTemplate(
     has_image = false,
     show_server_validation_in_alert = true
 ) {
+    
     $("#" + formid).validate({
         errorClass: "invalid-feedback",
         // errorElement: "div",
@@ -369,7 +371,7 @@ function objectAjaxWithBtnAndLoader(
     object,
     url,
     callbackSuccess = undefined,
-    calbackError = undefined,
+    callbackError = undefined,
     show_server_validation_in_alert = true
 ) {
     let btn = $("#" + btnid);
@@ -425,10 +427,10 @@ function objectAjaxNoLoaderNoAlert(
         data: formData,
 
         success: function (res, textStatus, xhr) {
-            if (res["success"] || xhr.status === 200) {
+            if (res["success"]) {
                 if (callbackSuccess) callbackSuccess(res);
             } else {
-                if (callbackError) callbackError(res);
+                if (callbackError) callbackError(res['message']);
             }
         },
 
