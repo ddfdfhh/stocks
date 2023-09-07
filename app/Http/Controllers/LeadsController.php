@@ -24,6 +24,11 @@ class LeadsController extends Controller
 
         $this->table_columns = [
             [
+                'column' => 'title',
+                'label' => 'Title',
+                'sortable' => 'Yes',
+            ],
+            [
                 'column' => 'lead_name',
                 'label' => 'Lead Name',
                 'sortable' => 'Yes',
@@ -33,11 +38,7 @@ class LeadsController extends Controller
                 'label' => 'PhoneNo',
                 'sortable' => 'Yes',
             ],
-            [
-                'column' => 'whatsapp_no',
-                'label' => 'Whatsapp No',
-                'sortable' => 'Yes',
-            ],
+           
             [
                 'column' => 'product_id',
                 'label' => 'Product/Service',
@@ -58,16 +59,7 @@ class LeadsController extends Controller
                 'label' => 'Created At',
                 'sortable' => 'Yes',
             ],
-            [
-                'column' => 'address',
-                'label' => 'Address',
-                'sortable' => 'No',
-            ],
-            [
-                'column' => 'email',
-                'label' => 'Email',
-                'sortable' => 'Yes',
-            ],
+           
             [
                 'column' => 'followup_date',
                 'label' => 'Follow Up Date',
@@ -314,6 +306,15 @@ class LeadsController extends Controller
             [
                 'label' => null,
                 'inputs' => [
+                    [
+                        'placeholder' => 'Enter title',
+                        'name' => 'title',
+                        'label' => 'Title',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->title : "",
+                        'attr' => [],
+                    ],
                     [
                         'placeholder' => 'Enter lead_name',
                         'name' => 'lead_name',
@@ -579,6 +580,15 @@ class LeadsController extends Controller
             [
                 'label' => null,
                 'inputs' => [
+                     [
+                        'placeholder' => 'Enter title',
+                        'name' => 'title',
+                        'label' => 'Title',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->title : "",
+                        'attr' => [],
+                    ],
                     [
                         'placeholder' => 'Enter lead_name',
                         'name' => 'lead_name',
