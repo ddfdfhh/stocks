@@ -27,7 +27,7 @@
         <ul class="menu-sub ">
 
 
-            @if (auth()->user()->can('list_roles'))
+            @if (auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_roles'))
                 <li class="menu-item @if ($last_uri == 'roles') active @endif">
                     <a href="{{ route('roles.index') }}" class="menu-link">
 
