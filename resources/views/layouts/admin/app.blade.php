@@ -45,6 +45,9 @@
     <script src="{{ asset('assets/js/config.js') }}"></script> @yield('css')
 </head>
 <style>
+th{
+text-transform:capitalize!important
+}
     .btn-icon {
         width: 30px !important;
         height: 30px !important;

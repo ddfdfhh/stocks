@@ -209,6 +209,24 @@ function getModuleWiseRules(module) {
             }
           
         };
+    }  else if (module == "ReceivePayment") {
+        return {
+            title: {
+                required: true,
+            },
+            paid_amount: {
+                required: true,
+                number: true,
+            },
+            due_amount: {
+                required: true,
+                number: true,
+            },
+            paid_date: {
+                required: true,
+              
+            },
+        };
     } else {
         return {};
     }
@@ -250,7 +268,7 @@ function getModuleWiseCallbacks(module) {
     let callbackSuccess = function (res) {
         if (res["redirect_url"]) {
             setTimeout(function () {
-                window.location.href = res["redirect_url"];
+               // window.location.href = res["redirect_url"];
             }, 3000);
         }
     };

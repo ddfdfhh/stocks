@@ -12,6 +12,12 @@ class Expense extends Model
 {
     protected $table='expenses';
     public $timestamps=0;
+    protected $dates = [
+        'paid_date',
+        'due_date',
+        'created_at'
+       
+    ];
      public function getFillable(){
         return  $this->getTableColumns();
      }

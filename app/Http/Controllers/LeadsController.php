@@ -667,6 +667,18 @@ class LeadsController extends Controller
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
+                     [
+                        'name' => 'assigned_id',
+                        'label' => 'Assigned To',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'assigned_id', false) : (!empty(getList('User')) ? getList('User')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('User'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
                     [
                         'placeholder' => 'Enter address',
                         'name' => 'address',

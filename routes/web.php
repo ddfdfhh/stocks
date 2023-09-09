@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth']], function () {
 Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
 
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard_data', [AdminController::class, 'dashboard_data'])->name('admin.dashboard_data');
     Route::get('/unauthorized', [AdminController::class, 'unauthorized'])->name('admin.unauthorized');
     Route::get('/crud', [CrudGeneratorController::class, 'index'])->name('admin.crud');
 
@@ -187,6 +188,7 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
 
     Route::resource('create_orders', 'CreateOrderController');
     Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class, 'view'])->name('createorders.view');
+    Route::post('getOrderTotalAmount', [App\Http\Controllers\CreateOrderController::class, 'getOrderTotalAmount'])->name('createorders.getOrderTotalAmount');
     Route::get('generate_invoice/{id}', [App\Http\Controllers\CreateOrderController::class, 'generateInvoice'])->name('createorders.generateInvoice');
     Route::get("export_createorders/{type}", [App\Http\Controllers\CreateOrderController::class, "exportCreateOrder"])->name("createorder.export");
 
@@ -203,10 +205,14 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post('spendable_items/view', [App\Http\Controllers\ExpsnseItemController::class, 'view'])->name('spendableitems.view');
     Route::post("expsnseitem/load_form", [App\Http\Controllers\ExpsnseItemController::class, "loadAjaxForm"])->name("expsnseitem.loadAjaxForm");
     Route::get("export_expsnseitems/{type}", [App\Http\Controllers\ExpsnseItemController::class, "exportExpsnseItem"])->name("expsnseitem.export");
+    Route::resource('expenses', 'ExpenseController');
+    Route::post('expenses/view', [App\Http\Controllers\ExpenseController::class,'view'])->name('expenses.view');
+    Route::post("expense/load_form", [App\Http\Controllers\ExpenseController::class,"loadAjaxForm"])->name("expense.loadAjaxForm");
+    Route::get("export_expenses/{type}", [App\Http\Controllers\ExpenseController::class,"exportExpense"])->name("expense.export");
 
-            
-        Route::resource('expenses', 'ExpenseController');
-        Route::post('expenses/view', [App\Http\Controllers\ExpenseController::class,'view'])->name('expenses.view');
-        Route::post("expense/load_form", [App\Http\Controllers\ExpenseController::class,"loadAjaxForm"])->name("expense.loadAjaxForm");
-        Route::get("export_expenses/{type}", [App\Http\Controllers\ExpenseController::class,"exportExpense"])->name("expense.export");
+    
+
+Route::resource('receive_payments', 'ReceivePaymentController');
+Route::post('receive_payments/view', [App\Http\Controllers\ReceivePaymentController::class,'view'])->name('receivepayments.view');
+Route::get("export_receivepayments/{type}", [App\Http\Controllers\ReceivePaymentController::class,"exportReceivePayment"])->name("receivepayment.export");
 });

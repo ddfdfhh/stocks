@@ -1,8 +1,9 @@
 @props(['data', 'label', 'values','index'])
 @php
     $data = $data;
+   
     $values = json_decode($values, true);
-   // dd($values);
+  //  dd($values);
     $data = array_map(function ($v) {
         if ($v['tag'] == 'select') {
             $ar = $v['options'];
@@ -39,7 +40,7 @@
 
                 </div>
             </div>
-            @if($values)
+            @if($values && is_array($values))
                     @foreach ($values as $t)
                         <div class="row copy_row">
                             @php

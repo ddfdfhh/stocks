@@ -144,6 +144,7 @@ function handleFormSubmitError(
     errorThrown,
     show_server_validation_in_alert = true
 ) {
+    console.log(xhr);
     if (
         xhr.responseJSON !== undefined &&
         xhr.responseJSON.errors !== undefined

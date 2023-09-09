@@ -18,6 +18,12 @@ if (!function_exists('formateDate')) {
         return strlen($v) > 2 ? ($show_time ? date('j M,Y h:i a', strtotime($v)) : date('j M,Y', strtotime($v))) : '';
     }
 }
+if (!function_exists('formateNumber')) {
+    function formateNumber($v, $decimal = 2)
+    {
+        return strlen($v) >0 ?number_format($v,$decimal):'';
+    }
+}
 function getFieldById($model, $id, $field)
 {
     $mod = app("App\\Models\\$model");
@@ -281,7 +287,7 @@ function formatPostForJsonColumn($post)
 //dd($post);
     return $post;
 }
-function showArrayInColumn($arr = [], $row_index = 0,$by_json_key = 'id', $size = 'md', $title = '', $show_delete = false,
+function showArrayInColumn($arr = [], $row_index = 0, $by_json_key = 'id', $size = 'md', $title = '', $show_delete = false,
     $delete_data_info = ['row_id_val' => '', 'table' => '', 'json_column_name' => '', 'delete_url' => '']) {
     if (!empty($arr)) {
         if (!is_array($arr)) {
@@ -366,7 +372,7 @@ function showArrayInColumn($arr = [], $row_index = 0,$by_json_key = 'id', $size 
     }
 
 }
-function showArrayInColumnNoPopup($arr = [],$by_json_key='id',$show_delete = false,
+function showArrayInColumnNoPopup($arr = [], $by_json_key = 'id', $show_delete = false,
     $delete_data_info = ['row_id_val' => '', 'table' => '', 'json_column_name' => '', 'delete_url' => '']) {
     if (!empty($arr)) {
         if (!is_array($arr)) {
@@ -621,6 +627,16 @@ function getListFromIndexArray($arr = []) /* for optinos in select not from mode
     }
     return $list3;
 }
+function getListFromIndexArrayForRadio($arr = []) /* for optinos in select not from model but from an array liek ['apple','mango']*/
+{
+
+    $list3 = [];
+    foreach ($arr as $item) {
+        $ar = (object) ['label' => $item, 'value' => $item];
+        array_push($list3, $ar);
+    }
+    return $list3;
+}
 function getList($model, $where = [], $by_field = 'name')
 {
     $model_class = "\App\Models" . '\\' . $model;
@@ -761,3 +777,95 @@ function can($permission)
     // dd(auth()->user());
     return (auth()->user()->hasRole(['Admin'])) || (auth()->user()->hasAnyPermission([$permission]));
 }
+/******Monthly weekly daily recors for chart */
+function getDailyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount", $for_days = 7)
+{
+    $perday_records = null;
+    if ($to_do == 'sum') {
+        $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, Date(`" . $date_column . "`) AS d FROM  " . $table . " WHERE Date(`" . $date_column . "`) BETWEEN ADDDATE(NOW(),-" . $for_days . ") 
+        AND NOW()  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY Date(`" . $date_column . "`) ORDER BY DATE(`" . $date_column . "`) DESC";
+    } else {
+        $query = "SELECT COUNT(*) AS c, Date(`" . $date_column . "`) AS d FROM  " . $table . " WHERE Date(`" . $date_column . "`)
+         BETWEEN ADDDATE(NOW(),-" . $for_days . ") AND NOW()  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY Date(`" . $date_column . "`) ORDER BY DATE(`" . $date_column . "`) DESC";
+    }
+
+    $perday_records = \DB::select($query);
+    $perday_records = array_map(function ($v) {
+        return (array) $v;
+    }, $perday_records);
+    return ['val' => array_column($perday_records, $to_do == 'sum' ? 'total' : 'c'), 'datetime' => array_column($perday_records, 'd')];
+
+}
+function getMonthlyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount")
+{
+    $month_ar = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    $monthly_records = null;
+    if ($to_do == 'sum') {
+        $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, MONTH(`" . $date_column . "`) AS m FROM  " . $table . "
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY MONTH(`" . $date_column . "`)";
+    } else {
+       $query = "SELECT COUNT(*) AS c, MONTH(`" . $date_column . "`) AS m FROM  " . $table . "
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY MONTH(`" . $date_column . "`)";
+
+    }
+
+    $monthly_records = \DB::select($query);
+
+    $monthly_records = array_map(function ($v) {
+        $v->m = date("M", mktime(0, 0, 0, $v->m, 10));
+        return (array) $v;
+    }, $monthly_records);
+
+    $monthly_records = collect($monthly_records)->pluck($to_do == 'sum' ? 'total' : 'c', 'm')->toArray();
+    $monthly_records_val = [];
+    foreach ($month_ar as $m) {
+        if (isset($monthly_records[$m])) {
+            $monthly_records_val[ucfirst($m)] = $monthly_records[$m];
+        } elseif (isset($monthly_records[ucfirst($m)])) {
+            $monthly_records_val[ucfirst($m)] = $monthly_records[ucfirst($m)];
+
+        } else {
+            $monthly_records_val[ucfirst($m)] = 0.0;
+        }
+    }
+
+    return  array_values($monthly_records_val);
+
+}
+function getWeeklyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount",$no_weeks=4)
+{
+    
+    $monthly_records = null;
+    if ($to_do == 'sum') {
+        $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, WEEK(`" . $date_column . "`) AS w FROM  " . $table . "
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())   AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL ".$no_weeks." WEEK)
+        AND NOW() " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY WEEK(`" . $date_column . "`) ORDER BY WEEK(`" . $date_column . "`) DESC";
+    } else {
+        $query = "SELECT COUNT(*) AS c, WEEK(`" . $date_column . "`) AS w FROM  " . $table . "
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW()) AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL ".$no_weeks." WEEK)
+        AND NOW()  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY WEEK(`" . $date_column . "`) ORDER BY WEEK(`" . $date_column . "`) DESC";
+
+    }
+
+    //dd($query);
+    $weekly_records = \DB::select($query);
+
+    
+
+    $weekly_records = collect($weekly_records)->pluck($to_do == 'sum' ? 'total' : 'c', 'w')->toArray();
+    $weekly_records_val = [];
+    $i=1;
+    foreach (array_keys($weekly_records) as $w) {
+        if (isset($weekly_records[$w])) {
+            $weekly_records_val[$i] = $weekly_records[$w];
+        } else {
+            $weekly_records_val[$i] = 0.0;
+        }
+        $i++;
+    }
+
+    return array_values($weekly_records_val);
+
+}
+

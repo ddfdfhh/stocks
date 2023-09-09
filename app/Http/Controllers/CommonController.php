@@ -99,7 +99,7 @@ class CommonController extends Controller
 
         $resp = '<fieldset class="form-group border p-3 fieldset">
        <legend class="w-auto px-2 legend">Inputs Generation </legend>
-       <div id="nested_togggle" class="repeatable3" style="margin-bottom:5px">
+       <div id="nested_togggle" class="toggable_group" style="margin-bottom:5px">
            <div class="row">
 
                <div class="col-md-12">

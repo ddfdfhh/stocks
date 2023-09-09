@@ -2,7 +2,7 @@
     
     $last_uri = request()->segment(2);
     
-    $routes_arr = ['create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
+    $routes_arr = ['receive_payments','create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
     $raw_arr = ['create_material_stocks', 'units', 'input_materials'];
     $product_arr = ['generated_product_stocks', 'products'];
     $leads_arr = ['lead_sources', 'leads'];
@@ -150,6 +150,14 @@
             </a>
         </li>
     @endif
+    @if(auth()->user()->hasRole(['Admin']) || auth()->user()->can('list_receive_payments'))
+            <li class="menu-item @if($last_uri=='receive_payments') active  @endif">
+              <a href="{{route('receive_payments.index')}}" class="menu-link">
+               <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <div data-i18n="Calendar">Receive Payments</div>
+              </a>
+            </li>
+     @endif
     <li class="menu-item @if (in_array($last_uri, $product_arr)) open @endif">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-cuboid"></i>
@@ -255,3 +263,6 @@
     <!-- User interface -->
 
 </ul>
+
+
+

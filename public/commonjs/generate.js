@@ -68,27 +68,44 @@ function addPlusToggableOuter(){
     
     }
 function addPlusRepeatableCreateNested(){
-   
-        copyContent=$('#nested_create .copy_row2').last().clone();
+  
+        copyContent=$(event.target).closest('.repeatable').find('.copy_row2').last().clone();
         
-        $("#nested_create").append(copyContent);
+        $(event.target).closest(".repeatable").append(copyContent);
     
 }
     function removeMinusRepeatableCreateNested(){
-        if($("#nested_create .copy_row2").length>1)
-        $("#nested_create .copy_row2").last().remove();
+        if($(event.target).closest('.repeatable').find('.copy_row2').length>1)
+        $(event.target)
+            .closest(".repeatable")
+            .find(".copy_row2")
+            .last()
+            .remove();
     
     }
 function addPlusToggleNested(){
    
-        copyContent=$('#nested_togggle .copy_row1').last().clone();
         
-        $("#nested_togggle").append(copyContent);
+     copyContent = $(event.target)
+         .closest(".toggable_group")
+         .find(".copy_row1")
+         .last()
+         .clone();
+
+     $(event.target).closest(".toggable_group").append(copyContent);
+    
     
 }
     function removeMinusToggleNested(){
-        if($("#nested_togggle .copy_row1").length>1)
-        $("#nested_togggle .copy_row1").last().remove();
+       if (
+           $(event.target).closest(".toggable_group").find(".copy_row1")
+               .length > 1
+       )
+           $(event.target)
+               .closest(".toggable_group")
+               .find(".copy_row1")
+               .last()
+               .remove();
     
     }
 function addPlusIndexPage(){

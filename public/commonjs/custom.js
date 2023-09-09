@@ -518,3 +518,62 @@ function addEditRemark(id) {
     );
     
 }
+var current_order_total = 0;
+var current_order_prev_paid = 0;
+var current_order_due = 0;
+function fetchOrderTotalAmount(id) { 
+   
+   
+    let callbackSuccess = function (res) {
+        $("#inp-order_id").closest(".form-group").find("#resp").remove();
+          $("#inp-order_id")
+              .closest(".form-group")
+              .append(`<div id="resp"></div>`);
+        {
+            if (res["success"]) {
+                let er = JSON.parse(res['message']);
+                console.log(er);
+              current_order_total = parseFloat(er["total"]);
+              current_order_prev_paid = parseFloat(er["paid"]);
+              current_order_due = parseFloat(er["due_amount"]);
+                $("#resp")
+                    .html(`<span class="mt-3 badge bg-label-success"  role="alert">
+                            Total Amount-&#8377; ${current_order_total},  Total Paid-&#8377; ${current_order_prev_paid}, Total Due-&#8377; ${current_order_due} </span>`);
+               
+            } else {
+                 $("#resp")
+                     .html(`<span class="mt-3 badge badge-label-danger"  role="alert">
+                            ${res["message"]} </span>`);
+            }
+        }
+    };
+    let callbackError = function (res) {
+        $("#inp-order_id").closest(".form-group").find("#resp").remove();
+        $("#inp-order_id")
+            .closest(".form-group")
+            .append(`<div id="resp"></div>`);
+         $("#resp")
+             .html(`<span class="mt-3 badge bg-label-danger"  role="alert">
+                            ${res["message"]} </span>`);
+    };
+    
+    
+    if (id.length === 0) {
+        return false;
+    }
+    objectAjaxNoLoaderNoAlert(
+      
+        { order_id:id },
+    '/admin/getOrderTotalAmount',
+        callbackSuccess,
+        callbackError,
+        "POST",
+        false
+    );
+    
+}
+function setDueAmount(paid_amount) {
+    let total_paid = current_order_prev_paid + paid_amount
+    let due = current_order_total - total_paid;;
+    $("#inp-due_amount").val(due > 0 ? due : 0)
+}

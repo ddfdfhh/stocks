@@ -114,12 +114,7 @@
                         href="javascript:load_form('{!! $module !!}','edit','{!! $editurl !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
                         <i class="bx bx-edit"></i> </a>
                 @endif
-                @if (auth()->user()->hasRole(['Admin']) ||
-                        auth()->user()->can('delete_' . $plural_lowercase))
-                    <a class="btn  btn-danger btn-icon" title="Delete"
-                        href="javascript:deleteRecord('{!! $r->id !!}','{!! $deleteurl !!}');">
-                        <i class="bx bx-trash"></i></a>
-                @endif
+               
                 {{-- <div class="dropdown">
                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                             class="bx bx-dots-vertical-rounded"></i></button>

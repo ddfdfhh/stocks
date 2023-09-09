@@ -1168,7 +1168,7 @@ class CrudGeneratorController extends Controller
         /***** */
         $modelName = $data['modelName'];
         $this->controller($data);
-           $this->addPermission($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
+           //$this->addPermission($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
         $this->request($data['modelName'], $data['validation']);
         $this->viewFiles($data['modelNamePluralLowerCase'], $data['isModal'], $data['has_export']);
         // $this->makeTablesWithMigration();
