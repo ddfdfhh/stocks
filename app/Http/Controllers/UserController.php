@@ -267,7 +267,7 @@ class UserController extends Controller
                       [
                         'placeholder' => 'Enter password',
                         'name' => 'password',
-                        'label' => 'Password',
+                        'label' => 'Password (Minimum 8 Characters ,combination of uppercase ,lowercase ,digits and special characters)',
                         'tag' => 'input',
                         'type' => 'password',
                         'default' => isset($model) ? $model->email : "",
@@ -278,7 +278,7 @@ class UserController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'default' =>  '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),

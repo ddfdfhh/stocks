@@ -45,7 +45,7 @@
     <script src="{{ asset('assets/js/config.js') }}"></script> @yield('css')
 </head>
 <style>
-    .form-group label,.text-muted {
+   .text-muted {
         color: #707b87 !important;
         font-weight:500!important;
     }

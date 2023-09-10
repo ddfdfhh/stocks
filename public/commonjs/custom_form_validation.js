@@ -68,13 +68,14 @@ function getModuleWiseRules(module) {
                 // }
             },
             password: {
-                required: $('#user_form').attr('data-edit')?false:true,
+                required: $("#user_form").attr("data-edit") ? false : true,
                 minlength: 8,
-                // pwcheck:true,
+                 pwcheck:true,
             },
             phone: {
                 required: true,
                 number: true,
+                phone: true,
                 // pwcheck:true,
             },
         };
@@ -129,6 +130,7 @@ function getModuleWiseRules(module) {
             mobile_no: {
                 required: true,
                 number: true,
+                phone: true,
             },
             address: {
                 required: true,
@@ -196,6 +198,7 @@ function getModuleWiseRules(module) {
             mobile_no: {
                 required: true,
                 number: true,
+                phone: true,
             },
         };
     } else if (module == "Remark") {
@@ -205,11 +208,9 @@ function getModuleWiseRules(module) {
             },
             conversation: {
                 required: true,
-                
-            }
-          
+            },
         };
-    }  else if (module == "ReceivePayment") {
+    } else if (module == "ReceivePayment") {
         return {
             title: {
                 required: true,
@@ -224,7 +225,6 @@ function getModuleWiseRules(module) {
             },
             paid_date: {
                 required: true,
-              
             },
         };
     } else {
@@ -250,9 +250,9 @@ function getModuleWiseValidationMessages(module) {
                 required: true,
             },
             conversation: {
-                required: 'Please enter conversation message',
+                required: "Please enter conversation message",
             },
-        }
+        };
     } else if (module == "ResetPassword") {
         return {
             password: {
@@ -260,6 +260,17 @@ function getModuleWiseValidationMessages(module) {
             },
             password_confirmation: {
                 pwcheck: "Enter strong password",
+            }
+            
+        };
+    } 
+     else if (module == "User") {
+        return {
+            password: {
+                pwcheck: "Enter strong password",
+            },
+            phone: {
+                phone: "Enter valid phone no",
             },
         };
     } else return {};
@@ -268,8 +279,8 @@ function getModuleWiseCallbacks(module) {
     let callbackSuccess = function (res) {
         if (res["redirect_url"]) {
             setTimeout(function () {
-               // window.location.href = res["redirect_url"];
-            }, 3000);
+                window.location.href = res["redirect_url"];
+            }, 2500);
         }
     };
     let callbackError = function (error = "") {
@@ -277,7 +288,5 @@ function getModuleWiseCallbacks(module) {
     };
     if (module == "Login") {
         return { callbackSuccess, callbackError };
-    }
-    
-    else return { callbackSuccess, callbackError };
+    } else return { callbackSuccess, callbackError };
 }
