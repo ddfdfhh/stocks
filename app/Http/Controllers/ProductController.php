@@ -18,7 +18,7 @@ class ProductController extends Controller
         $this->has_upload=0;
         $this->is_multiple_upload=0;
         $this->has_export=0;
-        $this->pagination_count=100;
+        $this->pagination_count=5;
 		
         $this->table_columns=[
     [
@@ -29,6 +29,18 @@ class ProductController extends Controller
     [
         'column' => 'price',
         'label' => 'Price',
+        'sortable' => 'Yes'
+    ],
+    
+    [
+        'column' => 'sgst',
+        'label' => 'SGST(%)',
+        'sortable' => 'Yes'
+    ],
+    
+    [
+        'column' => 'cgst',
+        'label' => 'CGST(%)',
         'sortable' => 'Yes'
     ],
     [
@@ -535,6 +547,24 @@ class ProductController extends Controller
                 'type' => 'number',
                 'default' => isset($model) ? $model->price : "",
                 'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter SGST Rate',
+                'name' => 'sgst',
+                'label' => 'SGST(%)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->sgst : "",
+                'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter CGST Rate',
+                'name' => 'cgst',
+                'label' => 'CGST(%)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->cgst : "",
+                'attr' => []
             ]
         ]
     ]
@@ -584,6 +614,24 @@ class ProductController extends Controller
                 'tag' => 'input',
                 'type' => 'number',
                 'default' => isset($model) ? $model->price : "",
+                'attr' => []
+            ],
+             [
+                'placeholder' => 'Enter SGST Rate',
+                'name' => 'sgst',
+                'label' => 'SGST(%)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->sgst : "",
+                'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter CGST Rate',
+                'name' => 'cgst',
+                'label' => 'CGST(%)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->cgst : "",
                 'attr' => []
             ]
         ]
