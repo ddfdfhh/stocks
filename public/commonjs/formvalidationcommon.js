@@ -2,7 +2,8 @@ var loaderRef = $("#loader"); /**Id of icon div embeded in submit buttons  */
 $.validator.addMethod("pwcheck", function (value) {
     return (
         /^[A-Za-z0-9\d=#~!\-@._*]*$/.test(value) && // consists of only these
-        /[a-z]/.test(value) &&  /[A-Z]/.test(value) && // has a lowercase letter
+        /[a-z]/.test(value) &&
+        /[A-Z]/.test(value) && // has a lowercase letter
         /\d/.test(value)
     ); // has a digit
 });
@@ -192,9 +193,8 @@ function handleFormSubmitSuccess(
 
         if (callbackSuccess) callbackSuccess(res);
     } else {
-        
         loaderRef.hide();
- if (show_server_validation_in_alert) successAlert(res["message"]);
+        if (show_server_validation_in_alert) errorAlert(res["message"]);
         else showValidationErrorsNoAlert(res["message"]);
         if (callbackError) callbackError(res);
     }
@@ -212,7 +212,6 @@ function formValidateFunctionTemplate(
     has_image = false,
     show_server_validation_in_alert = true
 ) {
-    
     $("#" + formid).validate({
         errorClass: "invalid-feedback",
         // errorElement: "div",
@@ -431,7 +430,7 @@ function objectAjaxNoLoaderNoAlert(
             if (res["success"]) {
                 if (callbackSuccess) callbackSuccess(res);
             } else {
-                if (callbackError) callbackError(res['message']);
+                if (callbackError) callbackError(res["message"]);
             }
         },
 

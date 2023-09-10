@@ -26,11 +26,6 @@ class CreateMaterialStockController extends Controller
         'label' => 'Supplier',
         'sortable' => 'Yes'
     ],
-    [
-        'column' => 'driver_id',
-        'label' => 'Driver',
-        'sortable' => 'Yes'
-    ],
    
     [
         'column' => 'material_id',
@@ -39,19 +34,25 @@ class CreateMaterialStockController extends Controller
     ],
     [
         'column' => 'quantity',
-        'label' => 'Quantity',
+        'label' => 'Total Quantity',
+        'sortable' => 'Yes'
+    ],
+    [
+        'column' => 'current_quantity',
+        'label' => 'Current Quantity',
+        'sortable' => 'Yes'
+    ],
+    [
+        'column' => 'used_quantity',
+        'label' => 'used Quantity',
         'sortable' => 'Yes'
     ],
      [
         'column' => 'amount',
         'label' => 'Amount',
         'sortable' => 'Yes'
-    ],
-    [
-        'column' => 'entry_date',
-        'label' => 'Entry Date',
-        'sortable' => 'Yes'
     ]
+   
 ];
 		$this->form_image_field_name=[
     [
@@ -343,6 +344,7 @@ class CreateMaterialStockController extends Controller
                          }
                      }
             }
+            $post['current_quantity']=$post['quantity'];
            $creatematerialstock = CreateMaterialStock::create($post);
           
              if ($this->has_upload) {
@@ -559,6 +561,8 @@ class CreateMaterialStockController extends Controller
                          }
                      }
             }
+            $post['current_quantity'] = $post['quantity'];
+
             $creatematerialstock->update($post);
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {

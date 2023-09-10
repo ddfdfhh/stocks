@@ -261,12 +261,13 @@ class GeneratedProductStockController extends Controller
     }
     public function store(GeneratedProductStockRequest $request)
     {
-
+       \DB::beginTransaction();
         try {
             $post = $request->all();
             $material_ids = $post['raw_materials__json__material_id'];
             $material_names_array = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('name', 'id')->toArray();
-            // dd( $material_names_array);
+            $material_qty_array = \DB::table('create_material_stock')->whereIn('id', $material_ids)->pluck('current_quantity', 'material_id')->toArray();
+           //  dd( $material_qty_array);
             $post = formatPostForJsonColumn($post);
             $ar = json_decode($post['raw_materials']);
 
@@ -276,13 +277,29 @@ class GeneratedProductStockController extends Controller
                 return $v;
             }, $ar);
             unset($post['raw_materials']);
-
+           if(count($ar)>0){
+           
+            foreach($ar as $item){
+               if($item->material_id){
+              //  dd($material_qty_array[$item->material_id]>$item->quantity);
+                if($material_qty_array[$item->material_id]<$item->quantity){
+                    return createResponse(false,'Insufficent quantity for '.$item->name);
+                }
+                \DB::table('create_material_stock')->where('material_id',$item->material_id)
+                                          ->decrement('current_quantity',$item->quantity);
+                \DB::table('create_material_stock')->where('material_id',$item->material_id)->increment('used_quantity',$item->quantity);
+               }
+                                        
+            }
+        }
+           
             $post['raw_materials'] = json_encode($ar);
-
+           
             $generatedproductstock = GeneratedProductStock::create($post);
-
+                \DB::commit();
             return createResponse(true, 'Product Stock created successfully', $this->index_url);
         } catch (\Exception $ex) {
+            \DB::rollback();
             return createResponse(false, $ex->getMessage());
         }
     }
