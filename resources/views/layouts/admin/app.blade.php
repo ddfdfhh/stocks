@@ -174,6 +174,7 @@
                 <div class="content-wrapper">
 
                     @yield('content')
+                   <center> <p class="text-muted" style="font-weight:normal">Designed by Spseasyway Pvt ltd</p></center>
                 </div>
                 <!-- Content wrapper -->
             </div>
