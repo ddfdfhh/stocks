@@ -419,7 +419,7 @@
                         </div>
                         <div class="row gx-2 row-bordered m-0">
                             <!-- Order Summary -->
-                            <div class="col-md-6 col-6">
+                            <div class="col-md-6 col-12">
 
                                 <div class="card ">
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
@@ -461,7 +461,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-6">
+                            <div class="col-md-6 col-12">
 
                                 <div class="card ">
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
@@ -560,7 +560,7 @@
                         </div>
                         <div class="row gx-2 row-bordered m-0">
                             <!-- Order Summary -->
-                            <div class="col-md-6 col-6">
+                            <div class="col-md-6 col-12">
 
                                 <div class="card ">
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
@@ -601,7 +601,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-6">
+                            <div class="col-md-6 col-12">
 
                                 <div class="card ">
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
@@ -683,7 +683,7 @@
 
                         <div class="row gx-2 row-bordered m-0">
                             <!-- Order Summary -->
-                            <div class="col-md-12 col-6">
+                            <div class="col-md-12 col-12">
 
                                 <div class="card ">
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
@@ -764,7 +764,7 @@
 
                             <div class="row gx-2 row-bordered m-0">
                                 <!-- Order Summary -->
-                                <div class="col-md-12 col-6">
+                                <div class="col-md-12 col-12">
 
                                     <div class="card ">
                                         <div
