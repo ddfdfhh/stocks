@@ -1,6 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <style>
+    
         .card-header {
             padding: 11px 24px !important;
 
@@ -424,7 +425,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Orders <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('create_orders.index') }}" class="btn btn-xs btn-primary"
+                                        <a href="{{ route('create_orders.index') }}" class="btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -466,7 +467,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Paid Orders <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('create_orders.index') }}" class="btn btn-xs btn-primary"
+                                        <a href="{{ route('create_orders.index') }}" class="btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -565,7 +566,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Leads <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('leads.index') }}" class="text-white btn btn-xs btn-outline-warning"
+                                        <a href="{{ route('leads.index') }}" class="text-white btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -606,7 +607,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Converted Leads <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('leads.index') }}" class="text-white btn btn-xs btn-outline-warning"
+                                        <a href="{{ route('leads.index') }}" class="text-white btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -688,7 +689,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Sales <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('create_orders.index') }}" class="text-white btn btn-xs btn-outline-warning"
+                                        <a href="{{ route('create_orders.index') }}" class="text-white btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -770,7 +771,7 @@
                                             class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                             <h5 class="card-title mb-0 text-white ">Latest Expenses <i
                                                     class="fa fa-long-arrow-right"></i> </h5>
-                                            <a href="{{ route('expenses.index') }}" class="text-white btn btn-xs btn-outline-warning"
+                                            <a href="{{ route('expenses.index') }}" class="text-white btn btn-xs btn-warning"
                                                 style="margin-left:5px">View All</a>
                                         </div>
                                         <div class="table-responsive mt-2">

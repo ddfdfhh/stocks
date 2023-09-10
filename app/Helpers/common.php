@@ -666,6 +666,24 @@ function getListOnlyNonIdValue($model, $where = [], $by_field = 'name')
 
     return $lists;
 }
+function getListWithSameIdAndName($model, $where = [], $by_field = 'name')
+{
+   $model_class = "\App\Models" . '\\' . $model;
+$lists = $model_class::query();
+if (count($where) > 0) {
+    $lists = $lists->where('status', 'Active')->where($where);
+}
+$lists = $lists->get(['id', $by_field]);
+
+$list2 = [];
+foreach ($lists as $list) {
+    $ar = (object) ['id' => $list[$by_field], 'name' => $list[$by_field]];
+    array_push($list2, $ar);
+}
+return $list2;
+
+}
+
 /******remove below thing any time  */
 
 function getValOfArraykey($ar, $key, $is_array = true)
@@ -771,11 +789,15 @@ function formatDefaultValueForCheckbox($model, $field)
     return $model->{$field} ? json_decode($model->{$field}, true) : [];
 
 }
-
+function is_admin()
+{
+   
+    return auth()->user()->hasRole(['Admin']);
+}
 function can($permission)
 {
     // dd(auth()->user());
-    return (auth()->user()->hasRole(['Admin'])) || (auth()->user()->hasAnyPermission([$permission]));
+    return (auth()->user()->hasRole(['Admin'])) || (auth()->user()->can($permission));
 }
 /******Monthly weekly daily recors for chart */
 function getDailyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount", $for_days = 7)

@@ -11,6 +11,6 @@
         </a>
     </div>
     <ul class="sidebar-menu">
-        @include('layouts.menu')
+        @include('layouts.admin.menu')
     </ul>
 </aside>

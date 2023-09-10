@@ -72,7 +72,7 @@ class ExpsnseItemController extends Controller
     public function index(Request $request)
     {
        
-        if (!can('list_expsnseitem')) {
+        if (!can('list_spendable_items')) {
         return redirect(route('admin.unauthorized'));
         }
         $searchable_fields=[
@@ -213,7 +213,7 @@ class ExpsnseItemController extends Controller
     }
     public function store(ExpsnseItemRequest $request)
     {
-        if (!can('add_expsnseitem')) {
+        if (!can('create_spendable_items')) {
         return createResponse(false,'Dont have permission');
         }
         \DB::beginTransaction();
@@ -322,7 +322,7 @@ class ExpsnseItemController extends Controller
     }
     public function show($id)
     {
-        if (!can('view_expsnseitem')) {
+        if (!can('view_spendable_items')) {
         return createResponse(false,'Dont have permission for this action');
         }
         
@@ -367,7 +367,7 @@ class ExpsnseItemController extends Controller
 
     public function update(ExpsnseItemRequest $request, $id)
     {
-        if (!can('edit_expsnseitem')) {
+        if (!can('edit_spendable_items')) {
         return createResponse(false,'Dont have permission');
         }
          \DB::beginTransaction();
@@ -422,7 +422,7 @@ class ExpsnseItemController extends Controller
 
     public function destroy($id)
     {
-        if (!can('delete_expsnseitem')) {
+        if (!can('delete_spendable_items')) {
         return createResponse(false,'Dont have permission to delete');
         }
          \DB::beginTransaction();
@@ -512,7 +512,7 @@ class ExpsnseItemController extends Controller
         $form_type=$request->form_type;
         $id=$request->id;
         if($form_type=='add'){
-            if (!can('create_expsnseitem')) {
+            if (!can('create_spendable_items')) {
         return createResponse(false,'Dont have permission to create ');
         }
                  $data1=[
@@ -553,7 +553,7 @@ class ExpsnseItemController extends Controller
        
         }
         if($form_type=='edit'){
-            if (!can('edit_expsnseitem')) {
+            if (!can('edit_spendable_items')) {
         return createResponse(false,'Dont have permission to update');
         }
                $model=ExpsnseItem::findOrFail($id);
@@ -642,7 +642,7 @@ class ExpsnseItemController extends Controller
         }
       if($form_type=='view')
           { 
-            if (!can('view_expsnseitem')) {
+            if (!can('view_spendable_items')) {
             return createResponse(false,'Dont have permission to view');
             }
             $html=view('admin.'.$this->view_folder.'.'.$form_type.'_modal',with($data))->render();

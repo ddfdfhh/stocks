@@ -72,8 +72,8 @@ class LeadSourceController extends Controller
     }
     public function index(Request $request)
     {
-       
-        if (!can('list_leadsource')) {
+      
+        if (!can('list_lead_sources')) {
         return redirect(route('admin.unauthorized'));
         }
         $searchable_fields=[
@@ -214,7 +214,7 @@ class LeadSourceController extends Controller
     }
     public function store(LeadSourceRequest $request)
     {
-        if (!can('add_leadsource')) {
+        if (!can('create_lead_sources')) {
         return createResponse(false,'Don\'t have permission');
         }
         \DB::beginTransaction();
@@ -323,7 +323,7 @@ class LeadSourceController extends Controller
     }
     public function show($id)
     {
-        if (!can('view_leadsource')) {
+        if (!can('view_lead_sources')) {
         return createResponse(false,'Don\'t have permission for this action');
         }
         
@@ -368,7 +368,7 @@ class LeadSourceController extends Controller
 
     public function update(LeadSourceRequest $request, $id)
     {
-        if (!can('edit_leadsource')) {
+        if (!can('edit_lead_sources')) {
         return createResponse(false,'Don\'t have permission');
         }
          \DB::beginTransaction();
@@ -423,7 +423,7 @@ class LeadSourceController extends Controller
 
     public function destroy($id)
     {
-        if (!can('delete_leadsource')) {
+        if (!can('delete_lead_sources')) {
         return createResponse(false,'Don\'t have permission to delete');
         }
          \DB::beginTransaction();
@@ -513,7 +513,7 @@ class LeadSourceController extends Controller
         $form_type=$request->form_type;
         $id=$request->id;
         if($form_type=='add'){
-            if (!can('create_leadsource')) {
+            if (!can('create_lead_sources')) {
         return createResponse(false,'Don\'t have permission to create ');
         }
                  $data1=[
@@ -554,7 +554,7 @@ class LeadSourceController extends Controller
        
         }
         if($form_type=='edit'){
-            if (!can('edit_leadsource')) {
+            if (!can('edit_lead_sources')) {
         return createResponse(false,'Don\'t have permission to update');
         }
                $model=LeadSource::findOrFail($id);
@@ -643,7 +643,7 @@ class LeadSourceController extends Controller
         }
       if($form_type=='view')
           { 
-            if (!can('view_leadsource')) {
+            if (!can('view_lead_sources')) {
             return createResponse(false,'Don\'t have permission to view');
             }
             $html=view('admin.'.$this->view_folder.'.'.$form_type.'_modal',with($data))->render();

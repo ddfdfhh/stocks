@@ -34,4 +34,8 @@ protected $dates = [
 {
   return $this->belongsTo(CreateOrder::class,'order_id','id')->withDefault();
 } 
+public function payment_collected_by():BelongsTo
+{
+  return $this->belongsTo(User::class,'payment_collected_by_id','id')->withDefault();
+} 
  }

@@ -7,56 +7,16 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
-                    <h5>All {{ properPluralName($plural_lowercase) }}</h5>
-                    <div class="d-flex">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            @if (auth()->user()->hasRole(['Admin']) ||
-                                    auth()->user()->can('create_' . $plural_lowercase))
-                                <button type="button" class="rounded-0 btn btn-primary text-white">
-                                    <a href="{{ route($plural_lowercase . '.create') }}"
-                                        class="text-decoration-none text-white">
-                                        <i class="bx bx-plus-circle" style="margin-top:-3px"></i> Add New
-                                    </a>
-                                </button>
-                            @endif
-
-                            @if ($has_export)
-                                <button type="button"
-                                    class="rounded-0 dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span><i class="bx bx-export me-sm-2"></i> <span
-                                            class="d-none d-sm-inline-block">Export</span></span>
-                                </button>
-                                <ul class="dropdown-menu">
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                            href="{{ route(strtolower($module) . '.export', ['type' => 'excel']) }}?{{ http_build_query($_GET) }}"><span><i
-                                                    class="bx bx-printer me-2"></i>XLS</span></a>
-                                        <a class="dropdown-item"
-                                            href="{{ route(strtolower($module) . '.export', ['type' => 'csv']) }}?{{ http_build_query($_GET) }}"><span><i
-                                                    class="bx bx-file me-2"></i>CSV</span></a>
-                                        <a class="dropdown-item"
-                                            href="{{ route(strtolower($module) . '.export', ['type' => 'pdf']) }}?{{ http_build_query($_GET) }}"><span><i
-                                                    class="bx bxs-file-pdf me-2"></i>PDF</span></a>
-
-                                    </li>
-
-                                </ul>
-                            @endif
-
-                        </div>
-
-                    </div>
+                    <h5>All FollowUp Leads</h5>
+                    
                 </div>
-                <br>
-                <div class="d-flex justify-content-between flex-wrap">
-
+                
+                  <br>
+                <div class="d-flex justify-content-between flex-wrap mt-3">
                     <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
                         <div class="dropdown mb-2">
-                            <button type="button" class="rounded-0  btn btn-outline-primary dropdown-toggle"
-                                data-bs-toggle="dropdown">
-                                <i class="bx bx-check-square"></i> Update Status
+                            <button type="button" class="rounded-0 btn btn-outline-primary dropdown-toggle"  data-bs-toggle="dropdown">
+                            <i class="bx bx-check-square"></i>   Update Status
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item"
@@ -71,7 +31,9 @@
                         <x-filter :data="$filterable_fields" />
                     </div>
                     <x-search :searchableFields="$searchable_fields" />
+
                 </div>
+
 
 
 

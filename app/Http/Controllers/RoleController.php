@@ -223,9 +223,12 @@ class RoleController extends Controller
     public function store(RoleRequest $request)
     {
         try {
-            $post = $request->all();
-            $role = Role::create(['name' => $post['name']]);
-            $role->syncPermissions($post['permissions']);
+            $permissions = $request->except(['_token', 'name']);
+            $role = Role::create(['name' => $request->name]);
+            $role->syncPermissions(array_keys($permissions));
+            \Artisan::call('cache:forget spatie.permission.cache');
+            \Artisan::call('cache:clear');
+
             //app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             return createResponse(true, $this->module . ' created successfully', $this->index_url);
@@ -329,6 +332,9 @@ class RoleController extends Controller
             // dd(array_keys($permissions));
             $role->syncPermissions(array_keys($permissions));
             //  app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            \Artisan::call('cache:forget spatie.permission.cache');
+            \Artisan::call('cache:clear');
+            //   \Artisan::call('cache:clear');
 
             \DB::commit();
             return createResponse(true, $this->module . ' updated successfully', $this->index_url);

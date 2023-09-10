@@ -68,7 +68,7 @@ function getModuleWiseRules(module) {
                 // }
             },
             password: {
-                required: true,
+                required: $('#user_form').attr('data-edit')?false:true,
                 minlength: 8,
                 // pwcheck:true,
             },

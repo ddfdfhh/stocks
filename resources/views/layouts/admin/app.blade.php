@@ -45,9 +45,15 @@
     <script src="{{ asset('assets/js/config.js') }}"></script> @yield('css')
 </head>
 <style>
-th{
-text-transform:capitalize!important
-}
+    .form-group label,.text-muted {
+        color: #707b87 !important;
+        font-weight:500!important;
+    }
+
+    th {
+        text-transform: capitalize !important
+    }
+
     .btn-icon {
         width: 30px !important;
         height: 30px !important;

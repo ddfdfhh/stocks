@@ -18,7 +18,6 @@
 
                         @if (count($repeating_group_inputs) > 0)
                             @foreach ($repeating_group_inputs as $grp)
-                          
                                 <x-repeatable :data="$grp['inputs']" :label="$grp['label']" values="" :index="$loop->index" />
                             @endforeach
                         @endif

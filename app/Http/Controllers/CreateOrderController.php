@@ -139,7 +139,7 @@ class CreateOrderController extends Controller
     }
     public function index(Request $request)
     {
-return view('admin.create_orders.invoice');
+//return view('admin.create_orders.invoice');
         $searchable_fields = [
             [
                 'name' => 'customer_id',
@@ -334,8 +334,11 @@ return view('admin.create_orders.invoice');
 
             $post['items'] = json_encode($ar);
             $post['total'] = $total;
-
+   //$post['uid']=
             $createorder = CreateOrder::create($post);
+            $createorder ->uid=$createorder->id. mt_rand(1000000,9999999);
+            $createorder->save();;
+
 
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
@@ -907,7 +910,7 @@ return view('admin.create_orders.invoice');
             $data['row'] = $row;
             $data['settings'] = $settings;
             $data['customer'] = $customer;
-            return view('admin.create_orders.invoice', with($data));
+            return view('admin.create_orders.show_invoice', with($data));
             // return createResponse(true,$html);
         } else {
             return createResponse(false, 'Order Not found');

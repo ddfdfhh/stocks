@@ -12,7 +12,7 @@
             
             $deleteurl = route($plural_lowercase . '.destroy', [\Str::singular($plural_lowercase) => $r->id]);
             $editurl = route($plural_lowercase . '.edit', [\Str::singular($plural_lowercase) => $r->id]);
-            $viewurl =  route($plural_lowercase . '.show', [\Str::singular($plural_lowercase) => $r->id]);
+            $viewurl = route($plural_lowercase . '.show', [\Str::singular($plural_lowercase) => $r->id]);
             
         @endphp
         <tr id="row-{{ $r->id }}">
@@ -30,7 +30,7 @@
                     </td>
                 @elseif(str_contains($t, '_at') || str_contains($t, 'date'))
                     <td>{{ formateDate($r->{$t}) }}</td>
-                  @elseif(isFieldPresentInRelation($model_relations, $t) >= 0)
+                @elseif(isFieldPresentInRelation($model_relations, $t) >= 0)
                     @if (
                         $r->{$t} &&
                             (preg_match("/image$/", $t) ||
@@ -69,10 +69,11 @@
                             :rowid="$r->id" />
                     </td>
                 @elseif(isFieldPresentInRelation($model_relations, $t) < 0 &&
-                        (preg_match("/images$/", $t) || preg_match("/_images$/", $t) ||
-                        preg_match("/_docs$/", $t) ||
-                        preg_match("/_files$/", $t) ||
-                        preg_match("/_pdfs$/", $t)))
+                        (preg_match("/images$/", $t) ||
+                            preg_match("/_images$/", $t) ||
+                            preg_match("/_docs$/", $t) ||
+                            preg_match("/_files$/", $t) ||
+                            preg_match("/_pdfs$/", $t)))
                     <td>
                         <!-- here image list is list of table row in object form *****-->
 
@@ -85,7 +86,7 @@
                                 $tr = json_decode($r->{$t}, true);
                             
                                 if ($tr !== null) {
-                                     /*   $tr = array_map(function ($v) {
+                                    /*   $tr = array_map(function ($v) {
                                        
                                         $v['date']=formateDate($v['date'],true);
                                         return $v;
@@ -106,35 +107,23 @@
                 @endif
             @endforeach
             <td>
-               @if (auth()->user()->hasRole(['Admin']) ||
+                @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('view_' . $plural_lowercase))
-                <a class="btn btn-success btn-icon" title="View"
-                    href="javascript:viewRecord('{!! $r->id !!}','{!! $viewurl !!}','{!!strtolower($module)!!}')">
-                    <i class="bx bx-dice-4"></i>
-                </a>
+                    <a class="btn btn-success btn-icon" title="View"
+                        href="javascript:viewRecord('{!! $r->id !!}','{!! $viewurl !!}','{!! strtolower($module) !!}')">
+                        <i class="bx bx-dice-4"></i>
+                    </a>
                 @endif
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
-                    <a class="btn  btn-info btn-icon" title="Edit"
-                        href="{{ $editurl }}">
+                    <a class="btn  btn-info btn-icon" title="Edit" href="{{ $editurl }}">
                         <i class="bx bx-edit"></i> </a>
                 @endif
-               
-                {{-- <div class="dropdown">
-                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                            class="bx bx-dots-vertical-rounded"></i></button>
-                    <div class="dropdown-menu">
-                             <a class="dropdown-item" href="javascript:viewRecord('{!! $r->id !!}','{!! $viewurl !!}','{!!strtolower($module)!!}');"><i class="bx bx-trophy me-2"></i> View</a>
-                @if (auth()->user()->hasRole(['Admin']) ||
-    auth()->user()->can('edit_' . $plural_lowercase))
-                        <a class="dropdown-item" href="{{ route($plural_lowercase . '.edit', [strtolower($module) => $r->id]) }}"><i class="bx bx-edit-alt me-2"></i> Edit</a>
-                     @endif 
-                       @if (auth()->user()->hasRole(['Admin']) ||
-    auth()->user()->can('delete_' . $plural_lowercase))
-                          <a class="dropdown-item" href="javascript:deleteRecord('{!! $r->id !!}','{!! $deleteurl !!}');"><i class="bx bx-trash me-2"></i> Delete</a>
-                    @endif 
-                     </div>
-                </div> --}}
+                @if ($r->order_id)
+                    <a class="btn  btn-warning btn-icon" title="Invoice"
+                        href="{{ route('receivepayment.generateReceipt', ['id' => $r->order_id]) }}">
+                        <i class="bx bx-receipt"></i></a>
+                @endif
             </td>
 
 

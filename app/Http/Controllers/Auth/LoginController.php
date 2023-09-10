@@ -33,17 +33,15 @@ class LoginController extends Controller
         $cr = ['email' => $request->email, 'password' => $request->password];
 
         if (Auth::attempt($cr)) {
-  return createResponse(true, 'Admin Logged In Successfully', route('admin.dashboard'));
-          /*  if (auth()->user()->role == 2) {
-                if (is_null(auth()->user()->email_verified_at)) {
-                    Auth::logout();
-                    return createResponse(false, 'Please verify your account from email sent, while registering');
-                }
-                return createResponse(true, 'Logged In Successfully', route('dashboard'));
+           // dd(auth()->user()->getRoleNames());
+            //return createResponse(true, 'Admin Logged In Successfully', route('admin.dashboard'));
+            if (auth()->user()->hasRole(['Admin'])) {
+
+                return createResponse(true, 'Logged In Successfully', route('admin.dashboard'));
             } else {
-                return createResponse(true, 'Admin Logged In Successfully', route('admin.dashboard'));
+                return createResponse(true, 'Admin Logged In Successfully', route('user.dashboard'));
             }
-*/
+
         } else {
             // dd(auth()->id());
             return createResponse(false, 'Login credentials are invalid');
@@ -64,8 +62,9 @@ class LoginController extends Controller
     {
         return redirect()->intended();
     }
-    public function logout(){
-          Auth::logout();
-          return redirect(route('login'));
+    public function logout()
+    {
+        Auth::logout();
+        return redirect(route('login'));
     }
 }

@@ -91,3 +91,5 @@ function formValidateFunctionTemplate(
 7- jab bhi roles and permisison se realted  tables mein  manually koi changes karo to aloways refresh cache
    app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
    you add this in controller index fucntion then reove after cache refresh
+
+   8-Image keliye input fields add karne ki jaroorat nahi hai just place form_fild_names array inconstructor wo sab handle karega .

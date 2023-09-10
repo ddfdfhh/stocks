@@ -146,7 +146,7 @@
                                                                 <div align="left" class="alignment"
                                                                     style="line-height:10px"><img alt="Image"
                                                                         src="{{ asset('storage/settings/' . $settings->image) }}"
-                                                                        style="    display: block;
+                                                                        style="display: block;
     height: 152px;
     border: 0;
     width: auto;
@@ -176,7 +176,7 @@
                                                                                 style="font-size: 16px; word-break: break-word; line-height: 2; mso-line-height-alt: 32px;"><span
                                                                                     data-mce-style="font-size:14px;"
                                                                                     style="font-size:14px;">Invoice
-                                                                                    </span></span></span></a>
+                                                                                </span></span></span></a>
                                                                     <!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
                                                                 </div>
                                                             </td>
@@ -220,8 +220,8 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    
-                                                    
+
+
                                                     <table border="0" cellpadding="0" cellspacing="0"
                                                         class="button_block block-4" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
@@ -330,7 +330,7 @@
                                                                             MLM E-Healthcare Network</p>
                                                                         <p
                                                                             style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 21px;">
-                                                                           P.O Box 11474, Dubai11474
+                                                                            P.O Box 11474, Dubai11474
                                                                         </p>
                                                                     </div>
                                                                 </div>

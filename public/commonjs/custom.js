@@ -5,14 +5,15 @@ function applySelect2(elem, in_popup = true, container_id = null) {
         if ($(elem)[0].length > 0) {
             $(elem).each(function () {
                 let tag = $(this).attr("data-tag") == undefined ? false : true;
+                let id = $(this).attr("id");
 
+                console.log("my id", id);
                 if ($(this).attr("multiple")) {
                     options["tokenSeparators"] = [",", " "];
                     options["tags"] = tag;
                     options["multiple"] = true;
                 }
-
-                $(this).select2(options);
+                if (id !== "inp-city_id") $(this).select2(options);
             });
         } else {
             let tag = $(this).attr("data-tag") == undefined ? false : true;
@@ -73,16 +74,16 @@ function applySelect2ChangeEventPopulateOther(data = {}) {
 }
 function initiateSelect2ChangeEvents(in_popup = true, container_id = null) {
     let data_state = {
-        parent_id: "inp-state",
-        dependent_id: "inp-city",
-        dependee_key: "state" /***in child table column for parent */,
+        parent_id: "inp-state_id",
+        dependent_id: "inp-city_id",
+        dependee_key: "state_id" /***in child table column for parent */,
         dependent_key:
             "name" /***in child table column name for childin option name */,
-        dependent_select_box_id: "inp-city",
-        dependent_table: "cities",
+        dependent_select_box_id: "inp-city_id",
+        dependent_table: "city",
         dependent_table_table_id: "id",
         callback: function () {
-            applySelect2("#inp-city", in_popup, container_id);
+            // applySelect2("#inp-city", in_popup, container_id);
         },
     };
     applySelect2ChangeEventPopulateOther(data_state);
@@ -92,28 +93,14 @@ function initiateSelect2ChangeEvents(in_popup = true, container_id = null) {
         dependee_key: "country" /***in child table column for parent */,
         dependent_key:
             "name" /***in child table column name for childin option name */,
-        dependent_select_box_id: "inp-state",
-        dependent_table: "states",
+        dependent_select_box_id: "inp-state_id",
+        dependent_table: "state_id",
         dependent_table_table_id: "id",
         callback: function () {
-            applySelect2("#inp-state", in_popup, container_id);
+            applySelect2("#inp-state_id", in_popup, container_id);
         },
     };
     applySelect2ChangeEventPopulateOther(data_country);
-    let data_city = {
-        parent_id: "inp-city",
-        dependent_id: "inp-pincode",
-        dependee_key: "city" /***in child table column for parent */,
-        dependent_key:
-            "name" /***in child table column name for childin option name */,
-        dependent_select_box_id: "inp-pincode",
-        dependent_table: "pincodes",
-        dependent_table_table_id: "id",
-        callback: function () {
-            applySelect2("#inp-pincode", in_popup, container_id);
-        },
-    };
-    applySelect2ChangeEventPopulateOther(data_city);
 }
 
 function inilizeEvents() {
@@ -304,18 +291,7 @@ function generateInvoice(order_id) {
 $(document).ready(function () {
     if ($("form").length > 0) initializeFormAjaxSubmitAndValidation();
     applySelect2("select", false);
-    $("#inp-state_id").on("change", function () {
-        let val = $(this).val();
-        // fetchHtmlContent({state:val},'inp-city',host+'/getCity');
-        showDependentSelectBox(
-            "state_id",
-            "name",
-            val,
-            "inp-city_id",
-            "city",
-            "id"
-        );
-    });
+
     initialiseSummernote();
     inilizeEvents();
 
@@ -328,7 +304,7 @@ function addMoreRow() {
     let parent = $(event.target).closest(".repeatable");
 
     let copy_content = parent.find(".copy_row")[0];
-    let has_select=$(copy_content).find(".select2").length;
+    let has_select = $(copy_content).find(".select2").length;
     if (has_select) {
         $(copy_content).find(".select2").remove();
     }
@@ -457,35 +433,33 @@ function load_form(module, form_type, url, id = null, properName) {
     };
     calbackError = function (msg) {
         bsOffcanvas.hide();
-        errorAlert(msg);/****In case permission error to load form */
-}
+        errorAlert(msg); /****In case permission error to load form */
+    };
     objectAjaxNoLoaderNoAlert(
         obj,
         url,
         htmlLoadcallback,
         calbackError,
-        "POST",
-       
+        "POST"
     ); /**called to load form */
 }
-function addEditRemark(id) { 
-   
-   let lead_id = id;
+function addEditRemark(id) {
+    let lead_id = id;
     let callbackSuccess = function (res) {
         console.log(res["message"]);
         $("#resp").html("");
         {
             if (res["success"]) {
-               $("#resp-" + lead_id)
-                   .html(`<div class="alert alert-success text-left align-left"  style="text-align:left!important" role="alert">
+                $("#resp-" + lead_id)
+                    .html(`<div class="alert alert-success text-left align-left"  style="text-align:left!important" role="alert">
                             <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-check-square align-top me-2"></i>Success!</h6>
                             <span>${res["message"]}</span>
                            
                             </div>`);
                 $("form").trigger("reset");
             } else {
-                 $("#resp-" + lead_id)
-                     .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important "role="alert">
+                $("#resp-" + lead_id)
+                    .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important "role="alert">
                         <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-error align-top me-2"></i>Danger!</h6>
                         <span>${res["message"]}</span>
                         
@@ -495,54 +469,50 @@ function addEditRemark(id) {
     };
     let callbackError = function (res) {
         $("#resp-" + lead_id).html("");
-         $("#resp-" + lead_id)
-             .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important" role="alert">
+        $("#resp-" + lead_id)
+            .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important" role="alert">
                         <h6 class="alert-heading mb-1"><i class="bx bx-xs bx-error align-top me-2"></i>Danger!</h6>
                         <span>${res["message"]}</span>
                        
                         </div>`);
     };
     let url = $("#remark_form-" + lead_id).attr("data-url");
-    
-    let conversation = $("#conversation-"+lead_id).val();
+
+    let conversation = $("#conversation-" + lead_id).val();
     if (lead_id.length === 0 || conversation.length === 0) {
         return false;
     }
     objectAjaxWithBtnAndLoader(
-        'remark_btn-'+lead_id,
-        {lead_id,conversation},
+        "remark_btn-" + lead_id,
+        { lead_id, conversation },
         url,
         callbackSuccess,
         callbackError,
         false
     );
-    
 }
 var current_order_total = 0;
 var current_order_prev_paid = 0;
 var current_order_due = 0;
-function fetchOrderTotalAmount(id) { 
-   
-   
+function fetchOrderTotalAmount(id) {
     let callbackSuccess = function (res) {
         $("#inp-order_id").closest(".form-group").find("#resp").remove();
-          $("#inp-order_id")
-              .closest(".form-group")
-              .append(`<div id="resp"></div>`);
+        $("#inp-order_id")
+            .closest(".form-group")
+            .append(`<div id="resp"></div>`);
         {
             if (res["success"]) {
-                let er = JSON.parse(res['message']);
+                let er = JSON.parse(res["message"]);
                 console.log(er);
-              current_order_total = parseFloat(er["total"]);
-              current_order_prev_paid = parseFloat(er["paid"]);
-              current_order_due = parseFloat(er["due_amount"]);
+                current_order_total = parseFloat(er["total"]);
+                current_order_prev_paid = parseFloat(er["paid"]);
+                current_order_due = parseFloat(er["due_amount"]);
                 $("#resp")
                     .html(`<span class="mt-3 badge bg-label-success"  role="alert">
                             Total Amount-&#8377; ${current_order_total},  Total Paid-&#8377; ${current_order_prev_paid}, Total Due-&#8377; ${current_order_due} </span>`);
-               
             } else {
-                 $("#resp")
-                     .html(`<span class="mt-3 badge badge-label-danger"  role="alert">
+                $("#resp")
+                    .html(`<span class="mt-3 badge badge-label-danger"  role="alert">
                             ${res["message"]} </span>`);
             }
         }
@@ -552,28 +522,24 @@ function fetchOrderTotalAmount(id) {
         $("#inp-order_id")
             .closest(".form-group")
             .append(`<div id="resp"></div>`);
-         $("#resp")
-             .html(`<span class="mt-3 badge bg-label-danger"  role="alert">
+        $("#resp").html(`<span class="mt-3 badge bg-label-danger"  role="alert">
                             ${res["message"]} </span>`);
     };
-    
-    
+
     if (id.length === 0) {
         return false;
     }
     objectAjaxNoLoaderNoAlert(
-      
-        { order_id:id },
-    '/admin/getOrderTotalAmount',
+        { order_id: id },
+        "/admin/getOrderTotalAmount",
         callbackSuccess,
         callbackError,
         "POST",
         false
     );
-    
 }
 function setDueAmount(paid_amount) {
-    let total_paid = current_order_prev_paid + paid_amount
-    let due = current_order_total - total_paid;;
-    $("#inp-due_amount").val(due > 0 ? due : 0)
+    let total_paid = current_order_prev_paid + paid_amount;
+    let due = current_order_total - total_paid;
+    $("#inp-due_amount").val(due > 0 ? due : 0);
 }

@@ -103,8 +103,8 @@
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <span class="fw-semibold d-block lh-1">{{ucwords(auth()->user()->name)}}</span>
-                                        <small>{{count(auth()->user()->getRoleNames())>0?auth()->user()->getRoleNames()[0]:''}}</small>
+                                        <span class="fw-semibold d-block lh-1">John Doe</span>
+                                        <small>Admin</small>
                                     </div>
                                 </div>
                             </a>
@@ -112,14 +112,14 @@
                         <li>
                             <div class="dropdown-divider"></div>
                         </li>
-                       @if(is_admin())
+
                         <li>
                             <a class="dropdown-item" href="{{ route('settings.index') }}">
                                 <i class="bx bx-cog me-2"></i>
                                 <span class="align-middle">Settings</span>
                             </a>
                         </li>
-                          @endif
+
                         <a class="dropdown-item" href="{{ route('logout') }}">
                             <i class="bx bx-power-off me-2"></i>
                             <span class="align-middle">Log Out</span>

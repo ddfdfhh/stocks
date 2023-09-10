@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReceivePaymentRequest;
 use App\Models\ReceivePayment;
 use File;
+use PDF;
 use \Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 class ReceivePaymentController extends Controller
@@ -64,6 +65,11 @@ class ReceivePaymentController extends Controller
     [
         'name' => 'order',
         'class' => 'App\\Models\\ReceivePayment',
+        'type' => 'BelongsTo'
+    ],
+    [
+        'name' => 'payment_collected_by',
+        'class' => 'App\\Models\\User',
         'type' => 'BelongsTo'
     ]
 ];
@@ -1387,4 +1393,26 @@ class ReceivePaymentController extends Controller
         })->toArray();
         return $ar;
     }
+      public function generateReceipt(Request $r,$id)
+    {
+       // return view('admin.create_orders.invoice');
+            $order_id = $id;
+            $row = \DB::table('create_order')->whereId($order_id)->first();
+
+            $customer = \App\Models\Customer::with(['state', 'city'])->whereId($row->customer_id)->first();
+            $settings = \DB::table('setting')->whereId(1)->first();
+
+            $data['row'] = $row;
+            $data['settings'] = $settings;
+            $data['customer'] = $customer;
+         return view('admin.receive_payments.reciept', $data);
+               // $pdf = PDF::loadView('admin.receive_payments.reciept', $data);
+                $file_name = "invoice-" . $order_id . ".pdf";
+
+               
+                $pdf->download($file_name);
+
+    }  
+        
+        
 }

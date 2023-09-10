@@ -1,16 +1,28 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\CityRequest;
+use App\Http\Controllers\Controller;
+use App\Models\City;
+use \App\Models\User;
+use File;
 use \Carbon\Carbon;
-
-class AdminController extends Controller
+use \Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+class DashboardController extends Controller
 {
-    public function index()
+     public function __construct(){
+       
+		
+     }
+     public function index()
     {
         $user = auth()->user();
-     
+     //   dd(can('list_leads'));
+      // dd($user->getPermissionsViaRoles()->toArray());
+     //   $user->assignRole('Admin');
+     /*
         $data['total_expense'] = \DB::table('company_ledger')->whereMode('Spent')->sum('amount');
         $data['total_sell'] = \DB::table('company_ledger')->whereMode('Income')->sum('amount');
         $data['total_expense_today'] = \DB::table('company_ledger')->whereMode('Spent')->whereDay('created_at', '=', Carbon::now()->day)->sum('amount');
@@ -28,38 +40,23 @@ class AdminController extends Controller
         $data['top_five_expense'] = \DB::table('company_ledger')->whereMode('Spent')->orderBy('created_at', 'DESC')->take(5)->get();
         $data['top_five_sells'] = \DB::table('company_ledger')->whereMode('Income')->orderBy('created_at', 'DESC')->take(5)->get();
         $data['top_five_orders'] = \DB::table('create_order')->orderBy('created_at', 'DESC')->take(5)->get();
-        $data['top_five_orders_paid'] = \DB::table('create_order')->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();
+        $data['top_five_orders_paid'] = \DB::table('create_order')->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();*/
         /**Leads */
-        $data['top_five_leads'] = \DB::table('leads')->orderBy('created_at', 'DESC')->take(5)->get();
-        $data['top_five_converted_leads'] = \DB::table('leads')->whereStatus('Converted')->orderBy('created_at', 'DESC')->take(5)->get();
-        $data['total_leads_entered'] = \DB::table('leads')->count();
-        $data['total_leads_failed'] = \DB::table('leads')->whereStatus('Failed')->orWhere('status', 'Cancelled')->count();
-        $data['today_leads'] = \DB::table('leads')->whereDay('created_at', '=', Carbon::now()->day)->count();
-        $data['total_leads_success'] = \DB::table('leads')->whereStatus('Converted')->count();
-        $data['today_leads_success'] = \DB::table('leads')->whereStatus('Converted')->whereDay('created_at', '=', Carbon::now()->day)->count();
+        $data['top_five_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->orderBy('created_at', 'DESC')->take(5)->get();
+        $data['top_five_converted_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->orderBy('created_at', 'DESC')->take(5)->get();
+        $data['total_leads_entered'] = \DB::table('leads')->where('assigned_id',auth()->id())->count();
+        $data['total_leads_failed'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Failed')->count();
+        $data['total_leads_active'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Working')->orWhere('status','New')->count();
+       
+        $data['today_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereDay('created_at', '=', Carbon::now()->day)->count();
+        $data['total_leads_success'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->count();
+        $data['today_leads_success'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->whereDay('created_at', '=', Carbon::now()->day)->count();
+        $data['top_five_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->orderBy('followup_date', 'ASC')->take(5)->get();
+        $data['top_five_today_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->whereDay('followup_date', '=', Carbon::now()->day)->orderBy('followup_date', 'ASC')->take(5)->get();
 
-
-        $data['total_customers'] = \DB::table('customer')->count();
-        /**sell** */
-        $data['total_sell'] = \DB::table('company_ledger')->whereMode('Income')->sum('amount');
-        $data['today_sell'] = \DB::table('company_ledger')->whereMode('Income')->whereDate('created_at', Carbon::today()->toDateString())->sum('amount');
-        $data['weekly_sell'] = \DB::table('company_ledger')->whereMode('Income')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
-        $data['monthly_sell'] = \DB::table('company_ledger')->whereMode('Income')->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-
-        /**Expense** */
-        $data['total_expense'] = \DB::table('company_ledger')->whereMode('Spent')->sum('amount');
-        $data['today_expense'] = \DB::table('company_ledger')->whereMode('Spent')->whereDate('created_at', Carbon::today()->toDateString())->sum('amount');
-        $data['weekly_expense'] = \DB::table('company_ledger')->whereMode('Spent')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
-        $data['monthly_expense'] = \DB::table('company_ledger')->whereMode('Spent')->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-
-          $data['total_orders'] = \DB::table('create_order')->count();
-          $data['today_orders'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->count();
-          $data['total_order_income'] = \DB::table('create_order')->sum('paid_amount');
-          $data['today_order_income'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->sum('paid_amount');
-
-        $data['income']= $data['total_sell']-$data['total_expense'];
+        
 //dd($data);
-        return view('admin.dashboard', with($data));
+        return view('user.dashboard', with($data));
     }
     public function dashboard_data(Request $r)
     {
@@ -160,5 +157,4 @@ class AdminController extends Controller
         }
 
     }
-   
-}
+ }

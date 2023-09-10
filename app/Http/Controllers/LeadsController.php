@@ -38,7 +38,7 @@ class LeadsController extends Controller
                 'label' => 'PhoneNo',
                 'sortable' => 'Yes',
             ],
-           
+
             [
                 'column' => 'product_id',
                 'label' => 'Product/Service',
@@ -59,7 +59,7 @@ class LeadsController extends Controller
                 'label' => 'Created At',
                 'sortable' => 'Yes',
             ],
-           
+
             [
                 'column' => 'followup_date',
                 'label' => 'Follow Up Date',
@@ -67,45 +67,45 @@ class LeadsController extends Controller
             ],
         ];
         $this->form_image_field_name = [];
-       //$this->repeating_group_inputs = [];
+        //$this->repeating_group_inputs = [];
 
-      $this->repeating_group_inputs=[
-    [
-        'colname' => 'enquired_products_detail',
-        'label' => 'More Detail About Products/Services Enquired',
-        'inputs' => [
+        $this->repeating_group_inputs = [
             [
-                'name' => 'enquired_products_detail__json__product_id[]',
-                'label' => 'Select  Product',
-                'tag' => 'select',
-                'type' => 'select',
-                'default' => '',
-                'attr' => [],
-                'custom_key_for_option' => 'name',
-                'options' => getList('Product'),
-                'custom_id_for_option' => 'id',
-                'multiple' => false
-            ],
-            [
-                'placeholder' => 'Enter quantity',
-                'name' => 'enquired_products_detail__json__quantity[]',
-                'label' => 'Quantity Requested',
-                'tag' => 'input',
-                'type' => 'number',
-                'default' => '',
-                'attr' => []
-            ],
-            [
-                'placeholder' => 'Enter price',
-                'name' => 'enquired_products_detail__json__price[]',
-                'label' => 'Price Requested',
-                'tag' => 'input',
-                'type' => 'number',
-                'default' => '',
-                'attr' => []
-            ]
-        ]
-    ]];
+                'colname' => 'enquired_products_detail',
+                'label' => 'More Detail About Products/Services Enquired',
+                'inputs' => [
+                    [
+                        'name' => 'enquired_products_detail__json__product_id[]',
+                        'label' => 'Select  Product',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => '',
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('Product'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter quantity',
+                        'name' => 'enquired_products_detail__json__quantity[]',
+                        'label' => 'Quantity Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter price',
+                        'name' => 'enquired_products_detail__json__price[]',
+                        'label' => 'Price Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                ],
+            ]];
         $this->toggable_group = [];
         $this->model_relations = [
             [
@@ -198,7 +198,7 @@ class LeadsController extends Controller
                 'name' => 'assigned_id',
                 'label' => 'Assigned To',
                 'type' => 'select',
-                'options' => getList('User')
+                'options' => getList('User'),
             ],
             [
                 'name' => 'created_at',
@@ -214,27 +214,27 @@ class LeadsController extends Controller
                 'name' => 'product_id',
                 'label' => 'Product',
                 'type' => 'select',
-                'options' => getList('Product')
+                'options' => getList('Product'),
             ],
             [
                 'name' => 'source_id',
                 'label' => 'Lead Source  ',
                 'type' => 'select',
-                  'options' => getList('LeadSource')
+                'options' => getList('LeadSource'),
             ],
-         
-    [
-        'name' => 'status',
-        'label' => 'Status',
-        'type' => 'select',
-        'options' => getListFromIndexArray(['Failed','Working'])
-    ],
-    [
-        'name' => 'type',
-        'label' => 'Lead Type',
-        'type' => 'select',
-        'options' => getListFromIndexArray(['Cold','Warm','Hot'])
-    ]
+
+            [
+                'name' => 'status',
+                'label' => 'Status',
+                'type' => 'select',
+                'options' => getListFromIndexArray(['Failed', 'Working', 'New', 'Converted']),
+            ],
+            [
+                'name' => 'type',
+                'label' => 'Lead Type',
+                'type' => 'select',
+                'options' => getListFromIndexArray(['Cold', 'Warm', 'Hot']),
+            ],
         ];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
@@ -412,13 +412,14 @@ class LeadsController extends Controller
                         'custom_key_for_option' => 'name',
                         'options' => [
                             (object) [
+                                'id' => 'New',
+                                'name' => 'New',
+                            ],
+                            (object) [
                                 'id' => 'Working',
                                 'name' => 'Working',
                             ],
-                            (object) [
-                                'id' => 'Contacted',
-                                'name' => 'Contacted',
-                            ],
+
                             (object) [
                                 'id' => 'Failed',
                                 'name' => 'Failed',
@@ -514,27 +515,25 @@ class LeadsController extends Controller
         try {
             $post = $request->all();
 
-            
-             $ids = $post['enquired_products_detail__json__product_id'];
-            $material_names_array = \DB::table('product')->whereIn('id', $ids)->get(['name','id']);
-            $t=[];
-            foreach($material_names_array as $v){
-                 $t[$v->id]=['name'=>$v->name]; 
+            $ids = $post['enquired_products_detail__json__product_id'];
+            $material_names_array = \DB::table('product')->whereIn('id', $ids)->get(['name', 'id']);
+            $t = [];
+            foreach ($material_names_array as $v) {
+                $t[$v->id] = ['name' => $v->name];
             }
-            
+
             $post = formatPostForJsonColumn($post);
-            
+
             $ar = json_decode($post['enquired_products_detail']);
-            $total=0;
+            $total = 0;
             $ar = array_map(function ($v) use ($t) {
                 $name = isset($t[$v->product_id]) ? $t[$v->product_id]['name'] : '';
-            
+
                 $v->name = $name;
-               
+
                 return $v;
             }, $ar);
-            
-           
+
             unset($post['enquired_products_detail']);
 
             $post['enquired_products_detail'] = json_encode($ar);
@@ -580,7 +579,7 @@ class LeadsController extends Controller
             [
                 'label' => null,
                 'inputs' => [
-                     [
+                    [
                         'placeholder' => 'Enter title',
                         'name' => 'title',
                         'label' => 'Title',
@@ -667,7 +666,7 @@ class LeadsController extends Controller
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
-                     [
+                    [
                         'name' => 'assigned_id',
                         'label' => 'Assigned To',
                         'tag' => 'select',
@@ -698,12 +697,12 @@ class LeadsController extends Controller
                         'custom_key_for_option' => 'name',
                         'options' => [
                             (object) [
-                                'id' => 'Working',
-                                'name' => 'Working',
+                                'id' => 'New',
+                                'name' => 'New',
                             ],
                             (object) [
-                                'id' => 'Contacted',
-                                'name' => 'Contacted',
+                                'id' => 'Working',
+                                'name' => 'Working',
                             ],
                             (object) [
                                 'id' => 'Failed',
@@ -849,25 +848,24 @@ class LeadsController extends Controller
             $leads = Leads::findOrFail($id);
 
             $ids = $post['enquired_products_detail__json__product_id'];
-            $material_names_array = \DB::table('product')->whereIn('id', $ids)->get(['name','id']);
-            $t=[];
-            foreach($material_names_array as $v){
-                 $t[$v->id]=['name'=>$v->name]; 
+            $material_names_array = \DB::table('product')->whereIn('id', $ids)->get(['name', 'id']);
+            $t = [];
+            foreach ($material_names_array as $v) {
+                $t[$v->id] = ['name' => $v->name];
             }
-            
+
             $post = formatPostForJsonColumn($post);
-            
+
             $ar = json_decode($post['enquired_products_detail']);
-            $total=0;
+            $total = 0;
             $ar = array_map(function ($v) use ($t) {
                 $name = isset($t[$v->product_id]) ? $t[$v->product_id]['name'] : '';
-            
+
                 $v->name = $name;
-               
+
                 return $v;
             }, $ar);
-            
-           
+
             unset($post['enquired_products_detail']);
 
             $post['enquired_products_detail'] = json_encode($ar);
@@ -1092,12 +1090,12 @@ class LeadsController extends Controller
                             'custom_key_for_option' => 'name',
                             'options' => [
                                 (object) [
-                                    'id' => 'Working',
-                                    'name' => 'Working',
+                                    'id' => 'New',
+                                    'name' => 'New',
                                 ],
                                 (object) [
-                                    'id' => 'Contacted',
-                                    'name' => 'Contacted',
+                                    'id' => 'Working',
+                                    'name' => 'Working',
                                 ],
                                 (object) [
                                     'id' => 'Failed',
@@ -1273,12 +1271,12 @@ class LeadsController extends Controller
                             'custom_key_for_option' => 'name',
                             'options' => [
                                 (object) [
-                                    'id' => 'Working',
-                                    'name' => 'Working',
+                                    'id' => 'New',
+                                    'name' => 'New',
                                 ],
                                 (object) [
-                                    'id' => 'Contacted',
-                                    'name' => 'Contacted',
+                                    'id' => 'Working',
+                                    'name' => 'Working',
                                 ],
                                 (object) [
                                     'id' => 'Failed',
@@ -1401,6 +1399,149 @@ class LeadsController extends Controller
             return createResponse(true, $html);
         }
     }
+    public function followup_leads(Request $request)
+    {
+
+        if (!can('list_leads')) {
+            return redirect(route('admin.unauthorized'));
+        }
+        $searchable_fields = [
+            [
+                'name' => 'address',
+                'label' => 'Address',
+            ],
+            [
+                'name' => 'company_name',
+                'label' => 'Company Name',
+            ],
+            [
+                'name' => 'designation',
+                'label' => 'Designation',
+            ],
+            [
+                'name' => 'email',
+                'label' => 'Email',
+            ],
+            [
+                'name' => 'lead_name',
+                'label' => 'Lead Name',
+            ],
+            [
+                'name' => 'lead_phone_no',
+                'label' => 'Lead Phone No',
+            ],
+            [
+                'name' => 'whatsapp_no',
+                'label' => 'Whatsapp No',
+            ],
+        ];
+        $filterable_fields = [
+            [
+                'name' => 'assigned_id',
+                'label' => 'Assigned To',
+                'type' => 'select',
+                'options' => getList('User'),
+            ],
+            [
+                'name' => 'created_at',
+                'label' => 'Created At',
+                'type' => 'date',
+            ],
+            [
+                'name' => 'followup_date',
+                'label' => 'Followup Date',
+                'type' => 'date',
+            ],
+            [
+                'name' => 'product_id',
+                'label' => 'Product',
+                'type' => 'select',
+                'options' => getList('Product'),
+            ],
+            [
+                'name' => 'source_id',
+                'label' => 'Lead Source  ',
+                'type' => 'select',
+                'options' => getList('LeadSource'),
+            ],
+
+            [
+                'name' => 'status',
+                'label' => 'Status',
+                'type' => 'select',
+                'options' => getListFromIndexArray(['Failed', 'Working', 'New', 'Converted']),
+            ],
+            [
+                'name' => 'type',
+                'label' => 'Lead Type',
+                'type' => 'select',
+                'options' => getListFromIndexArray(['Cold', 'Warm', 'Hot']),
+            ],
+        ];
+        $table_columns = $this->table_columns;
+        if ($request->ajax()) {
+            $sort_by = $request->get('sortby');
+            $sort_type = $request->get('sorttype');
+            $search_by = $request->get('search_by');
+
+            $query = $request->get('query');
+
+            $search_val = str_replace(" ", "%", $query);
+            if (empty($search_by)) {
+                $search_by = 'name';
+            }
+
+            $list = Leads::whereNotIn('status', ['Convereted', 'Failed', 'Cancelled'])->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::today())->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
+                return $query->where($search_by, 'like', '%' . $search_val . '%');
+            })
+                ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
+                    return $query->orderBy($sort_by, $sort_type);
+                })->paginate($this->pagination_count);
+            $data = [
+                'table_columns' => $table_columns,
+                'list' => $list,
+                'sort_by' => $sort_by,
+                'sort_type' => $sort_type,
+                'storage_folder' => $this->storage_folder,
+                'plural_lowercase' => 'leads',
+                'module' => $this->module,
+                'has_image' => $this->has_upload,
+                'model_relations' => $this->model_relations,
+                'image_field_names' => $this->form_image_field_name,
+                'storage_folder' => $this->storage_folder,
+            ];
+            return view('admin.leads.followup', with($data));
+        } else {
+
+            $query = null;
+            if (count($this->model_relations) > 0) {
+                $query = Leads::with(array_column($this->model_relations, 'name'))->whereNotIn('status', ['Converted', 'Failed', 'Cancelled'])->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::today());
+            } else {
+                $query = Leads::whereNotNull('followup_date')->whereNotIn('status', ['Converted', 'Failed', 'Cancelled'])->whereDate('followup_date', '>=', \Carbon\Carbon::today());
+            }
+            $query = $this->buildFilter($request, $query);
+            $list = $query->paginate($this->pagination_count);
+            $view_data = [
+                'list' => $list,
+                'dashboard_url' => $this->dashboard_url,
+                'index_url' => $this->index_url,
+                'title' => 'All Leadss',
+                'module' => $this->module, 'model_relations' => $this->model_relations,
+                'searchable_fields' => $searchable_fields,
+                'filterable_fields' => $filterable_fields,
+                'storage_folder' => $this->storage_folder,
+                'table_columns' => $table_columns,
+                'plural_lowercase' => 'leads',
+                'has_image' => $this->has_upload,
+
+                'image_field_names' => $this->form_image_field_name,
+                'storage_folder' => $this->storage_folder,
+                'has_export' => $this->has_export,
+            ];
+            return view('admin.leads.followup', $view_data);
+        }
+    }
+
     public function exportLeads(Request $request, $type)
     {
         $filter = [];
@@ -1489,7 +1630,7 @@ class LeadsController extends Controller
                 if (is_null($t)) {
                     return createResponse(false, 'Please refresh the page and try again');
                 }
-                $existing_conversations = $t->conversations?json_decode($t->conversations, true):[];
+                $existing_conversations = $t->conversations ? json_decode($t->conversations, true) : [];
                 $new_conversation = [
                     'by_user_id' => auth()->id(),
                     'name' => auth()->user()->name,
@@ -1511,5 +1652,5 @@ class LeadsController extends Controller
         }
 
     }
-   
+
 }

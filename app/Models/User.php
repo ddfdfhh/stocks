@@ -20,8 +20,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email','phone','state','city','pincode','address','image','status',
-        'password',
+        'email','phone','state_id','city_id','pincode','address','image','status',
+        'password','plain_password'
     ];
 
     /**
@@ -53,6 +53,12 @@ class User extends Authenticatable
     //     });
     // }
     
+    public function setPasswordAttribute($value){
+        
+             $this->attributes['password'] = Hash::make($value);
+             $this->attributes['plain_password'] = $value;
+
+    }
     public function withState(){
         return $this->belongsTo(\App\Models\Country::class,'country','id')->withDefault();
     }

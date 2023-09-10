@@ -115,7 +115,7 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
 
-        if (!can('list_expense')) {
+        if (!can('list_expenses')) {
             return redirect(route('admin.unauthorized'));
         }
         $searchable_fields = [
@@ -338,7 +338,7 @@ class ExpenseController extends Controller
     }
     public function store(ExpenseRequest $request)
     {
-        if (!can('add_expense')) {
+        if (!can('create_expenses')) {
             return createResponse(false, 'Dont have permission');
         }
         \DB::beginTransaction();
@@ -507,7 +507,7 @@ class ExpenseController extends Controller
     }
     public function show($id)
     {
-        if (!can('view_expense')) {
+        if (!can('view_expenses')) {
             return createResponse(false, 'Dont have permission for this action');
         }
 
@@ -551,7 +551,7 @@ class ExpenseController extends Controller
 
     public function update(ExpenseRequest $request, $id)
     {
-        if (!can('edit_expense')) {
+        if (!can('edit_expenses')) {
             return createResponse(false, 'Dont have permission');
         }
         \DB::beginTransaction();
@@ -610,7 +610,7 @@ class ExpenseController extends Controller
 
     public function destroy($id)
     {
-        if (!can('delete_expense')) {
+        if (!can('delete_expenses')) {
             return createResponse(false, 'Dont have permission to delete');
         }
         \DB::beginTransaction();
@@ -693,7 +693,7 @@ class ExpenseController extends Controller
         $form_type = $request->form_type;
         $id = $request->id;
         if ($form_type == 'add') {
-            if (!can('create_expense')) {
+            if (!can('create_expenses')) {
                 return createResponse(false, 'Dont have permission to create ');
             }
             $data1 = [
@@ -800,7 +800,7 @@ class ExpenseController extends Controller
 
         }
         if ($form_type == 'edit') {
-            if (!can('edit_expense')) {
+            if (!can('edit_expenses')) {
                 return createResponse(false, 'Dont have permission to update');
             }
             $model = Expense::findOrFail($id);
@@ -953,7 +953,7 @@ class ExpenseController extends Controller
 
         }
         if ($form_type == 'view') {
-            if (!can('view_expense')) {
+            if (!can('view_expenses')) {
                 return createResponse(false, 'Dont have permission to view');
             }
             $html = view('admin.' . $this->view_folder . '.' . $form_type . '_modal', with($data))->render();

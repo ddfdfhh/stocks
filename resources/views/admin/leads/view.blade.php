@@ -113,16 +113,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($row->conversations && count($row->conversations) > 0)
-                                    @foreach ($row->conversations as $item)
+                            @php
+                           $conversations=$row->conversations?json_decode($row->conversations,true):[];
+                            @endphp
+                                @if ($row->conversations && count($conversations) > 0)
+                                    @foreach($conversations as $item)
                                         <tr id="row-{{ $item['by_user_id'] }}">
 
                                             <td class="text-truncate"
-                                                style="white-space: -o-pre-wrap;
-                                        word-wrap: break-word;
-                                        white-space: pre-wrap;
-                                        white-space: -moz-pre-wrap;
-                                        white-space: -pre-wrap; ">
+                                                style="word-wrap: break-word;max-width:600px;">
                                                 {{ $item['message'] }}</td>
                                             <td class="text-truncate">{{ formateDate($item['date'], true) }}</td>
                                             <td class="text-truncate">

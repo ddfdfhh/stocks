@@ -18,42 +18,101 @@ class UserController extends Controller
         $this->module = 'User';
         $this->view_folder = 'users';
         $this->storage_folder = $this->view_folder;
-        $this->form_image_field_name = 'image';
-        $this->is_multiple_upload = false;
-        $this->parent_field_name = 'image';
-        $this->image_model_name = '';
         $this->has_upload = 1;
+        $this->is_multiple_upload = 0;
+        $this->has_export = 0;
         $this->pagination_count = 100;
-        $this->columns_with_select_field = [];
-        $this->table_columns = [['column' => 'name', 'label' => 'Name', 'sortable' => 'Yes'],
-            ['column' => 'email', 'label' => 'Email', 'sortable' => 'Yes'],
-            ['column' => 'phone', 'label' => 'Phone', 'sortable' => 'Yes'],
-            ['column' => 'address', 'label' => 'Address', 'sortable' => 'Yes'],
-          
-            ['column' => 'status', 'label' => 'Status', 'sortable' => 'Yes'],
-            ['column' => 'role', 'label' => 'Role', 'sortable' => 'No'],
-            ['column' => 'image', 'label' => 'Profile', 'sortable' => 'No'],
-            ['column' => 'created_at', 'label' => 'Date', 'sortable' => 'Yes']];
+
+        $this->table_columns = [
+            [
+                'column' => 'name',
+                'label' => 'Name',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'email',
+                'label' => 'Email',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'phone',
+                'label' => 'Phone No',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'image',
+                'label' => 'Photo',
+                'sortable' => 'No',
+            ],
+            [
+                'column' => 'status',
+                'label' => 'Status',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'created_at',
+                'label' => 'Created At',
+                'sortable' => 'Yes',
+            ],
+        ];
+        $this->form_image_field_name = [
+            [
+                'field_name' => 'image',
+                'single' => true,
+            ],
+        ];
+        $this->repeating_group_inputs = [];
+        $this->toggable_group = [];
+        $this->model_relations = [
+            [
+                'name' => 'roles',
+                'class' => 'App\\Models\\User',
+                'type' => 'BelongsToMany',
+            ],
+            [
+                'name' => 'permissions',
+                'class' => 'App\\Models\\User',
+                'type' => 'BelongsToMany',
+            ],
+        ];
+
     }
     public function buildFilter(Request $r, $query)
     {
         $get = $r->all();
         if (count($get) > 0 && $r->isMethod('get')) {
             foreach ($get as $key => $value) {
-                if (strpos($key, 'start') !== false) {
-                    $field_name = explode('_', $key);
+                if ((!is_array($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
+                    if (strpos($key, 'start') !== false) {
+                        $field_name = explode('_', $key);
 
-                    $x = array_shift($field_name);
-                    $field_name = implode('_', $field_name);
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
 
-                    $query = $query->whereDate($field_name, '>=', \Carbon\Carbon::parse($value));
-                } elseif (strpos($key, 'end') !== false) {
-                    $field_name = explode('_', $key);
-                    $x = array_shift($field_name);
-                    $field_name = implode('_', $field_name);
-                    $query = $query->whereDate($field_name, '<=', \Carbon\Carbon::parse($value));
-                } else {
-                    $query = $query->where($key, $value);
+                        $query = $query->whereDate($field_name, '>=', \Carbon\Carbon::parse($value));
+                    } elseif (strpos($key, 'end') !== false) {
+                        $field_name = explode('_', $key);
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
+                        $query = $query->whereDate($field_name, '<=', \Carbon\Carbon::parse($value));
+                    } elseif (strpos($key, 'min') !== false) {
+                        $field_name = explode('_', $key);
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
+                        $query = $query->where($field_name, '>=', $value);
+                    } elseif (strpos($key, 'max') !== false) {
+                        $field_name = explode('_', $key);
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
+                        $query = $query->where($field_name, '<=', $value);
+                    } else {
+                        if (!is_array($value)) {
+                            $query = $query->where($key, $value);
+                        } else {
+                            //dd($value);
+                            $query = $query->whereIn($key, $value);
+                        }
+                    }
                 }
             }
         }
@@ -62,9 +121,52 @@ class UserController extends Controller
     public function index(Request $request)
     {
 
-        $searchable_fields = [['name' => 'name', 'label' => 'Name'], ['name' => 'email', 'label' => 'Email'], ['name' => 'phone', 'label' => 'Phone']];
-        $filterable_fields = [['name' => 'created_at', 'label' => 'Date', 'type' => 'date'],
-        ['name' => 'state', 'label' => 'State', 'type' => 'select']];
+        if (!can('list_user')) {
+            return redirect(route('admin.unauthorized'));
+        }
+        $searchable_fields = [
+            [
+                'name' => 'name',
+                'label' => 'Name',
+            ],
+            [
+                'name' => 'email',
+                'label' => 'Email',
+            ],
+            [
+                'name' => 'phone',
+                'label' => 'Phone',
+            ],
+            [
+                'name' => 'pincode',
+                'label' => 'Pincode',
+            ],
+        ];
+        $filterable_fields = [
+            [
+                'name' => 'state_id',
+                'label' => 'State',
+                'type' => 'select',
+                'options' => getList('State'),
+            ],
+            [
+                'name' => 'city_id',
+                'label' => 'City',
+                'type' => 'select',
+                'options' => [],
+            ],
+            [
+                'name' => 'status',
+                'label' => 'Status',
+                'type' => 'select',
+                'options' => getListFromIndexArray(['Active', 'In-Active']),
+            ],
+            [
+                'name' => 'created_at',
+                'label' => 'Created At',
+                'type' => 'date',
+            ],
+        ];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -93,161 +195,429 @@ class UserController extends Controller
                 'plural_lowercase' => 'users',
                 'module' => $this->module,
                 'has_image' => $this->has_upload,
-                'is_multiple' => $this->is_multiple_upload,
-                'image_field_name' => $this->form_image_field_name,
+                'model_relations' => $this->model_relations,
+                'image_field_names' => $this->form_image_field_name,
                 'storage_folder' => $this->storage_folder,
             ];
             return view('admin.' . $this->view_folder . '.page', with($data));
         } else {
-            $query = User::query();
+
+            $query = null;
+            if (count($this->model_relations) > 0) {
+                $query = User::with(array_column($this->model_relations, 'name'));
+            } else {
+                $query = User::query();
+            }
             $query = $this->buildFilter($request, $query);
             $list = $query->paginate($this->pagination_count);
-
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
                 'index_url' => $this->index_url,
                 'title' => 'All Users',
-                'module' => $this->module,
+                'module' => $this->module, 'model_relations' => $this->model_relations,
                 'searchable_fields' => $searchable_fields,
                 'filterable_fields' => $filterable_fields,
                 'storage_folder' => $this->storage_folder,
                 'table_columns' => $table_columns,
                 'plural_lowercase' => 'users',
                 'has_image' => $this->has_upload,
-                'is_multiple' => $this->is_multiple_upload,
-                'image_field_name' => $this->form_image_field_name,
+
+                'image_field_names' => $this->form_image_field_name,
                 'storage_folder' => $this->storage_folder,
+                'has_export' => $this->has_export,
             ];
             return view('admin.' . $this->view_folder . '.index', $view_data);
         }
     }
 
-    public function getList($model,$where=[])
-    {
-        $model_class = "\App\models" . '\\' . $model;
-        $lists = $model_class::query();
-        if(count($where)>0){
-            $lists=$lists->where('status','Active')->where($where);
-        }
-        $lists=$lists->get(['id', 'name']);
-
-        $list2 = [];
-        foreach ($lists as $list) {
-            $ar = (object) ['id' => $list['id'], 'name' => $list['name']];
-            array_push($list2, $ar);
-        }
-        return $list2;
-    }
-    public function getFieldValuesFromModelAsArray($model,$field,$where=[])
-    {
-        $model_class = "\App\models" . '\\' . $model;
-        $lists = $model_class::query();
-        if(count($where)>0){
-            $lists=$lists->where('status','Active')->where($where);
-        }
-        $lists=$lists->get([$field]);
-
-        $list4 = [];
-        foreach ($lists as $list) {
-            $list4[]=$list[$field];
-            
-        }
-        return $list4;
-    }
-    public function getListFromIndexArray($arr=[])
-    {
-        /* for optinos in select not from model but from an array liek ['apple','mango']*/
-
-        $list3 = [];
-        foreach ($arr as $item) {
-            $ar = (object) ['id' => $item, 'name' => $item];
-            array_push($list3, $ar);
-        }
-        return $list3;
-    }
-
     public function create()
     {
-        $data = [['placeholder' => 'Enter Name', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['placeholder' => 'Enter Email', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['placeholder' => 'Enter Phone', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['name' => 'state', 'label' => 'State', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['name' => 'city', 'label' => 'City', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['name' => 'pincode', 'label' => 'Pincode', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['placeholder' => 'Enter Address', 'name' => 'address', 'label' => 'Address', 'tag' => 'input', 'type' => 'textarea', 'default' => '']];
+        $data = [
+            [
+                'label' => null,
+                'inputs' => [
+                    [
+                        'placeholder' => 'Enter name',
+                        'name' => 'name',
+                        'label' => 'Full Name',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->name : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter email',
+                        'name' => 'email',
+                        'label' => 'Email',
+                        'tag' => 'input',
+                        'type' => 'email',
+                        'default' => isset($model) ? $model->email : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter phone',
+                        'name' => 'phone',
+                        'label' => 'Phone Number',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->phone : "",
+                        'attr' => [],
+                    ],
+                      [
+                        'placeholder' => 'Enter password',
+                        'name' => 'password',
+                        'label' => 'Password',
+                        'tag' => 'input',
+                        'type' => 'password',
+                        'default' => isset($model) ? $model->email : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('State'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                         
+                        'name' => 'city_id',
+                        'label' => 'City',
+                        'tag' => 'select',
+                        'type' => 'select',
+                         'default' => isset($model) ?$model->city:"",
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' =>[],
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter address',
+                        'name' => 'address',
+                        'label' => 'Address',
+                        'tag' => 'textarea',
+                        'type' => 'textarea',
+                        'default' => isset($model) ? $model->address : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter pincode',
+                        'name' => 'pincode',
+                        'label' => 'Pincode',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->pincode : "",
+                        'attr' => [],
+                    ],
+                   
+                    [
+                        'name' => 'role',
+                        'label' => 'Assign Role',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('Role')) ? getList('Role')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('Role'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'tag' => 'input',
+                        'type' => 'radio',
+                        'default' => isset($model) ? $model->status : 'Active',
+                        'attr' => [],
+                        'value' => [
+                            (object) [
+                                'label' => 'Active',
+                                'value' => 'Active',
+                            ],
+                            (object) [
+                                'label' => 'In-Active',
+                                'value' => 'In-Active',
+                            ],
+                        ],
+                        'has_toggle_div' => [],
+                        'multiple' => false,
+                        'inline' => true,
+                    ],
+                ],
+            ],
+        ];
 
-        if (count($this->columns_with_select_field) > 0) {
-            foreach ($this->columns_with_select_field as $t) {
-                $input = ['name' => $t['field_name'], 'label' => $t['label'], 'type' => 'select', 'multiple' => $t['multiple'], 'custom_key_for_option' => 'name', 'options' => $this->getList($t['label']), 'event' => ['name' => 'onChange', 'function' => isset($t['onChange']) ? 'javascript:void(0)' : $t['onChange']]];
-                array_push($data, $input);
+        if (count($this->form_image_field_name) > 0) {
+
+            foreach ($this->form_image_field_name as $g) {
+               
+                    $y = [
+                        'placeholder' => '',
+                        'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
+                        'label' => $g['single'] ? $g['field_name'] : \Str::plural($g['field_name']),
+                        'tag' => 'input',
+                        'type' => 'file',
+                        'default' => '',
+                        'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
+                    ];
+                    array_push($data[0]['inputs'], $y);
+                
             }
         }
 
-        $radio_checkbox_group = [['name' => 'role', 'label' => 'Assign Role ', 'type' => 'checkbox', 'multiple' => true, 'value' => $roles, 'inline' => false], ['name' => 'status', 'label' => 'Status ', 'type' => 'checkbox', 'multiple' => true, 'value' => [['label' => 'Yes', 'value' => 'Yes'], ['label' => 'No', 'value' => 'No']], 'inline' => false]];
         $view_data = [
             'data' => $data,
-            'radio' => $radio_checkbox_group,
+
             'dashboard_url' => $this->dashboard_url,
             'index_url' => $this->index_url,
             'title' => 'Create ' . $this->module,
             'module' => $this->module,
             'plural_lowercase' => 'users',
-            'image_field_name' => $this->form_image_field_name,
+            'image_field_names' => $this->form_image_field_name,
             'has_image' => $this->has_upload,
-            'is_multiple' => $this->is_multiple_upload,
+            'model_relations' => $this->model_relations,
 
+            'repeating_group_inputs' => $this->repeating_group_inputs,
+            'toggable_group' => $this->toggable_group,
             'storage_folder' => $this->storage_folder,
         ];
         return view('admin.' . $this->view_folder . '.add', with($view_data));
     }
+    public function view(Request $request)
+    {
+        $id = $request->id;
+        $data['row'] = null;
+        if (count($this->model_relations) > 0) {
+            $data['row'] = User::with(array_column($this->model_relations, 'name'))->findOrFail($id);
+        } else {
+            $data['row'] = User::findOrFail($id);
+        }
+        $data['has_image'] = $this->has_upload;
+        $data['model_relations'] = $this->model_relations;
+        $data['storage_folder'] = $this->storage_folder;
+        $data['image_field_names'] = $this->form_image_field_name;
+        $data['table_columns'] = $this->table_columns;
+        $data['module'] = $this->module;
+        $html = view('admin.' . $this->view_folder . '.view', with($data))->render();
+        return createResponse(true, $html);
+    }
     public function store(UserRequest $request)
     {
+        if (!can('add_user')) {
+            return createResponse(false, 'Dont have permission');
+        }
         \DB::beginTransaction();
         try {
-            $user = User::create($request->all());
-            $user->assignRole($request->role);
-            if ($this->has_upload) {
+            $post = $request->all();
 
-                if ($this->is_multiple_upload) {
-                    $this->upload($request, $user->id);
-                } else {
-                    $field = $this->form_image_field_name;
-                    if($request->hasFile($field)){
-                       $image_name = $this->upload($request);
-                       if($image_name){
-                                $user->{$field} = $image_name;
-                                $user->save();
-                       }
+            $post = formatPostForJsonColumn($post);
+            if (count($this->model_relations) > 0 && in_array('BelongsToMany', array_column($this->model_relations, 'type'))) {
+                foreach (array_keys($post) as $key) {
+                    if (isFieldBelongsToManyToManyRelation($this->model_relations, $key) >= 0) {
+                        $post->$key->sync($post[$key]);
                     }
                 }
             }
+           // dd($post);
+            $user = User::create($post);
+            $user->assignRole($request->role);
+            if ($this->has_upload) {
+                foreach ($this->form_image_field_name as $item) {
+                    $field_name = $item['field_name'];
+                    $single = $item['single'];
+
+                    if ($request->hasfile($field_name)) {
+                        if (is_array($request->file($field_name))) {
+                            $image_model_name = modelName($item['table_name']);
+                            $parent_table_field = !empty($item['parent_table_field']) ? $item['parent_table_field'] : null;
+                            $this->upload($request->file($field_name), $user->id, $image_model_name, $parent_table_field);
+                        } else {
+                            $image_name = $this->upload($request->file($field_name));
+                            if ($image_name) {
+                                $user->{$field_name} = $image_name;
+                                $user->save();
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
             \DB::commit();
             return createResponse(true, $this->module . ' created successfully', $this->index_url);
-        } catch (\Exception$ex) {
-             \DB::rollback();
+        } catch (\Exception $ex) {
+            \DB::rollback();
             return createResponse(false, $ex->getMessage());
         }
     }
+
     public function edit($id)
     {
 
         $model = User::findOrFail($id);
+$roles=$model->getRoleNames()->toArray();
 
-        $data = [['placeholder' => 'Enter Name', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['placeholder' => 'Enter Email', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['placeholder' => 'Enter Phone', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''], ['name' => 'state', 'label' => 'State', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['name' => 'city', 'label' => 'City', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['name' => 'pincode', 'label' => 'Pincode', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false], ['placeholder' => 'Enter Address', 'name' => 'address', 'label' => 'Address', 'tag' => 'input', 'type' => 'textarea', 'default' => '']];
-        if (count($this->columns_with_select_field) > 0) {
-            foreach ($this->columns_with_select_field as $label => $field_name) {
-                $input = ['name' => $field_name, 'label' => $label, 'type' => 'select', 'default' => $model->{field_name}, 'custom_key_for_option' => 'name', 'options' => $this->getList($label)];
-                array_push($data, $input);
+        $data = [
+            [
+                'label' => null,
+                'inputs' => [
+                    [
+                        'placeholder' => 'Enter name',
+                        'name' => 'name',
+                        'label' => 'Full Name',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->name : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter email',
+                        'name' => 'email',
+                        'label' => 'Email',
+                        'tag' => 'input',
+                        'type' => 'email',
+                        'default' => isset($model) ? $model->email : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter phone',
+                        'name' => 'phone',
+                        'label' => 'Phone Number',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->phone : "",
+                        'attr' => [],
+                    ],
+                      [
+                        'placeholder' => 'Enter password',
+                        'name' => 'password',
+                        'label' => 'Password ',
+                        'tag' => 'input',
+                        'type' => 'password',
+                        'default' => "",
+                        'attr' => [],
+                    ],
+                    [
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('State'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                         
+                        'name' => 'city_id',
+                        'label' => 'City',
+                        'tag' => 'select',
+                        'type' => 'select',
+                         'default' => isset($model) ?$model->city_id:"",
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' =>getList('City',['state_id'=>$model->state_id]),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                  
+                    [
+                        'placeholder' => 'Enter address',
+                        'name' => 'address',
+                        'label' => 'Address',
+                        'tag' => 'textarea',
+                        'type' => 'textarea',
+                        'default' => isset($model) ? $model->address : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter pincode',
+                        'name' => 'pincode',
+                        'label' => 'Pincode',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->pincode : "",
+                        'attr' => [],
+                    ],
+                    [
+                         
+                        'name' => 'role',
+                        'label' => 'Assign Role',
+                        'tag' => 'select',
+                        'type' => 'select',
+                         'default' =>$roles[0],
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' =>getListWithSameIdAndName('Role'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                   
+                    [
+                        'name' => 'status',
+                        'label' => 'Status',
+                        'tag' => 'input',
+                        'type' => 'radio',
+                        'default' => isset($model) ? $model->status : 'Active',
+                        'attr' => [],
+                        'value' => [
+                            (object) [
+                                'label' => 'Active',
+                                'value' => 'Active',
+                            ],
+                            (object) [
+                                'label' => 'In-Active',
+                                'value' => 'In-Active',
+                            ],
+                        ],
+                        'has_toggle_div' => [],
+                        'multiple' => false,
+                        'inline' => true,
+                    ],
+                ],
+            ],
+        ];
+        if (count($this->form_image_field_name) > 0) {
+            foreach ($this->form_image_field_name as $g) {
+                $field_name=$g['field_name'];
+                
+                    $y = [
+                        'placeholder' => '',
+                        'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
+                        'label' =>'Photo',
+                        'tag' => 'input',
+                        'type' => 'file',
+                        'default' => $g['single'] ? $this->storage_folder . '/' . $model->{$field_name} : json_encode($this->getImageList($id, $g['table_name'], $g['parent_table_field'])),
+                        'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
+                    ];
+                  //  dd($y);
+                    array_push($data[0]['inputs'], $y);
+                
             }
         }
-        $radio_checkbox_group = [['name' => 'role', 'label' => 'Assign Role ', 'type' => 'checkbox', 'multiple' => true, 'value' => $roles, 'inline' => false], ['name' => 'status', 'label' => 'Status ', 'type' => 'checkbox', 'multiple' => true, 'value' => [['label' => 'Yes', 'value' => 'Yes'], ['label' => 'No', 'value' => 'No']], 'inline' => false]];
-
         $view_data = [
             'data' => $data,
-            'radio' => $radio_checkbox_group,
+
             'dashboard_url' => $this->dashboard_url,
             'index_url' => $this->index_url,
             'title' => 'Edit ' . $this->module,
             'module' => $this->module,
             'has_image' => $this->has_upload,
             'is_multiple' => $this->is_multiple_upload,
-            'image_field_name' => $this->form_image_field_name,
+            'image_field_names' => $this->form_image_field_name,
             'storage_folder' => $this->storage_folder,
+            'repeating_group_inputs' => $this->repeating_group_inputs,
+            'toggable_group' => $this->toggable_group,
             'plural_lowercase' => 'users', 'model' => $model,
         ];
         if ($this->has_upload && $this->is_multiple_upload) {
@@ -259,59 +629,101 @@ class UserController extends Controller
     }
     public function show($id)
     {
-
-        $data['row'] = User::findOrFail($id);
-        $data['has_image'] = $this->has_upload;
-        $data['is_multiple'] = $this->is_multiple_upload;
-        $data['storage_folder'] = $this->storage_folder;
-        if ($data['is_multiple']) {
-
-            $data['image_list'] = $this->getImageList($id);
+        if (!can('view_user')) {
+            return createResponse(false, 'Dont have permission for this action');
         }
-        $html = view('admin.' . $this->view_folder . '.view', with($data))->render();
-        return createResponse(true, $html);
-    }
-    public function view(Request $request)
-    {
-        $id = $request->id;
-        $data['row'] = User::findOrFail($id);
+
+        $data['row'] = null;
+        if (count($this->model_relations) > 0) {
+            $data['row'] = User::with(array_column($this->model_relations, 'name'))->findOrFail($id);
+        } else {
+            $data['row'] = User::findOrFail($id);
+        }
+
         $data['has_image'] = $this->has_upload;
+        $data['model_relations'] = $this->model_relations;
         $data['is_multiple'] = $this->is_multiple_upload;
         $data['storage_folder'] = $this->storage_folder;
         $data['table_columns'] = $this->table_columns;
+        $data['plural_lowercase'] = 'users';
+        $data['module'] = $this->module;
         if ($data['is_multiple']) {
 
             $data['image_list'] = $this->getImageList($id);
         }
-        $html = view('admin.' . $this->view_folder . '.view', with($data))->render();
-        return createResponse(true, $html);
+        $table = getTableNameFromModel($this->module);
+        $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+        //natcasesort($columns);
+
+        $cols = [];
+        $exclude_cols = ['updated_at', 'id'];
+        foreach ($columns as $col) {
+
+            $label = ucwords(str_replace('_', ' ', $col));
+
+            if (!in_array($col, $exclude_cols)) {
+                array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+            }
+
+        }
+        $data['table_columns'] = $cols;
+        return createResponse(true, view('admin.' . $this->view_folder . '.view_modal', with($data))->render());
+
     }
+
     public function update(UserRequest $request, $id)
     {
+        if (!can('edit_user')) {
+            return createResponse(false, 'Dont have permission');
+        }
         \DB::beginTransaction();
-      
         try
         {
+            $post = $request->all();
+
             $user = User::findOrFail($id);
-            $user->update($request->all());
-            $user->assignRole($request->role);
-            if ($this->has_upload) {
-                if ($this->is_multiple_upload) {
-                    $this->upload($request, $user->id);
-                } else {
-                    $field = $this->form_image_field_name;
-                    $image_name = $this->upload($request);
-                    if($image_name){
-                        $user->{$field} = $image_name;
-                        $user->save();
-                     }
-                   
-                    
+
+            $post = formatPostForJsonColumn($post);
+            if (count($this->model_relations) > 0 && in_array('BelongsToMany', array_column($this->model_relations, 'type'))) {
+                foreach (array_keys($post) as $key) {
+                    if (isFieldBelongsToManyToManyRelation($this->model_relations, $key) >= 0) {
+                        $post->$key->sync($post[$key]);
+                    }
                 }
+            }
+            if(empty($post['password'])){
+    unset($post['password']);
+            }
+            $user->update($post);
+           // dd($request->role);
+            $user->assignRole($request->role);
+
+            if ($this->has_upload) {
+                foreach ($this->form_image_field_name as $item) {
+                    $field_name = $item['field_name'];
+                    $single = $item['single'];
+
+                    if ($request->hasfile($field_name)) {
+                        if (is_array($request->file($field_name))) {
+                            $image_model_name = modelName($item['table_name']);
+                            $parent_table_field = !empty($item['parent_table_field']) ? $item['parent_table_field'] : null;
+                            $this->upload($request->file($field_name), $user->id, $image_model_name, $parent_table_field);
+                        } else {
+                            $image_name = $this->upload($request->file($field_name));
+                            if ($image_name) {
+                                $user->{$field_name} = $image_name;
+                                $user->save();
+                            }
+                        }
+
+                    }
+
+                }
+
             }
             \DB::commit();
             return createResponse(true, $this->module . ' updated successfully', $this->index_url);
-        } catch (\Exception$ex) {
+        } catch (\Exception $ex) {
             \DB::rollback();
             return createResponse(false, $ex->getMessage());
         }
@@ -319,6 +731,10 @@ class UserController extends Controller
 
     public function destroy($id)
     {
+        if (!can('delete_user')) {
+            return createResponse(false, 'Dont have permission to delete');
+        }
+        \DB::beginTransaction();
         try
         {
             User::destroy($id);
@@ -326,21 +742,63 @@ class UserController extends Controller
             if ($this->has_upload) {
                 $this->deleteFile($id);
             }
+            \DB::commit();
             return createResponse(true, $this->module . ' Deleted successfully');
-        } catch (\Exception$ex) {
+        } catch (\Exception $ex) {
+            \DB::rollback();
             return createResponse(false, 'Failed to  Delete Properly');
         }
 
     }
-    public function upload(Request $request, $parent_table_id = null)
+    public function deleteFile($id)
     {
-        $form_image_field_name = $this->form_image_field_name;
-        $uploaded_filename=null;
-        if ($request->file($form_image_field_name)!=null) {
-          
-            $uploaded_filename = $this->is_multiple_upload ?
-            storeMultipleFile($this->storage_folder, $request->file($form_image_field_name), $this->image_model_name, $parent_table_id, $this->parent_field_name)
-            : storeSingleFile($this->storage_folder, $request->file($form_image_field_name));
+
+        foreach ($this->form_image_field_name as $item) {
+            $field_name = $item['field_name'];
+            $single = $item['single'];
+
+            $table_name = !empty($item['table_name']) ? $item['table_name'] : null;
+            $parent_table_field = !empty($item['parent_table_field']) ? $item['parent_table_field'] : null;
+            if ($single) {
+                $model = $this->module;
+                $mod = app("App\\Models\\$model");
+                $filerow = $mod->findOrFail($id);
+                $image_name = $filerow->{$field_name};
+                $path = storage_path('app/public/' . $this->storage_folder . '/' . $image_name);
+                if (\File::exists($path)) {
+                    unlink($path);
+
+                }
+            } else {
+                $list = \DB::table($table_name)->where($parent_table_field, $id)->get(['name']);
+                if (count($list) > 0) {
+                    foreach ($list as $t) {
+                        try {
+                            $path = storage_path('app/public/' . $this->storage_folder . '/' . $t->name);
+                            if (\File::exists($path)) {
+                                unlink($path);
+
+                            }
+                        } catch (\Exception $ex) {
+
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
+    public function upload($request_files, $parent_table_id = null, $image_model_name = null, $parent_table_field = null)
+    {
+
+        $uploaded_filename = null;
+        if ($request_files != null) {
+
+            $uploaded_filename = is_array($request_files) && $parent_table_id ?
+            storeMultipleFile($this->storage_folder, $request_files, $image_model_name, $parent_table_id, $parent_table_field)
+            : storeSingleFile($this->storage_folder, $request_files);
             if (!is_array($uploaded_filename)) {
                 return $uploaded_filename;
             }
@@ -348,222 +806,402 @@ class UserController extends Controller
         }
         return $uploaded_filename;
 
-        
-        
-    }
-    public function deleteFile($id)
-    {
-
-        if (!$this->is_multiple_upload) {
-            $model = $this->module;
-            $model_field = $this->form_image_field_name;
-            $rowid = $id;
-            deleteSingleFileOwnTable($this->storage_folder, $model, $model_field, $rowid);
-        } else {
-            $filemodel = $this->image_model_name;
-            deleteAllFilesFromRelatedTable($this->storage_folder, $this->parent_field_name, $id, $filemodel);
-        }
-
     }
 
-    public function getImageList($id)
-    {
-        $image_model = $this->image_model_name;
-        $model = "App\\Models\\$image_model";
-        return $model::where($this->parent_field_name, $id)->get(['id', 'name']);
-    }
-    public function getRadioOptions($model)
-    {
-        $model_class = "\App\models" . '\\' . $model;
-        $lists = $model_class::get(['id', 'name']);
-        $alist = [];
-        foreach ($lists as $list) {
-            $ar = (object) ['label' => $list['name'], 'value' => $list['id']];
-            array_push($alist, $ar);
-        }
-        return $alist;
-    }
     public function loadAjaxForm(Request $request)
     {
         $data = [];
         $form_type = $request->form_type;
         $id = $request->id;
-        $roles = [];
-        foreach (Role::all() as $role) {
-            array_push($roles, (object) ['label' => $role->name, 'value' => $role->name]);
-        }
-
         if ($form_type == 'add') {
+            if (!can('create_user')) {
+                return createResponse(false, 'Dont have permission to create ');
+            }
             $data1 = [
-                ['placeholder' => 'Enter Name', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' => ''],
-                ['placeholder' => 'Enter Email', 'name' => 'email', 'label' => 'Email', 'tag' => 'input', 'type' => 'email', 'default' => ''],
-                ['placeholder' => 'Enter Password', 'name' => 'password', 'label' => 'Password', 'tag' => 'input', 'type' => 'password', 'default' => ''],
-                ['placeholder' => 'Enter Phone', 'name' => 'phone', 'label' => 'Phone', 'tag' => 'input', 'type' => 'text', 'default' => ''],
+                [
+                    'label' => null,
+                    'inputs' => [
+                        [
+                            'placeholder' => 'Enter name',
+                            'name' => 'name',
+                            'label' => 'Full Name',
+                            'tag' => 'input',
+                            'type' => 'text',
+                            'default' => isset($model) ? $model->name : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter email',
+                            'name' => 'email',
+                            'label' => 'Email',
+                            'tag' => 'input',
+                            'type' => 'email',
+                            'default' => isset($model) ? $model->email : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter phone',
+                            'name' => 'phone',
+                            'label' => 'Phone Number',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->phone : "",
+                            'attr' => [],
+                        ],
+                        [
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('State'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                         
+                        'name' => 'city_id',
+                        'label' => 'City',
+                        'tag' => 'select',
+                        'type' => 'select',
+                         'default' => isset($model) ?$model->city:"",
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' =>[],
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                        [
+                            'placeholder' => 'Enter address',
+                            'name' => 'address',
+                            'label' => 'Address',
+                            'tag' => 'textarea',
+                            'type' => 'textarea',
+                            'default' => isset($model) ? $model->address : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter pincode',
+                            'name' => 'pincode',
+                            'label' => 'Pincode',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->pincode : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter image',
+                            'name' => 'image',
+                            'label' => 'Photo',
+                            'tag' => 'input',
+                            'type' => 'file',
+                            'default' => isset($model) ? $model->image : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'name' => 'status',
+                            'label' => 'Status',
+                            'tag' => 'input',
+                            'type' => 'radio',
+                            'default' => isset($model) ? $model->status : 'Active',
+                            'attr' => [],
+                            'value' => [
+                                (object) [
+                                    'label' => 'Active',
+                                    'value' => 'Active',
+                                ],
+                                (object) [
+                                    'label' => 'In-Active',
+                                    'value' => 'In-Active',
+                                ],
+                            ],
+                            'has_toggle_div' => [],
+                            'multiple' => false,
+                            'inline' => true,
+                        ],
+                    ],
+                ],
             ];
 
-            if (count($this->columns_with_select_field) > 0) {
-               
-                foreach ($this->columns_with_select_field as $t) {
-                    $input = ['name' => $t['field_name'], 'label' => $t['label'], 'tag' => 'select', 'type' => 'select', 'default' =>[1,3],
-                        'custom_key_for_option' => 'name', 'options' => $this->getList($t['label']), 'custom_id_for_option' => 'id', 'multiple' => $t['multiple'],
-                        'event' => ['name' => 'onChange', 'function' => isset($t['onChange']) ? 'javascript:void(0)' : $t['onChange']],
-                    ];
-
-                    array_push($data1, $input);
-                }
-            }
-            $data2 = [['name' => 'state', 'label' => 'State', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['name' => 'city', 'label' => 'City', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['name' => 'pincode', 'label' => 'Pincode', 'tag' => 'select', 'type' => 'select', 'default' => '', 'custom_key_for_option' => 'name', 'options' => [], 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['placeholder' => 'Enter Address', 'name' => 'address', 'label' => 'Address', 'tag' => 'input', 'type' => 'textarea', 'default' => '']];
-
-            $data1 = array_merge($data1, $data2);
-            $radio_checkbox_group = [
-                ['name' => 'role', 'label' => 'Assign Role ', 'type' => 'checkbox', 'multiple' => true, 'value' => $roles, 'inline' => false, 'attr' => [], 'default' => []],
-                ['name' => 'status', 'label' => 'Status ', 'default' => '', 'type' => 'checkbox', 'multiple' => false, 'value' => [(object) ['label' => 'Yes', 'value' => 'Yes'], (object) ['label' => 'No', 'value' => 'No']], 'inline' => false, 'attr' => []]];
             $data = [
                 'data' => $data1,
-                'radio' => $radio_checkbox_group,
+
                 'dashboard_url' => $this->dashboard_url,
                 'index_url' => $this->index_url,
                 'title' => 'Create ' . $this->module,
                 'module' => $this->module,
                 'plural_lowercase' => 'users',
-                'image_field_name' => $this->form_image_field_name,
+                'image_field_names' => $this->form_image_field_name,
                 'has_image' => $this->has_upload,
-                'is_multiple' => $this->is_multiple_upload,
 
+                'repeating_group_inputs' => $this->repeating_group_inputs,
+                'toggable_group' => $this->toggable_group,
                 'storage_folder' => $this->storage_folder,
             ];
 
         }
         if ($form_type == 'edit') {
+            if (!can('edit_user')) {
+                return createResponse(false, 'Dont have permission to update');
+            }
             $model = User::findOrFail($id);
 
             $data1 = [
-                ['placeholder' => 'Enter Name', 'name' => 'name', 'label' => 'Name', 'tag' => 'input', 'type' => 'text', 'default' =>$model->name],
-                ['placeholder' => 'Enter Email', 'name' => 'email', 'label' => 'Email', 'tag' => 'input', 'type' => 'email', 'default' =>$model->email],
-                ['placeholder' => 'Enter Phone', 'name' => 'phone', 'label' => 'Phone', 'tag' => 'input', 'type' => 'text', 'default' =>$model->phone],
-            ];
-
-            if (count($this->columns_with_select_field) > 0) {
-                foreach ($this->columns_with_select_field as $t) {
-                    $input = ['name' => $t['field_name'], 'label' => $t['label'], 'tag' => 'select', 'type' => 'select', 'default' =>$model->{$t['field_name']},
-                        'custom_key_for_option' => 'name', 'options' => $this->getList($t['label']), 'custom_id_for_option' => 'id', 'multiple' => false,
-                        'event' => ['name' => 'onChange', 'function' => isset($t['onChange']) ? 'javascript:void(0)' : $t['onChange']],
-                    ];
-
-                    array_push($data1, $input);
-                }
-            }
-            $state_options=$model->state?$this->getList('State',['id'=>$model->state]):[];
-            $city_options=$model->city?$this->getList('City',['id'=>$model->city]):[];
-            $pin_options=$model->pincode?$this->getList('Pincode',['id'=>$model->city]):[];
-           
-            $data2 = [['name' => 'state', 'label' => 'State', 'tag' => 'select', 'type' => 'select', 'default' =>$model->state, 'custom_key_for_option' => 'name', 'options' => $state_options, 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['name' => 'city', 'label' => 'City', 'tag' => 'select', 'type' => 'select', 'default' =>$model->city, 'custom_key_for_option' => 'name', 'options' =>  $city_options, 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['name' => 'pincode', 'label' => 'Pincode', 'tag' => 'select', 'type' => 'select', 'default' =>$model->pincode, 'custom_key_for_option' => 'name', 'options' => $pin_options, 'custom_id_for_option' => 'id', 'multiple' => false],
-                ['placeholder' => 'Enter Address', 'name' => 'address', 'label' => 'Address', 'tag' => 'input', 'type' => 'textarea', 'default' =>$model->address]];
-
-            $data1 = array_merge($data1, $data2);
-            
-            $radio_checkbox_group = [
-                ['name' => 'role', 'label' => 'Assign Role ', 'type' => 'checkbox', 'multiple' => true, 'value' => $roles, 'inline' => false,'default'=>$model->getRoleNames()->toArray(),'attr'=>[]],
-                ['name'=>'status','label'=>'Status ','type'=>'radio','multiple'=>false,'attr'=>[],'value'=>[(object)['label'=>'Active','value'=>'Active'],(object)['label'=>'In Active','value'=>'In-Active']],'inline'=>false,'default'=>$model->status]
+                [
+                    'label' => null,
+                    'inputs' => [
+                        [
+                            'placeholder' => 'Enter name',
+                            'name' => 'name',
+                            'label' => 'Full Name',
+                            'tag' => 'input',
+                            'type' => 'text',
+                            'default' => isset($model) ? $model->name : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter email',
+                            'name' => 'email',
+                            'label' => 'Email',
+                            'tag' => 'input',
+                            'type' => 'email',
+                            'default' => isset($model) ? $model->email : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter phone',
+                            'name' => 'phone',
+                            'label' => 'Phone Number',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->phone : "",
+                            'attr' => [],
+                        ],
+                        [
+                        'name' => 'state_id',
+                        'label' => 'State',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('State'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                         
+                        'name' => 'city_id',
+                        'label' => 'City',
+                        'tag' => 'select',
+                        'type' => 'select',
+                         'default' => isset($model) ?$model->city:"",
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' =>getList('City',['state_id'=>$model->state_id]),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                        [
+                            'placeholder' => 'Enter address',
+                            'name' => 'address',
+                            'label' => 'Address',
+                            'tag' => 'textarea',
+                            'type' => 'textarea',
+                            'default' => isset($model) ? $model->address : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter pincode',
+                            'name' => 'pincode',
+                            'label' => 'Pincode',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->pincode : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter image',
+                            'name' => 'image',
+                            'label' => 'Photo',
+                            'tag' => 'input',
+                            'type' => 'file',
+                            'default' => isset($model) ? $model->image : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'name' => 'status',
+                            'label' => 'Status',
+                            'tag' => 'input',
+                            'type' => 'radio',
+                            'default' => isset($model) ? $model->status : 'Active',
+                            'attr' => [],
+                            'value' => [
+                                (object) [
+                                    'label' => 'Active',
+                                    'value' => 'Active',
+                                ],
+                                (object) [
+                                    'label' => 'In-Active',
+                                    'value' => 'In-Active',
+                                ],
+                            ],
+                            'has_toggle_div' => [],
+                            'multiple' => false,
+                            'inline' => true,
+                        ],
+                    ],
+                ],
             ];
 
             $data = [
                 'data' => $data1,
-                'radio' => $radio_checkbox_group,
+
                 'dashboard_url' => $this->dashboard_url,
                 'index_url' => $this->index_url,
                 'title' => 'Edit ' . $this->module,
                 'module' => $this->module,
                 'has_image' => $this->has_upload,
-                'is_multiple' => $this->is_multiple_upload,
-                'image_field_name' => $this->form_image_field_name,
+
+                'image_field_names' => $this->form_image_field_name,
                 'storage_folder' => $this->storage_folder,
+                'repeating_group_inputs' => $this->repeating_group_inputs,
+                'toggable_group' => $this->toggable_group,
                 'plural_lowercase' => 'users', 'model' => $model,
             ];
-            if ($this->has_upload && $this->is_multiple_upload) {
-                $data['image_list'] = $this->getImageList($id);
+            if ($this->has_upload) {
+                $ar = [];
+                if (count($this->form_image_field_name) > 0) {foreach ($this->form_image_field_name as $item) {
+                    if (!$item['single']) {
+                        $model_name = modelName($item['table_name']);
+                        $ar['image_list'][$item['field_name']] = getImageList($id, $model_name, $item['parent_table_field']);
+                    }
+                }
+                    $data['image_list'] = $ar; /***$data['image_list'] will have fieldnames as key and corrsponsing list of image models */
+                }
             }
+        }
+        if ($form_type == 'view') {
+            $data['row'] = null;
+            if (count($this->model_relations) > 0) {
+                $data['row'] = User::with(array_column($this->model_relations, 'name'))->findOrFail($id);
+            } else {
+                $data['row'] = User::findOrFail($id);
+            }
+            $data['has_image'] = $this->has_upload;
+            $data['model_relations'] = $this->model_relations;
+            $data['storage_folder'] = $this->storage_folder;
+            $data['table_columns'] = $this->table_columns;
+            $data['plural_lowercase'] = 'users';
+            $data['module'] = $this->module;
+            $data['image_field_names'] = $this->form_image_field_name;
+            $table = getTableNameFromModel($this->module);
+            $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+            //natcasesort($columns);
+
+            $cols = [];
+            $exclude_cols = ['id', 'updated_at'];
+            foreach ($columns as $col) {
+
+                $label = ucwords(str_replace('_', ' ', $col));
+                $label = str_replace(' Id', '', $label);
+
+                if (!in_array($col, $exclude_cols)) {
+                    array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+                }
+
+            }
+            $data['table_columns'] = $cols;
 
         }
         if ($form_type == 'view') {
-            $data['row'] = User::findOrFail($id);
-            $data['has_image'] = $this->has_upload;
-            $data['is_multiple'] = $this->is_multiple_upload;
-            $data['storage_folder'] = $this->storage_folder;
-            $data['table_columns'] = $this->table_columns;
-            $data['image_field_name'] = $this->form_image_field_name;
-            /***if columns shown in view is difrrent from table_columns jet
-            $columns=\DB::getSchemaBuilder()->getColumnListing('users');
-            natcasesort($columns);
-
-            $cols=[];
-            $exclude_cols=['id','from_area','branch','to_area','coupon_id','user_id','delivery_type_id','signature','map','otp_code','incentive_checked','franchisee_id'];
-            foreach($columns as $col){
-            if($col=='order_unique_id')
-            $col="order_tracking_id";
-            $label=ucwords(str_replace('_',' ',$col));
-
-            if(!in_array($col,$exclude_cols))
-            array_push($cols,['column'=>$col,'label'=>$label,'sortable'=>'No']);
+            if (!can('view_user')) {
+                return createResponse(false, 'Dont have permission to view');
             }
-            $data['table_columns']=$cols;
-             ***/
-            if ($data['is_multiple']) {
-
-                $data['image_list'] = $this->getImageList($id);
-            }
+            $html = view('admin.' . $this->view_folder . '.' . $form_type . '_modal', with($data))->render();
+            return createResponse(true, $html);
+        } else {
+            $html = view('admin.' . $this->view_folder . '.modal.' . $form_type, with($data))->render();
+            return createResponse(true, $html);
         }
-        $html = view('admin.' . $this->view_folder . '.modal.' . $form_type, with($data))->render();
-        return createResponse(true, $html);
     }
     public function exportUser(Request $request, $type)
     {
-        $filter=[]; $filter_date=[];
-        $date_field=null;
-        foreach($_GET as $key=>$val){
-          if(str_contains($key,'start_')){
-             $date_field=str_replace('start_','',$key);
-             $filter_date['min']=$val;
-          }
-          else if(str_contains($key,'end_')){
-            $date_field=str_replace('end_','',$key);
-            $filter_date['max']=$val;
-          }
-          else
-             $filter[$key]=$val;
+        $filter = [];
+        $filter_date = [];
+        $date_field = null;
+        foreach ($_GET as $key => $val) {
+            if (str_contains($key, 'start_')) {
+                $date_field = str_replace('start_', '', $key);
+                $filter_date['min'] = $val;
+            } else if (str_contains($key, 'end_')) {
+                $date_field = str_replace('end_', '', $key);
+                $filter_date['max'] = $val;
+            } else {
+                $filter[$key] = $val;
+            }
+
         }
-        
         if ($type == 'excel') {
-            return Excel::download(new \App\Exports\UserExport($filter,$filter_date,$date_field), 'users' . date("Y-m-d H:i:s") . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+            return Excel::download(new \App\Exports\UserExport($this->model_relations, $filter, $filter_date, $date_field), 'users' . date("Y-m-d H:i:s") . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
         }
 
         if ($type == 'csv') {
-            return Excel::download(new \App\Exports\UserExport($filter,$filter_date,$date_field), 'users' . date("Y-m-d H:i:s") . '.csv', \Maatwebsite\Excel\Excel::CSV);
+            return Excel::download(new \App\Exports\UserExport($this->model_relations, $filter, $filter_date, $date_field), 'users' . date("Y-m-d H:i:s") . '.csv', \Maatwebsite\Excel\Excel::CSV);
         }
 
         if ($type == 'pdf') {
-            return Excel::download(new \App\Exports\UserExport($filter,$filter_date,$date_field), 'users' . date("Y-m-d H:i:s") . '.pdf', \Maatwebsite\Excel\Excel::MPDF);
+            return Excel::download(new \App\Exports\UserExport($this->model_relations, $filter, $filter_date, $date_field), 'users' . date("Y-m-d H:i:s") . '.pdf', \Maatwebsite\Excel\Excel::MPDF);
         }
 
     }
-    public function pdf_generate_from_html()
+    public function load_toggle(Request $r)
     {
-        $mpdf = new \Mpdf\Mpdf(['utf-8', 'A4-C']);
-        $mpdf->autoScriptToLang = true;
-        $mpdf->baseScript = 1;
-        $mpdf->autoVietnamese = true;
-        $mpdf->autoArabic = true;
+        $value = trim($r->val);
+        $rowid = $r->has('row_id') ? $r->row_id : null;
+        $row = null;
+        if ($rowid) {
+            $model = app("App\\Models\\" . $this->module);
+            $row = $model::where('id', $rowid)->first();
+        }
+        $index_of_val = 0;
+        $is_value_present = false;
+        $i = 0;
+        foreach ($this->toggable_group as $val) {
 
-        $mpdf->autoLangToFont = true;
-        $html = "somehtml";
-        $mpdf->WriteHTML($html, \Mpdf\HTMLParserMode::HTML_BODY);
+            if ($val['onval'] == $value) {
 
-        $mpdf->Output();
+                $is_value_present = true;
+                $index_of_val = $i;
+                break;
+            }
+            $i++;
+        }
+        if ($is_value_present) {
+            if ($row) {
+                $this->toggable_group = [];
 
+            }
+            $data['inputs'] = $this->toggable_group[$index_of_val]['inputs'];
+
+            $v = view('admin.attribute_families.toggable_snippet', with($data))->render();
+            return createResponse(true, $v);
+        } else {
+            return createResponse(true, "");
+        }
+
+    }
+    public function getImageList($id, $table, $parent_field_name)
+    {
+
+        $ar = \DB::table($table)->where($parent_field_name, $id)->get(['id', 'name'])->map(function ($val) use ($table) {
+
+            $val->table = $table;
+            $val->folder = $this->storage_folder;
+            return $val;
+        })->toArray();
+        return $ar;
     }
 }
