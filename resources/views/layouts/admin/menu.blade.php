@@ -1,6 +1,7 @@
 @php
     
-    $last_uri = is_admin()?request()->segment(2):request()->segment(1);
+    //dd(url()->full());
+    $last_uri = str_contains(url()->full(),'admin/dashboard')?request()->segment(2):request()->segment(1);
     
     $routes_arr = ['receive_payments', 'create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
     $raw_arr = ['create_material_stocks', 'units', 'input_materials'];
@@ -167,7 +168,7 @@
             auth()->user()->can('list_receive_payments'))
         <li class="menu-item @if ($last_uri == 'receive_payments') active @endif">
             <a href="{{ route('receive_payments.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <i class="menu-icon tf-icons fa fa-inr"></i>
                 <div data-i18n="Calendar">Receive Payments</div>
             </a>
         </li>
