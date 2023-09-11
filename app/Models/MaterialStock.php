@@ -24,6 +24,6 @@ class MaterialStock extends Model
 
 	public function material():BelongsTo
 {
-  return $this->belongsTo(InputMaterial::class,'material_id','id')->withDefault();
+  return $this->belongsTo(InputMaterial::class,'material_id','id')->withDefault()->withTrashed();
 } 
  }

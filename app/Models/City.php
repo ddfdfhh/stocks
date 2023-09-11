@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\softDeletes;
+
 class City extends Model
 {
+   use softDeletes;
     protected $table='city';
     public $timestamps=0;
      public function getFillable(){
@@ -20,6 +23,6 @@ class City extends Model
     }
     	public function state():BelongsTo
 {
-         return $this->belongsTo(State::class,'state_id','id')->withDefault();
+         return $this->belongsTo(State::class,'state_id','id')->withDefault()->withTrashed();
 } 
  }

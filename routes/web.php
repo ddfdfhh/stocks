@@ -158,6 +158,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('generated_product_stocks', 'GeneratedProductStockController');
     Route::post('generated_product_stocks/view', [App\Http\Controllers\GeneratedProductStockController::class, 'view'])->name('generatedproductstocks.view');
     Route::get("export_generatedproductstocks/{type}", [App\Http\Controllers\GeneratedProductStockController::class, "exportGeneratedProductStock"])->name("generatedproductstock.export");
+    Route::post("calculateProductPrice", [App\Http\Controllers\GeneratedProductStockController::class, "calculateProductPrice"])->name("generatedproductstock.calculateProductPrice");
 
     Route::resource('create_orders', 'CreateOrderController');
     Route::post('create_orders/view', [App\Http\Controllers\CreateOrderController::class, 'view'])->name('createorders.view');

@@ -27,6 +27,11 @@ class InputMaterialController extends Controller
         'sortable' => 'Yes'
     ],
     [
+        'column' => 'rate',
+        'label' => 'Rate(Rs.)',
+        'sortable' => 'Yes'
+    ],
+    [
         'column' => 'unit_id',
         'label' => 'Measuring Unit',
         'sortable' => 'No'
@@ -545,6 +550,15 @@ class InputMaterialController extends Controller
                 'default' => isset($model) ? $model->name : "",
                 'attr' => []
             ],
+             [
+                'placeholder' => 'Enter rate',
+                'name' => 'rate',
+                'label' => 'Rate(Rs.)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->rate : "",
+                'attr' => []
+            ],
             [
                 'name' => 'unit_id',
                 'label' => 'Unit Id',
@@ -597,6 +611,15 @@ class InputMaterialController extends Controller
                 'default' => isset($model) ? $model->name : "",
                 'attr' => []
             ],
+             [
+                'placeholder' => 'Enter rate',
+                'name' => 'rate',
+                'label' => 'Rate(Rs.)',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->rate : "",
+                'attr' => []
+             ],
             [
                 'name' => 'unit_id',
                 'label' => 'Unit Id',

@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\softDeletes;
+
 class CreateOrder extends Model
 {
+  use softDeletes;
     protected $table='create_order';
     public $timestamps=0;
      public function getFillable(){
@@ -24,12 +27,12 @@ class CreateOrder extends Model
 
 	public function customer():BelongsTo
 {
-  return $this->belongsTo(Customer::class,'customer_id','id')->withDefault();
+  return $this->belongsTo(Customer::class,'customer_id','id')->withDefault()->withTrashed();
 } 
 
  
 	public function driver():BelongsTo
 {
-  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault();
+  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault()->withTrashed();;
 } 
  }

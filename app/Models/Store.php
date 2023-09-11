@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\softDeletes;
-
-class LeadSource extends Model
+class Store extends Model
 {
-    use softDeletes;
-    protected $table='lead_sources';
+    protected $table='stores';
     public $timestamps=0;
      public function getFillable(){
         return  $this->getTableColumns();
@@ -24,4 +21,9 @@ class LeadSource extends Model
     
    
   
-}
+
+	public function owner():BelongsTo
+{
+  return $this->belongsTo(User::class,'owner_id','id')->withDefault();
+} 
+ }

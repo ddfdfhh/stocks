@@ -1,9 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="py-3 breadcrumb-wrapper mb-4">
-            <span class="text-muted fw-light">{{ properPluralName($plural_lowercase) }} /</span> List
-        </h4>
+       
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasEndLabel" class="offcanvas-title" style="text-transform:capitalize;">

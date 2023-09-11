@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\softDeletes;
+
 class Driver extends Model
 {
+  use softDeletes;
     protected $table='driver';
     public $timestamps=0;
      public function getFillable(){
@@ -24,6 +27,6 @@ class Driver extends Model
 
 	public function vehicle():BelongsTo
 {
-  return $this->belongsTo(Vehicle::class,'vehicle_id','id');
+  return $this->belongsTo(Vehicle::class,'vehicle_id','id')->withTrashed();
 } 
  }

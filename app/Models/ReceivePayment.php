@@ -32,10 +32,10 @@ protected $dates = [
 
 	public function order():BelongsTo
 {
-  return $this->belongsTo(CreateOrder::class,'order_id','id')->withDefault();
+  return $this->belongsTo(CreateOrder::class,'order_id','id')->withDefault()->withTrashed();
 } 
 public function payment_collected_by():BelongsTo
 {
-  return $this->belongsTo(User::class,'payment_collected_by_id','id')->withDefault();
+  return $this->belongsTo(User::class,'payment_collected_by_id','id')->withDefault()->withTrashed();
 } 
  }

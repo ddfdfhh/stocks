@@ -27,16 +27,16 @@ class Leads extends Model
 
 	public function source():BelongsTo
 {
-  return $this->belongsTo(LeadSource::class,'source_id','id')->withDefault();
+  return $this->belongsTo(LeadSource::class,'source_id','id')->withDefault()->withTrashed();
 } 
  
 	public function assigned_to():BelongsTo
 {
-  return $this->belongsTo(User::class,'assigned_id','id')->withDefault();
+  return $this->belongsTo(User::class,'assigned_id','id')->withDefault()->withTrashed();
 } 
  
 	public function product():BelongsTo
 {
-  return $this->belongsTo(Product::class,'product_id','id')->withDefault();
+  return $this->belongsTo(Product::class,'product_id','id')->withDefault()->withTrashed();
 } 
  }

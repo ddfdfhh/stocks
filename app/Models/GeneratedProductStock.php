@@ -36,6 +36,6 @@ class GeneratedProductStock extends Model
 
 	public function product():BelongsTo
 {
-  return $this->belongsTo(Product::class,'product_id','id')->withDefault();
+  return $this->belongsTo(Product::class,'product_id','id')->withDefault()->withTrashed();
 } 
  }

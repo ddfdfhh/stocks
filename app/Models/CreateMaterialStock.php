@@ -24,14 +24,14 @@ class CreateMaterialStock extends Model
 
 	public function material():BelongsTo
 {
-  return $this->belongsTo(InputMaterial::class,'material_id','id')->withDefault();
+  return $this->belongsTo(InputMaterial::class,'material_id','id')->withDefault()->withTrashed();
 } 
 	public function driver():BelongsTo
 {
-  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault();
+  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault()->withTrashed();
 } 
 	public function supplier():BelongsTo
 {
-  return $this->belongsTo(Supplier::class,'supplier_id','id')->withDefault();
+  return $this->belongsTo(Supplier::class,'supplier_id','id')->withDefault()->withTrashed();
 } 
  }

@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\softDeletes;
-
-class LeadSource extends Model
+class AddProductStock extends Model
 {
-    use softDeletes;
-    protected $table='lead_sources';
+    protected $table='add_product_stocks';
     public $timestamps=0;
      public function getFillable(){
         return  $this->getTableColumns();
@@ -24,4 +21,9 @@ class LeadSource extends Model
     
    
   
-}
+
+	public function product():BelongsTo
+{
+  return $this->belongsTo(Product::class,'product_id','id')->withDefault();
+} 
+ }

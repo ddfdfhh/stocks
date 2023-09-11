@@ -51,7 +51,7 @@ class GeneratedProductStockController extends Controller
                         'type' => 'select',
                         'default' => '',
                         'attr' => [
-                          'class' => 'prod_sel',
+                            'class' => 'prod_sel', 'onChange' => 'calculateProductPrice()',
                         ],
                         'custom_key_for_option' => 'name',
                         'options' => getList('InputMaterial'),
@@ -65,7 +65,7 @@ class GeneratedProductStockController extends Controller
                         'tag' => 'input',
                         'type' => 'number',
                         'default' => '',
-                        'attr' => [],
+                        'attr' => ['onChange' => 'calculateProductPrice()'],
                     ],
                 ],
             ],
@@ -125,7 +125,7 @@ class GeneratedProductStockController extends Controller
                 'name' => 'product_id',
                 'label' => 'Product',
                 'type' => 'select',
-                'options'=>getList('Product')
+                'options' => getList('Product'),
             ],
         ];
         $table_columns = $this->table_columns;
@@ -261,46 +261,62 @@ class GeneratedProductStockController extends Controller
     }
     public function store(GeneratedProductStockRequest $request)
     {
-       \DB::beginTransaction();
+        \DB::beginTransaction();
         try {
             $post = $request->all();
+            // dd($post);
             $material_ids = $post['raw_materials__json__material_id'];
             $material_names_array = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('name', 'id')->toArray();
-            $material_qty_array = \DB::table('create_material_stock')->whereIn('id', $material_ids)->pluck('current_quantity', 'material_id')->toArray();
-           //  dd( $material_qty_array);
+            $material_unit_array = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('unit_id', 'id')->toArray();
+            $unit_name_array = \DB::table('unit')->whereIn('id', array_values($material_unit_array))->pluck('name', 'id')->toArray();
+            $material_qty_array = \DB::table('create_material_stock')->whereIn('material_id', $material_ids)->pluck('current_quantity', 'material_id')->toArray();
+            // dd( $material_ids);
             $post = formatPostForJsonColumn($post);
             $ar = json_decode($post['raw_materials']);
 
-            $ar = array_map(function ($v) use ($material_names_array) {
+            $ar = array_map(function ($v) use ($material_names_array, $unit_name_array, $material_unit_array) {
+                $unit_id = $material_unit_array[$v->material_id];
                 $name = isset($material_names_array[$v->material_id]) ? $material_names_array[$v->material_id] : '';
                 $v->name = $name;
+                $v->unit = isset($unit_name_array[$unit_id]) ? $unit_name_array[$unit_id] : '';
                 return $v;
             }, $ar);
+            //dd($material_qty_array);
             unset($post['raw_materials']);
-           if(count($ar)>0){
-           
-            foreach($ar as $item){
-               if($item->material_id){
-              //  dd($material_qty_array[$item->material_id]>$item->quantity);
-                if($material_qty_array[$item->material_id]<$item->quantity){
-                    return createResponse(false,'Insufficent quantity for '.$item->name);
-                }
-                \DB::table('create_material_stock')->where('material_id',$item->material_id)
-                                          ->decrement('current_quantity',$item->quantity);
-                \DB::table('create_material_stock')->where('material_id',$item->material_id)->increment('used_quantity',$item->quantity);
-               }
-                                        
+            if (count($material_qty_array) < 1) {
+                return createResponse(false, 'Please add stock for raw materials');
+
             }
-        }
-           
+            if (count($ar) > 0) {
+             //   print_r($material_qty_array);
+             //   dd($ar);
+                foreach ($ar as $item) {
+                    if ($item->material_id) {
+                        //  dd($material_qty_array[$item->material_id]>$item->quantity);
+                        if (isset($material_qty_array[$item->material_id])) {/***Mterial has stock addedd */
+                            if ($material_qty_array[$item->material_id] < $item->quantity) {
+                                return createResponse(false, 'Insufficent quantity for ' . $item->name);
+                            }
+                        } else {
+                            return createResponse(false, 'Please add stock for raw material ' . $item->name);
+
+                        }
+                        \DB::table('create_material_stock')->where('material_id', $item->material_id)
+                            ->decrement('current_quantity', $item->quantity);
+                        \DB::table('create_material_stock')->where('material_id', $item->material_id)->increment('used_quantity', $item->quantity);
+                    }
+
+                }
+            }
+
             $post['raw_materials'] = json_encode($ar);
-           
+          //  dd($post);
             $generatedproductstock = GeneratedProductStock::create($post);
-                \DB::commit();
+            \DB::commit();
             return createResponse(true, 'Product Stock created successfully', $this->index_url);
         } catch (\Exception $ex) {
             \DB::rollback();
-            return createResponse(false, $ex->getMessage());
+            return createResponse(false, $ex->getLine() . '==' . $ex->getMessage());
         }
     }
     public function edit($id)
@@ -440,7 +456,7 @@ class GeneratedProductStockController extends Controller
 
             $generatedproductstock->update($post);
 
-            return createResponse(true,' Product stock updated successfully', $this->index_url);
+            return createResponse(true, ' Product stock updated successfully', $this->index_url);
         } catch (\Exception $ex) {
             return createResponse(false, $ex->getMessage());
         }
@@ -746,5 +762,26 @@ class GeneratedProductStockController extends Controller
             return $val;
         })->toArray();
         return $ar;
+    }
+    public function calculateProductPrice(Request $r)
+    {
+        if ($r->ajax()) {
+            $post = $r->all();
+            $sum = 0;
+            $material_ids = $post['raw_materials__json__material_id'];
+            $material_qty = array_values($post['raw_materials__json__quantity']);
+
+            $material_ids = array_values($material_ids);
+            $t = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('rate', 'id')->toArray();
+            $i = 0;
+
+            foreach ($material_ids as $id) {
+
+                $sum += $t[$id] * $material_qty[$i];
+
+                $i++;
+            }
+            return createResponse(true, $sum);
+        }
     }
 }

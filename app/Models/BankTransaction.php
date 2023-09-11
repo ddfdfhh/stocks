@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\softDeletes;
-
-class LeadSource extends Model
+class BankTransaction extends Model
 {
-    use softDeletes;
-    protected $table='lead_sources';
+    protected $table='bank_transactions';
     public $timestamps=0;
      public function getFillable(){
         return  $this->getTableColumns();

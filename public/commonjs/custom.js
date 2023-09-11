@@ -543,3 +543,22 @@ function setDueAmount(paid_amount) {
     let due = current_order_total - total_paid;
     $("#inp-due_amount").val(due > 0 ? due : 0);
 }
+function calculateProductPrice() {
+   
+    $.ajax({
+        url: "/calculateProductPrice",
+        method: "POST",
+        dataType: "json",
+        data: $("#generatedproductstock_form").serialize(),
+        success: function (res, textStatus, xhr) {
+            $('#cost').text('Rs.' + res['message']);
+            $("#total_cost").val(res["message"]);
+        },
+
+        error: function (xhr, status, errorThrown) {
+            enableBtn(btn);
+            console.log("error");
+        },
+    });
+        
+}

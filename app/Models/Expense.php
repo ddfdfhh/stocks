@@ -34,11 +34,11 @@ class Expense extends Model
 
 	public function item():BelongsTo
 {
-  return $this->belongsTo(ExpsnseItem::class,'item_id','id')->withDefault();
+  return $this->belongsTo(ExpsnseItem::class,'item_id','id')->withDefault()->withTrashed();
 } 
  
 	public function paid_user():BelongsTo
 {
-  return $this->belongsTo(User::class,'paid_user_id','id')->withDefault();
+  return $this->belongsTo(User::class,'paid_user_id','id')->withDefault()->withTrashed();
 } 
  }

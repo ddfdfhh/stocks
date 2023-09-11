@@ -12,9 +12,11 @@ use Spatie\Permission\Guard;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
+use Illuminate\Database\Eloquent\softDeletes;
 
 class Role extends Model implements RoleContract
 {
+    use softDeletes;
     use HasPermissions;
     use RefreshesPermissionCache;
 

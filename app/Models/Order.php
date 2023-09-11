@@ -24,11 +24,11 @@ class Order extends Model
 
 	public function customer():BelongsTo
 {
-  return $this->belongsTo(Customer::class,'customer_id','id')->withDefault();
+  return $this->belongsTo(Customer::class,'customer_id','id')->withDefault()->withTrashed();
 } 
  
 	public function driver():BelongsTo
 {
-  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault();
+  return $this->belongsTo(Driver::class,'driver_id','id')->withDefault()->withTrashed();
 } 
  }
