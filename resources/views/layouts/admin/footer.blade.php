@@ -42,7 +42,7 @@
 <script src="{{ asset('commonjs/commonjs_functions.js') }}?v=3"></script>
 <script src="{{ asset('commonjs/index_table_sort_pagination.js') }}"></script>
 <script src="{{ asset('commonjs/summernote.min.js') }}"></script>
-<script src="{{ asset('commonjs/custom.js') }}?v=3"></script>
+<script src="{{ asset('commonjs/custom.js') }}?v=4"></script>
 @if(request()->segment(2)=='dashboard' || request()->segment(1)=='dashboard')
 <script src="{{ asset('commonjs/chart.js') }}"></script>
 @endif
