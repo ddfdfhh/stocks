@@ -56,7 +56,7 @@ class AdminController extends Controller
         $data['total_order_income'] = \DB::table('create_order')->sum('paid_amount');
         $data['today_order_income'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->sum('paid_amount');
         $data['total_products_count'] = \DB::table('product')->count();
-        $data['raw_meterials_count'] = \DB::table('input_materials')->count();
+        $data['raw_meterials_count'] = \DB::table('input_material')->count();
 
         $data['income'] = $data['total_sell'] - $data['total_expense'];
 //dd($data);
