@@ -93,6 +93,9 @@
                                         <th>{{ str_replace(' Id', '', $t['label']) }}</th>
                                     @endif
                                 @endforeach
+                                <th>Total Quantity</th>
+                                <th>Current Quantity</th>
+                                <th>Used Quantity</th>
                                 <th>Action</th>
                             </tr>
                         </thead>

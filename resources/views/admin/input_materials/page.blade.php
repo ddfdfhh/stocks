@@ -96,6 +96,9 @@
                     </td>
                 @endif
             @endforeach
+            <td>{{$r->material_stock->total_incoming}}</td>
+            <td>{{$r->material_stock->current_stock}}</td>
+            <td>{{$r->material_stock->total_outgoing}}</td>
             <td>
                 <a class="btn btn-success btn-icon" title="View"
                     href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">

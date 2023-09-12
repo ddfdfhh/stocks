@@ -10,7 +10,7 @@ class AdminController extends Controller
     public function index()
     {
         $user = auth()->user();
-     
+
         $data['total_expense'] = \DB::table('company_ledger')->whereMode('Spent')->sum('amount');
         $data['total_sell'] = \DB::table('company_ledger')->whereMode('Income')->sum('amount');
         $data['total_expense_today'] = \DB::table('company_ledger')->whereMode('Spent')->whereDay('created_at', '=', Carbon::now()->day)->sum('amount');
@@ -38,7 +38,6 @@ class AdminController extends Controller
         $data['total_leads_success'] = \DB::table('leads')->whereStatus('Converted')->count();
         $data['today_leads_success'] = \DB::table('leads')->whereStatus('Converted')->whereDay('created_at', '=', Carbon::now()->day)->count();
 
-
         $data['total_customers'] = \DB::table('customer')->count();
         /**sell** */
         $data['total_sell'] = \DB::table('company_ledger')->whereMode('Income')->sum('amount');
@@ -52,14 +51,14 @@ class AdminController extends Controller
         $data['weekly_expense'] = \DB::table('company_ledger')->whereMode('Spent')->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
         $data['monthly_expense'] = \DB::table('company_ledger')->whereMode('Spent')->whereMonth('created_at', Carbon::now()->month)->sum('amount');
 
-          $data['total_orders'] = \DB::table('create_order')->count();
-          $data['today_orders'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->count();
-          $data['total_order_income'] = \DB::table('create_order')->sum('paid_amount');
-          $data['today_order_income'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->sum('paid_amount');
-         $data['total_products_count'] = \DB::table('product')->count();
-         $data['raw_meterials_count'] = \DB::table('input_materials')->count();
+        $data['total_orders'] = \DB::table('create_order')->count();
+        $data['today_orders'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->count();
+        $data['total_order_income'] = \DB::table('create_order')->sum('paid_amount');
+        $data['today_order_income'] = \DB::table('create_order')->whereDate('created_at', Carbon::today()->toDateString())->sum('paid_amount');
+        $data['total_products_count'] = \DB::table('product')->count();
+        $data['raw_meterials_count'] = \DB::table('input_materials')->count();
 
-        $data['income']= $data['total_sell']-$data['total_expense'];
+        $data['income'] = $data['total_sell'] - $data['total_expense'];
 //dd($data);
         return view('admin.dashboard', with($data));
     }
@@ -162,5 +161,118 @@ class AdminController extends Controller
         }
 
     }
-   
+    public function buildFilter(Request $r, $query)
+    {
+        $get = $r->all();
+        if (count($get) > 0 && $r->isMethod('get')) {
+            foreach ($get as $key => $value) {
+                if ((!is_array($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
+                    if (strpos($key, 'start') !== false) {
+                        $field_name = explode('_', $key);
+
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
+
+                        $query = $query->whereDate($field_name, '>=', \Carbon\Carbon::parse($value));
+                    } elseif (strpos($key, 'end') !== false) {
+                        $field_name = explode('_', $key);
+                        $x = array_shift($field_name);
+                        $field_name = implode('_', $field_name);
+                        $query = $query->whereDate($field_name, '<=', \Carbon\Carbon::parse($value));
+                    } else {
+                        if (!is_array($value)) {
+                            $query = $query->where($key, $value);
+                        } else {
+                            //dd($value);
+                            $query = $query->whereIn($key, $value);
+                        }
+                    }
+                }
+            }
+        }
+        return $query;
+    }
+    public function company_ledger(Request $request)
+    {
+        $table_columns = [
+            [
+                'column' => 'name',
+                'label' => 'Title',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'amount',
+                'label' => 'Amount',
+                 'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'mode',
+                'label' => 'Income/Expense',
+                 'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'created_at',
+                'label' => 'Date',
+                 'sortable' => 'Yes',
+            ],
+
+        ];
+        $filterable_fields = [
+            [
+                'name' => 'created_at',
+                'label' => 'Created At',
+                'type' => 'date',
+            ],
+        ];
+        $this->pagination_count = 100;
+        if ($request->ajax()) {
+            $sort_by = $request->get('sortby');
+            $sort_type = $request->get('sorttype');
+            $search_by = $request->get('search_by');
+
+            $query = $request->get('query');
+
+            $search_val = str_replace(" ", "%", $query);
+            if (empty($search_by)) {
+                $search_by = 'name';
+            }
+
+            $list = \App\Models\CompanyLedger::when(!empty($search_val), function ($query) use ($search_val, $search_by) {
+                return $query->where($search_by, 'like', '%' . $search_val . '%');
+            })
+                ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
+                    return $query->orderBy($sort_by, $sort_type);
+                })->paginate($this->pagination_count);
+            $data = [
+                'table_columns' => $table_columns,
+                'list' => $list,
+                'sort_by' => $sort_by,
+                'sort_type' => $sort_type,
+
+            ];
+            return view('admin.company_ledger', with($data));
+        } else {
+
+            $query = null;
+
+            $query = \App\Models\CompanyLedger::query();
+
+            $query = $this->buildFilter($request, $query);
+            $list = $query->paginate($this->pagination_count);
+
+            $view_data = [
+                'list' => $list,
+
+                'title' => 'Company Ledger',
+                'searchable_fields' => [],
+                'filterable_fields' => $filterable_fields,
+
+                'table_columns' => $table_columns,
+
+            ];
+            return view('admin.company_ledger', $view_data);
+        }
+
+    }
+
 }

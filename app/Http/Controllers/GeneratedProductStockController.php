@@ -6,7 +6,7 @@ use App\Http\Requests\GeneratedProductStockRequest;
 use App\Models\GeneratedProductStock;
 use Maatwebsite\Excel\Facades\Excel;
 use \Illuminate\Http\Request;
-
+use \DB;
 class GeneratedProductStockController extends Controller
 {
     public function __construct()
@@ -304,12 +304,14 @@ class GeneratedProductStockController extends Controller
                 return createResponse(false, 'Please add stock for raw materials');
 
             }
+           //print_r($material_qty_array);
+         //  dd($ar);
             if (count($ar) > 0) {
                 //   print_r($material_qty_array);
                 //   dd($ar);
                 foreach ($ar as $item) {
                     if ($item->material_id) {
-                        //  dd($material_qty_array[$item->material_id]>$item->quantity);
+                     
                         if (isset($material_qty_array[$item->material_id])) { /***Mterial has stock addedd */
                             if ($material_qty_array[$item->material_id] < $item->quantity) {
                                 return createResponse(false, 'Insufficent quantity for ' . $item->name);
@@ -330,6 +332,7 @@ class GeneratedProductStockController extends Controller
             $this->upsertAdminProductStock($post);
             $generatedproductstock = GeneratedProductStock::create($post);
             \DB::commit();
+            //dd('ok');
             return createResponse(true, 'Product Stock created successfully', $this->index_url);
         } catch (\Exception $ex) {
             \DB::rollback();

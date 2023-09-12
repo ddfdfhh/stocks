@@ -45,6 +45,11 @@ class InputMaterialController extends Controller
         'name' => 'unit',
         'class' => 'App\\Models\\InputMaterial',
         'type' => 'BelongsTo'
+    ],
+    [
+        'name' => 'material_stock',
+        'class' => 'App\\Models\\InputMaterial',
+        'type' => 'BelongsTo'
     ]
 ];
       

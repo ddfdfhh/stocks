@@ -138,7 +138,7 @@
                     <li class="menu-item @if ($last_uri == 'input_materials') active @endif">
                         <a href="{{ route('input_materials.index') }}" class="menu-link">
 
-                            <div data-i18n="Calendar">Manage Input Materials</div>
+                            <div data-i18n="Calendar">Raw Materials</div>
                         </a>
                     </li>
                 @endif
@@ -157,12 +157,21 @@
                     <li class="menu-item @if ($last_uri == 'create_material_stocks') active @endif">
                         <a href="{{ route('create_material_stocks.index') }}" class="menu-link">
 
-                            <div data-i18n="Calendar">Manage Material Stocks</div>
+                            <div data-i18n="Calendar">Add Material Stock</div>
                         </a>
                     </li>
                 @endif
 
             </ul>
+        </li>
+    @endif
+     @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_create_orders'))
+        <li class="menu-item @if ($last_uri == 'create_orders') active @endif">
+            <a href="{{ route('admin.company_ledger') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <div data-i18n="Calendar">Company Ledger </div>
+            </a>
         </li>
     @endif
     @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||

@@ -29,4 +29,8 @@ class InputMaterial extends Model
 {
   return $this->belongsTo(Unit::class,'unit_id','id')->withDefault();
 } 
+	public function material_stock():BelongsTo
+{
+  return $this->belongsTo(MaterialStock::class,'id','material_id')->withDefault();
+} 
  }

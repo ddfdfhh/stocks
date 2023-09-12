@@ -246,6 +246,7 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post("user/load_form", [UserController::class, "loadAjaxForm"])->name("user.loadAjaxForm");
     Route::get("export_users/{type}", [UserController::class, "exportUser"])->name("user.export");
     Route::post("addEditRemark", [App\Http\Controllers\LeadsController::class, "addEditRemark"])->name("addEditRemark");
+    Route::get("company_ledger", [App\Http\Controllers\AdminController::class, "company_ledger"])->name("admin.company_ledger");
 
 /**=========================Genrate rotues from here */
 
