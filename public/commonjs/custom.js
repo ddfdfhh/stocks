@@ -1,15 +1,13 @@
 function formatState(state) {
     let txt = state.text;
     let p = txt.split("(");
-   
+
     if (p.length > 1) {
-          p[1] = p[1].replace(')', "");
-       
-        let n = !Number.isInteger(p[1].trim(')'))?parseInt(p[1]): p[1];
-        return $('<span>' + p[0] + '<strong>(' + n + ')</strong></span>');
-    }
-    else return state.text;
-    
+        p[1] = p[1].replace(")", "");
+
+        let n = !Number.isInteger(p[1].trim(")")) ? parseInt(p[1]) : p[1];
+        return $("<span>" + p[0] + "<strong>(" + n + ")</strong></span>");
+    } else return state.text;
 }
 
 function applySelect2(elem, in_popup = true, container_id = null) {
@@ -545,7 +543,7 @@ function fetchOrderTotalAmount(id) {
     }
     objectAjaxNoLoaderNoAlert(
         { order_id: id },
-        "/admin/getOrderTotalAmount",
+        "/getOrderTotalAmount",
         callbackSuccess,
         callbackError,
         "POST",
