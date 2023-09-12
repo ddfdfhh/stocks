@@ -174,7 +174,7 @@
             </a>
         </li>
     @endif
-    @if (auth()->user()->hasRole(['Admin']) ||
+    @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
             auth()->user()->can('list_receive_payments'))
         <li class="menu-item @if ($last_uri == 'receive_payments') active @endif">
             <a href="{{ route('receive_payments.index') }}" class="menu-link">

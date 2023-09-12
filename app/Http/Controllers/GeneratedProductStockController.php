@@ -261,7 +261,7 @@ class GeneratedProductStockController extends Controller
     }
      public function upsertAdminProductStock($post)
     {
-        $qty = $post['quantity'];
+        $qty = $post['quantity_produced'];
         $update = [
             'total_quantity' => DB::raw('total_quantity+' . $qty),
             'current_quantity' => DB::raw('current_quantity+' . $qty),

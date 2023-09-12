@@ -331,7 +331,7 @@
             {{-- for store owner --}}
             <div class="row">
                 <!--leads-->
-   <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
@@ -407,7 +407,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar">
+                                        <span class="avatar-initial rounded-circle bg-label-info"><i
+                                                class='bx bx-dock-top  fs-4'></i></span>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="card-title mb-0 me-2">{{ $total_products_count }}</h5>
+                                        <small class="text-muted">No Of Store Products </small>
+                                    </div>
+                                </div>
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <br>
 

@@ -61,7 +61,7 @@ class DashboardController extends Controller
             if(is_null($store)){
                 return '<center><h1>Please assign some store,then login </h1></center';
             }
-            $data['total_products']=\DB::table('store_assigned_product_stocks')->whereStoreId($store->id)->count();
+            $data['total_products_count']=\DB::table('store_assigned_product_stocks')->whereStoreId($store->id)->count();
             $data['top_five_orders'] = \DB::table('create_order')->whereCreatedById(auth()->id())->orderBy('created_at', 'DESC')->take(5)->get();
            $data['top_five_orders_paid'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();
             $data['total_orders_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->count();
