@@ -78,7 +78,7 @@ class {{modelName}}Controller extends Controller
     public function index(Request $request)
     {
        
-        if (!can('list_{{modelNameSingularLowerCase}}')) {
+        if (!can('list_{{modelNamePluralLowerCase}}')) {
         return redirect(route('admin.unauthorized'));
         }
         $searchable_fields={{searchFields}};
@@ -213,7 +213,7 @@ class {{modelName}}Controller extends Controller
     }
     public function store({{modelName}}Request $request)
     {
-        if (!can('add_{{modelNameSingularLowerCase}}')) {
+        if (!can('create_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission');
         }
         \DB::beginTransaction();
@@ -310,7 +310,7 @@ class {{modelName}}Controller extends Controller
     }
     public function show($id)
     {
-        if (!can('view_{{modelNameSingularLowerCase}}')) {
+        if (!can('view_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission for this action');
         }
         
@@ -336,11 +336,11 @@ class {{modelName}}Controller extends Controller
             $data['image_list']=$this->getImageList($id);
         }
          $table = getTableNameFromModel($this->module);
-        $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+         $columns = \DB::getSchemaBuilder()->getColumnListing($table);
             //natcasesort($columns);
 
             $cols=[];
-            $exclude_cols=['updated_at','id'];
+            $exclude_cols=['updated_at','id','deleted_at'];
             foreach($columns as $col){
             
             $label=ucwords(str_replace('_',' ',$col));
@@ -355,7 +355,7 @@ class {{modelName}}Controller extends Controller
 
     public function update({{modelName}}Request $request, $id)
     {
-        if (!can('edit_{{modelNameSingularLowerCase}}')) {
+        if (!can('edit_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission');
         }
          \DB::beginTransaction();
@@ -410,7 +410,7 @@ class {{modelName}}Controller extends Controller
 
     public function destroy($id)
     {
-        if (!can('delete_{{modelNameSingularLowerCase}}')) {
+        if (!can('delete_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission to delete');
         }
          \DB::beginTransaction();
@@ -500,7 +500,7 @@ class {{modelName}}Controller extends Controller
         $form_type=$request->form_type;
         $id=$request->id;
         if($form_type=='add'){
-            if (!can('create_{{modelNameSingularLowerCase}}')) {
+            if (!can('create_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission to create ');
         }
                  $data1={{create}};
@@ -526,7 +526,7 @@ class {{modelName}}Controller extends Controller
        
         }
         if($form_type=='edit'){
-            if (!can('edit_{{modelNameSingularLowerCase}}')) {
+            if (!can('edit_{{modelNamePluralLowerCase}}')) {
         return createResponse(false,'Dont have permission to update');
         }
                $model={{modelName}}::findOrFail($id);
@@ -600,7 +600,7 @@ class {{modelName}}Controller extends Controller
         }
       if($form_type=='view')
           { 
-            if (!can('view_{{modelNameSingularLowerCase}}')) {
+            if (!can('view_{{modelNamePluralLowerCase}}')) {
             return createResponse(false,'Dont have permission to view');
             }
             $html=view('admin.'.$this->view_folder.'.'.$form_type.'_modal',with($data))->render();

@@ -190,6 +190,33 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get("export_receivepayments/{type}", [App\Http\Controllers\ReceivePaymentController::class, "exportReceivePayment"])->name("receivepayment.export");
     Route::get('generate_receipt/{id}', [App\Http\Controllers\ReceivePaymentController::class, 'generateReceipt'])->name('receivepayment.generateReceipt');
 
+    Route::resource('bank_transactions', 'BankTransactionController');
+    Route::post('bank_transactions/view', [App\Http\Controllers\BankTransactionController::class, 'view'])->name('banktransactions.view');
+    Route::post("banktransaction/load_form", [App\Http\Controllers\BankTransactionController::class, "loadAjaxForm"])->name("banktransaction.loadAjaxForm");
+    Route::get("export_banktransactions/{type}", [App\Http\Controllers\BankTransactionController::class, "exportBankTransaction"])->name("banktransaction.export");
+
+    Route::resource('stores', 'StoreController');
+    Route::post('stores/view', [App\Http\Controllers\StoreController::class, 'view'])->name('stores.view');
+    Route::post("store/load_form", [App\Http\Controllers\StoreController::class, "loadAjaxForm"])->name("store.loadAjaxForm");
+    Route::get("export_stores/{type}", [App\Http\Controllers\StoreController::class, "exportStore"])->name("store.export");
+    Route::get("store_products/", [App\Http\Controllers\StoreController::class, "store_products"])->name("store.products");
+
+    Route::resource('add_product_stocks', 'AddProductStockController');
+    Route::post('add_product_stocks/view', [App\Http\Controllers\AddProductStockController::class, 'view'])->name('addproductstocks.view');
+    Route::post("addproductstock/load_form", [App\Http\Controllers\AddProductStockController::class, "loadAjaxForm"])->name("addproductstock.loadAjaxForm");
+    Route::get("export_addproductstocks/{type}", [App\Http\Controllers\AddProductStockController::class, "exportAddProductStock"])->name("addproductstock.export");
+
+    
+Route::resource('transfer_product_stocks', 'TransferProductStockController');
+Route::post('transfer_product_stocks/view', [App\Http\Controllers\TransferProductStockController::class,'view'])->name('transferproductstocks.view');
+Route::post("transferproductstock/load_form", [App\Http\Controllers\TransferProductStockController::class,"loadAjaxForm"])->name("transferproductstock.loadAjaxForm");
+Route::get("export_transferproductstocks/{type}", [App\Http\Controllers\TransferProductStockController::class,"exportTransferProductStock"])->name("transferproductstock.export");
+
+
+Route::resource('contractor_works', 'ContractorWorkController');
+Route::post('contractor_works/view', [App\Http\Controllers\ContractorWorkController::class, 'view'])->name('contractorworks.view');
+Route::get("export_contractorworks/{type}", [App\Http\Controllers\ContractorWorkController::class, "exportContractorWork"])->name("contractorwork.export");
+
 });
 
 /******Modules Routes From Here */
@@ -221,8 +248,5 @@ Route::prefix('admin')->middleware(['auth', 'IsAdmin'])->group(function () {
     Route::post("addEditRemark", [App\Http\Controllers\LeadsController::class, "addEditRemark"])->name("addEditRemark");
 
 /**=========================Genrate rotues from here */
-
-  
-
 
 });

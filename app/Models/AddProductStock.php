@@ -19,7 +19,10 @@ class AddProductStock extends Model
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
     
-   
+   public function store():BelongsTo
+{
+  return $this->belongsTo(Store::class,'store_id','id')->withDefault();
+} 
   
 
 	public function product():BelongsTo

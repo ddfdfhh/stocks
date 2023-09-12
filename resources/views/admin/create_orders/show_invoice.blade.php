@@ -28,11 +28,11 @@
         class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
-  
-<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-invoice-print.css')}}" />
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-invoice-print.css') }}" />
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-  @yield('css')
+    @yield('css')
 </head>
 <style>
     .btn-icon {
@@ -125,7 +125,7 @@
         <hr />
 
         <div class="row d-flex justify-content-between mb-4">
-            <div class="col-sm-6 w-50">
+            <div class="col-sm-6 w-8">
                 <h6>Invoice To:</h6>
                 <p class="mb-1">{{ ucwords($customer->name) }}</p>
                 <p class="mb-1"><span class="me-1 fw-bold">Address-</span> {{ ucwords($customer->address) }}</p>
@@ -136,57 +136,89 @@
                 <p class="mb-0"><span class="me-1 fw-bold">Email-</span>{{ $customer->email }}</p>
                 <p class="mb-0"><span class="me-1 fw-bold">GSTIN-</span>{{ $customer->gst_number }}</p>
             </div>
-            <div class="col-sm-6 w-50 " style="text-align:right">
+            <div class="col-sm-6 w-2" style="text-align:right;">
                 <h6>Bill To:</h6>
-                <p class="mb-1">Ram Ashish</p>
-                <p class="mb-1">ByPass Nearlby,Sulatnapur</p>
+                <p class="mb-1">{{ ucwords($customer->name) }}</p>
+                <p class="mb-1"> {{ ucwords($customer->address) }}</p>
+                <p class="mb-1">{{ ucwords($customer->city->name) }},{{ ucwords($customer->state->name) }},INDIA
+                </p>
 
-                <p class="mb-1">718-986-6062</p>
-                <p class="mb-0">ramashishs@gmail.com</p>
+                <p class="mb-1"> +91 {{ $customer->mobile_no }}</p>
+                <p class="mb-0">{{ $customer->email }}</p>
+                <p class="mb-0">{{ $customer->gst_number }}</p>
             </div>
         </div>
-
+ @php
+                                $sub_total = 0;
+                                $total = 0;
+                                $total_sgst_tax = 0;
+                                $total_cgst_tax = 0;
+                                $discount = 0;
+                            @endphp
         <div class="table-responsive">
             <table class="table border-top m-0">
                 <thead>
-                    <tr style="background-color:black">
-                        <th style="color:white">Item</th>
+                    <tr>
+                        <th class="tm_width_3 tm_semi_bold tm_primary_color tm_gray_bg">Product</th>
 
-                        <th style="color:white">Code</th>
-                        <th style="color:white">Qty</th>
-                        <th style="color:white">Price</th>
+                        <th class="tm_width_2 tm_semi_bold tm_primary_color tm_gray_bg">Price</th>
+                        <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Qty</th>
+                        <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Tax
+                            Inclusive?</th>
+                        <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Tax</th>
+                        <th class="tm_width_2 tm_semi_bold tm_primary_color tm_gray_bg tm_text_right">
+                            Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $total = 0;
-                        $tax = 0;
-                        $discount = 0;
-                    @endphp
                     @foreach (json_decode($row->items, true) as $item)
+                        @php
+                            
+                            $item['cgst'] = isset($item['cgst']) ? $item['cgst'] : 18;
+                            $item['sgst'] = isset($item['sgst']) ? $item['sgst'] : 18;
+                            $item['tax_inclusive'] = isset($item['tax_inclusive']) ? $item['tax_inclusive'] : 'Yes';
+                            $sub_sgst = $item['tax_inclusive'] == 'Yes' ? ($item['price'] - 1) * ($item['sgst'] / 100) : ($item['price'] * $item['sgst']) / 100;
+                            $sub_cgst = $item['tax_inclusive'] == 'Yes' ? ($item['price'] - 1) * ($item['cgst'] / 100) : ($item['price'] * $item['cgst']) / 100;
+                            $sub = $item['price'] * $item['quantity'];
+                            $sub_total += $sub;
+                            
+                            $total_sgst_tax += $sub_sgst * $item['quantity'];
+                            $total_cgst_tax += $sub_cgst * $item['quantity'];
+                        @endphp
                         <tr>
-                            <td>{{ $item['name'] }}</td>
-                            <td>PLI90</td>
-                            <td>{{ $item['quantity'] }}</td>
-                            <td>&#8377;{{ number_format($item['price'], 2) }}</td>
+                            <td class="tm_width_1">{{ $item['name'] }}</td>
+                            <td class="tm_width_1">
+                                &#8377;{{ number_format($item['price'], 2) }}</td>
+
+                            <td class="tm_width_1">{{ $item['quantity'] }}</td>
+                            <td class="tm_width_1">{{ $item['tax_inclusive'] }}</td>
+                            <td class="tm_width_3">
+                                &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )
+                                &#8377;{{ $sub_cgst }} csgst(@ {{ $item['cgst'] }}%)
+                            </td>
+                            <td class="tm_width_3" style="text-align:right">
+                                &#8377;{{ $sub_total }}
+                            </td>
 
                         </tr>
                     @endforeach
                     <tr>
-                        <td colspan="2" class="align-top px-4 py-3">
+                        <td colspan="4" class="align-top px-4 py-3">
 
                         </td>
                         <td class="text-end px-4 py-3">
                             <p class="mb-2">Subtotal:</p>
-                            <p class="mb-2">Discount:</p>
-                            <p class="mb-2">Tax:</p>
+
+                            <p class="mb-2">Total SGST Tax:</p>
+                            <p class="mb-2">Total CGST Tax:</p>
                             <p class="mb-0">Total:</p>
                         </td>
                         <td class="px-4 py-3">
-                            <p class="fw-semibold mb-2"> &#8377;{{ number_format($row->total, 2) }}</p>
-                            <p class="fw-semibold mb-2">&#8377;0.00</p>
-                            <p class="fw-semibold mb-2">&#8377;0.00</p>
-                            <p class="fw-semibold mb-0"> &#8377;{{ number_format($row->total, 2) }}
+                            <p class="fw-semibold mb-2"> &#8377;{{ $sub_total }}</p>
+                            <p class="fw-semibold mb-2"> &#8377;{{ $total_sgst_tax }}</p>
+                            <p class="fw-semibold mb-2"> &#8377;{{ $total_cgst_tax }}</p>
+                            <p class="fw-semibold mb-0">
+                                &#8377;{{ $sub_total + $total_cgst_tax + $total_sgst_tax }}
                         </td>
                         </p>
                         </td>
@@ -203,4 +235,5 @@
 
     </div>
 </body>
+
 </html>

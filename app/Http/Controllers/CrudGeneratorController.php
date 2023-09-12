@@ -587,7 +587,7 @@ class CrudGeneratorController extends Controller
         $index = 0;
         if (count($index_cols) > 0) {
             foreach ($index_cols as $cols) {
-                //dd($type);
+                if(isset($index_sortable[$index]))
                 $ar[] = ['column' => $cols, 'label' => $index_labels[$index], 'sortable' => $index_sortable[$index]];
 
                 $index++;
@@ -668,7 +668,7 @@ class CrudGeneratorController extends Controller
                             $options_for_select = [];
                             $options_for_radio = [];
                             $attr_string = $input_attrs[$i];
-                            $is_multiple = $is_multipl_p[$i];
+                            $is_multiple = isset($is_multipl_p[$i])?$is_multipl_p[$i]:false;
                             if (!empty($attr_string)) {
                                 $attrp = explode(',', $attr_string);
                                 foreach ($attrp as $x) {
@@ -1168,7 +1168,7 @@ class CrudGeneratorController extends Controller
         /***** */
         $modelName = $data['modelName'];
         $this->controller($data);
-           //$this->addPermission($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
+    $this->addPermission($data['modelName'], $data['modelNamePluralLowerCase'], $data['table_name']);
         $this->request($data['modelName'], $data['validation']);
         $this->viewFiles($data['modelNamePluralLowerCase'], $data['isModal'], $data['has_export']);
         // $this->makeTablesWithMigration();

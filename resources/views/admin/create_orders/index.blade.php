@@ -10,7 +10,7 @@
                     <h5>All Orders</h5>
                     <div class="d-flex">
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            @if (auth()->user()->hasRole(['Admin']) ||
+                            @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
                                     auth()->user()->can('create_' . $plural_lowercase))
                                 <button type="button" class="rounded-0 btn btn-primary text-white">
                                     <a href="{{ route($plural_lowercase . '.create') }}"

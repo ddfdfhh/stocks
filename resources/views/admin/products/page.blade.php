@@ -18,7 +18,7 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-             
+
 
             </td>
             @foreach ($table_columns as $t)
@@ -68,10 +68,11 @@
                             :rowid="$r->id" />
                     </td>
                 @elseif(isFieldPresentInRelation($model_relations, $t) < 0 &&
-                        (preg_match("/images$/", $t) || preg_match("/_images$/", $t) ||
-                        preg_match("/_docs$/", $t) ||
-                        preg_match("/_files$/", $t) ||
-                        preg_match("/_pdfs$/", $t)))
+                        (preg_match("/images$/", $t) ||
+                            preg_match("/_images$/", $t) ||
+                            preg_match("/_docs$/", $t) ||
+                            preg_match("/_files$/", $t) ||
+                            preg_match("/_pdfs$/", $t)))
                     <td>
                         <!-- here image list is list of table row in object form *****-->
 
@@ -96,10 +97,15 @@
                     </td>
                 @endif
             @endforeach
+            <td>{{ $r->admin_product_stock ? $r->admin_product_stock->total_quantity : 0.0 }}</td>
+            <td>{{ $r->admin_product_stock ? $r->admin_product_stock->current_quantity : 0.0 }}</td>
+            <td>{{ $r->admin_product_stock ? $r->admin_product_stock->other_location_quantity : 0.0 }}</td>
+            <td>{{ $r->admin_product_stock ? $r->admin_product_stock->generated_quantity : 0.0 }}</td>
+            <td>{{ $r->admin_product_stock ? $r->admin_product_stock->transferred_quantity : 0.0 }}</td>
             <td>
                 <a class="btn btn-success btn-icon" title="View"
                     href="javascript:load_form('{!! $module !!}','view','{!! route(strtolower($module) . '.loadAjaxForm') !!}','{!! $r->id !!}','{!! properSingularName($plural_lowercase) !!}')">
-                    <i class="bx bx-dice-4"></i> 
+                    <i class="bx bx-dice-4"></i>
                 </a>
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))

@@ -89,6 +89,11 @@
                                         <th>{{ $t['label'] }}</th>
                                     @endif
                                 @endforeach
+                                <th>Total Qty.</th>
+                                <th>Current Qty.</th>
+                                <th>Other Source Qty.</th>
+                                <th>Generated Qty.</th>
+                                <th>Transferred Qty.</th>
                                 <th>Action</th>
                             </tr>
                         </thead>

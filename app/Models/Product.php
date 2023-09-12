@@ -23,15 +23,10 @@ class Product extends Model
     
    
   
-
-	public function category():HasOne
+	public function admin_product_stock():BelongsTo
 {
-  return $this->hasOne(Category::class,'id','category_id');
+  return $this->belongsTo(AdminProductStock::class,'id','product_id')->withDefault();
 }
  
-	public function images():HasMany
-{
-return $this->hasMany(ProductImage::class,'product_id','id');
-}
-  
+	
  }

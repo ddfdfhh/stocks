@@ -1,5 +1,19 @@
+function formatState(state) {
+    let txt = state.text;
+    let p = txt.split("(");
+   
+    if (p.length > 1) {
+          p[1] = p[1].replace(')', "");
+       
+        let n = !Number.isInteger(p[1].trim(')'))?parseInt(p[1]): p[1];
+        return $('<span>' + p[0] + '<strong>(' + n + ')</strong></span>');
+    }
+    else return state.text;
+    
+}
+
 function applySelect2(elem, in_popup = true, container_id = null) {
-    let options = { placeholder: "Select.." };
+    let options = { placeholder: "Select..", templateResult: formatState };
     if (in_popup) options["dropdownParent"] = $("#" + container_id);
     if ($(elem).length > 0) {
         if ($(elem)[0].length > 0) {
@@ -544,14 +558,13 @@ function setDueAmount(paid_amount) {
     $("#inp-due_amount").val(due > 0 ? due : 0);
 }
 function calculateProductPrice() {
-   
     $.ajax({
         url: "/calculateProductPrice",
         method: "POST",
         dataType: "json",
         data: $("#generatedproductstock_form").serialize(),
         success: function (res, textStatus, xhr) {
-            $('#cost').text('Rs.' + res['message']);
+            $("#cost").text("Rs." + res["message"]);
             $("#total_cost").val(res["message"]);
         },
 
@@ -560,5 +573,4 @@ function calculateProductPrice() {
             console.log("error");
         },
     });
-        
 }

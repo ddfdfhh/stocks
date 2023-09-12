@@ -103,9 +103,15 @@
                                                 @endphp
                                             </td>
                                         @endif
-                                    </tr>
-                                @endforeach
 
+                                    </tr>
+                                  @endforeach
+                                  <tr><th>Total Quantity</th>   <td>{{ $r->admin_product_stock ? $r->admin_product_stock->total_quantity : 0.0 }}</td>   </tr>
+                                  <tr><th>Total Quantity</th>   <td>{{ $r->admin_product_stock ? $r->admin_product_stock->current_quantity : 0.0 }}</td>   </tr>
+                                 <tr><th>Total Quantity</th>    <td>{{ $r->admin_product_stock ? $r->admin_product_stock->other_location_quantity : 0.0 }}</td>   </tr>
+                                <tr><th>Total Quantity</th>     <td>{{ $r->admin_product_stock ? $r->admin_product_stock->generated_quantity : 0.0 }}</td>   </tr>
+                                <tr><th>Total Quantity</th>     <td>{{ $r->admin_product_stock ? $r->admin_product_stock->transferred_quantity : 0.0 }}</td>   </tr>
+                           
                             </tbody>
                         </table>
                     </div><br>

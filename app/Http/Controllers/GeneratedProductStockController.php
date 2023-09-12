@@ -54,7 +54,7 @@ class GeneratedProductStockController extends Controller
                             'class' => 'prod_sel', 'onChange' => 'calculateProductPrice()',
                         ],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('InputMaterial'),
+                        'options' => getListMaterialWithQty(),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -259,6 +259,23 @@ class GeneratedProductStockController extends Controller
         ];
         return view('admin.' . $this->view_folder . '.add', with($view_data));
     }
+     public function upsertAdminProductStock($post)
+    {
+        $qty = $post['quantity'];
+        $update = [
+            'total_quantity' => DB::raw('total_quantity+' . $qty),
+            'current_quantity' => DB::raw('current_quantity+' . $qty),
+            'generated_quantity' => DB::raw('generated_quantity+' . $qty),
+           
+        ];
+        
+
+        if (\DB::table('admin_product_stocks')->where(['product_id' => $post['product_id']])->exists()) {
+            \DB::table('admin_product_stocks')->where(['product_id' => $post['product_id']])->update($update);
+        } else {
+            \DB::table('admin_product_stocks')->insert(array_merge($update, ['product_id' => $post['product_id']]));
+        }
+    }
     public function store(GeneratedProductStockRequest $request)
     {
         \DB::beginTransaction();
@@ -288,12 +305,12 @@ class GeneratedProductStockController extends Controller
 
             }
             if (count($ar) > 0) {
-             //   print_r($material_qty_array);
-             //   dd($ar);
+                //   print_r($material_qty_array);
+                //   dd($ar);
                 foreach ($ar as $item) {
                     if ($item->material_id) {
                         //  dd($material_qty_array[$item->material_id]>$item->quantity);
-                        if (isset($material_qty_array[$item->material_id])) {/***Mterial has stock addedd */
+                        if (isset($material_qty_array[$item->material_id])) { /***Mterial has stock addedd */
                             if ($material_qty_array[$item->material_id] < $item->quantity) {
                                 return createResponse(false, 'Insufficent quantity for ' . $item->name);
                             }
@@ -310,7 +327,7 @@ class GeneratedProductStockController extends Controller
             }
 
             $post['raw_materials'] = json_encode($ar);
-          //  dd($post);
+            $this->upsertAdminProductStock($post);
             $generatedproductstock = GeneratedProductStock::create($post);
             \DB::commit();
             return createResponse(true, 'Product Stock created successfully', $this->index_url);

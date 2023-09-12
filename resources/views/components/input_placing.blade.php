@@ -1,17 +1,23 @@
  @props(['inputRow','value'])
  @php 
    $r=$inputRow;
+   //dd($r);
    $attrs=isset($r['attr'])?$r['attr']:[];
    if(isset($r['event'])){
          $attrs[$r['event']['name']]=$r['event']['function'];
    }
    $y=0;
+  
  @endphp
 
  @if ($r['tag'] == 'input')
                    @if ($r['type'] == 'text' || $r['type'] == 'number' || $r['type'] == 'file' || $r['type'] == 'date')
+                         @if(isset($attrs['readonly']))
+                        {!! Form::text($r['name'], $r['label'])->value($value)->type($r['type'])->placeholder($r['placeholder'])->attrs($attrs)->readonly() !!}
+                       @else
                         {!! Form::text($r['name'], $r['label'])->value($value)->type($r['type'])->placeholder($r['placeholder'])->attrs($attrs) !!}
-                       
+                        @endif
+                        
                     @elseif ($r['type'] == 'radio' || $r['type'] == 'checkbox')
                         <p style=" font-weight:600;font-size: 14px;margin:0">{{ $r['label'] }}</p>
                         <div class="align-items-center">

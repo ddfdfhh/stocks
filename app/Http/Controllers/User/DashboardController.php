@@ -42,6 +42,8 @@ class DashboardController extends Controller
         $data['top_five_orders'] = \DB::table('create_order')->orderBy('created_at', 'DESC')->take(5)->get();
         $data['top_five_orders_paid'] = \DB::table('create_order')->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();*/
         /**Leads */
+        $data=[];
+        if(!auth()->user()->hasRole(['Store Incharge'])){
         $data['top_five_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->orderBy('created_at', 'DESC')->take(5)->get();
         $data['top_five_converted_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->orderBy('created_at', 'DESC')->take(5)->get();
         $data['total_leads_entered'] = \DB::table('leads')->where('assigned_id',auth()->id())->count();
@@ -53,7 +55,21 @@ class DashboardController extends Controller
         $data['today_leads_success'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->whereDay('created_at', '=', Carbon::now()->day)->count();
         $data['top_five_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->orderBy('followup_date', 'ASC')->take(5)->get();
         $data['top_five_today_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->whereDay('followup_date', '=', Carbon::now()->day)->orderBy('followup_date', 'ASC')->take(5)->get();
+        }
+        else{
+            $store=\DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if(is_null($store)){
+                return '<center><h1>Please assign some store,then login </h1></center';
+            }
+            $data['total_products']=\DB::table('store_assigned_product_stocks')->whereStoreId($store->id)->count();
+            $data['top_five_orders'] = \DB::table('create_order')->whereCreatedById(auth()->id())->orderBy('created_at', 'DESC')->take(5)->get();
+           $data['top_five_orders_paid'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();
+            $data['total_orders_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->count();
+           $data['total_orders_paid_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->count();
+           $data['today_orders_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->count();
+           $data['today_orders_paid_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->count();
 
+        }
         
 //dd($data);
         return view('user.dashboard', with($data));

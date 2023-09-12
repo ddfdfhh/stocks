@@ -306,6 +306,8 @@ function showArrayInColumn($arr = [], $row_index = 0, $by_json_key = 'id', $size
             $header = '<tr>';
             foreach ($keys as $k) {
                 if (!str_contains($k, '_id') || $k != $by_json_key) {
+                    $k=str_replace('_',' ',$k);
+                    $k=ucwords($k);
                     $header .= '<th>' . $k . '</th>';
                 }
 
@@ -649,6 +651,58 @@ function getList($model, $where = [], $by_field = 'name')
     $list2 = [];
     foreach ($lists as $list) {
         $ar = (object) ['id' => $list['id'], 'name' => $list[$by_field]];
+        array_push($list2, $ar);
+    }
+    return $list2;
+}
+function getListAssignedProduct()
+{
+    $store=\DB::table('stores')->whereOwnerId(auth()->id())->first();
+    $lists = \App\Models\StoreAssignedProductStock::with('product:id,name')->whereStoreId($store->id)->get();
+   
+    
+    $list2 = [];
+    foreach ($lists as $list) {
+        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name.' ('.$list->current_quantity.')'];
+        array_push($list2, $ar);
+    }
+    return $list2;
+}
+function getListProductWithQty()
+{
+   
+    $lists = \App\Models\AdminProductStock::with('product:id,name')->get();
+   
+    
+    $list2 = [];
+    foreach ($lists as $list) {
+        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name.' ('.$list->current_quantity.')'];
+        array_push($list2, $ar);
+    }
+    return $list2;
+}
+
+function getListMaterialWithQty()
+{
+
+    $lists = \App\Models\MaterialStock::with('material:id,name')->get();
+
+    $list2 = [];
+    foreach ($lists as $list) {
+        $ar = (object) ['id' => $list->material_id, 'name' => $list->material->name . ' (' . $list->current_stock . ')'];
+        array_push($list2, $ar);
+    }
+    return $list2;
+}
+
+function getUserListWithRoles($role = 'name')
+{
+    
+    $lists = \App\Models\User::role($role)->get(['name','id'])->toArray();
+//dd($lists);
+    $list2 = [];
+    foreach ($lists as $list) {
+        $ar = (object) ['id' => $list['id'], 'name' => $list['name']];
         array_push($list2, $ar);
     }
     return $list2;

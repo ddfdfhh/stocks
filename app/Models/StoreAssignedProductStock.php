@@ -31,4 +31,9 @@ class StoreAssignedProductStock extends Model
 {
   return $this->belongsTo(Product::class,'product_id','id')->withDefault();
 } 
+ 
+	public function admin_product_stock():BelongsTo
+{
+  return $this->belongsTo(AdminProductStock::class,'product_id','product_id')->withDefault();
+} 
  }

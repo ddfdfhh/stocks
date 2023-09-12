@@ -85,6 +85,8 @@
                     $attrs[$r['event']['name']] = $r['event']['function'];
                 }
                 $r['label']=str_replace(' Id', '', $r['label']);
+                if(isset($r['placeholder']))
+                $r['placeholder']=str_replace('_', ' ', $r['placeholder']);
             @endphp
 
             <div class="col-md-{{ $col }} mb-3">
