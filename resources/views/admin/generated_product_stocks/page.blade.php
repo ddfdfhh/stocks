@@ -18,8 +18,7 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-                <input name="ids[]" class="form-check-input" type="checkbox" id="check_all" value="{{ $r->id }}" />
-
+               
 
             </td>
             @foreach ($table_columns as $t)
@@ -103,6 +102,7 @@
                     </td>
                 @endif
             @endforeach
+            {{--
             <td>
                
                 @if (auth()->user()->hasRole(['Admin']) ||
@@ -117,7 +117,7 @@
                         href="javascript:deleteRecord('{!! $r->id !!}','{!! $deleteurl !!}');">
                         <i class="bx bx-trash"></i></a>
                 @endif
-                {{-- <div class="dropdown">
+                 <div class="dropdown">
                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                             class="bx bx-dots-vertical-rounded"></i></button>
                     <div class="dropdown-menu">
@@ -131,9 +131,9 @@
                           <a class="dropdown-item" href="javascript:deleteRecord('{!! $r->id !!}','{!! $deleteurl !!}');"><i class="bx bx-trash me-2"></i> Delete</a>
                     @endif 
                      </div>
-                </div> --}}
+                </div>
             </td>
-
+ --}}
 
         </tr>
     @endforeach

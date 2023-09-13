@@ -148,13 +148,13 @@
                 <p class="mb-0">{{ $customer->gst_number }}</p>
             </div>
         </div>
- @php
-                                $sub_total = 0;
-                                $total = 0;
-                                $total_sgst_tax = 0;
-                                $total_cgst_tax = 0;
-                                $discount = 0;
-                            @endphp
+        @php
+            $sub_total = 0;
+            $total = 0;
+            $total_sgst_tax = 0;
+            $total_cgst_tax = 0;
+            $discount = 0;
+        @endphp
         <div class="table-responsive">
             <table class="table border-top m-0">
                 <thead>
@@ -193,7 +193,7 @@
                             <td class="tm_width_1">{{ $item['quantity'] }}</td>
                             <td class="tm_width_1">{{ $item['tax_inclusive'] }}</td>
                             <td class="tm_width_3">
-                                &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )
+                                &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )<br>
                                 &#8377;{{ $sub_cgst }} csgst(@ {{ $item['cgst'] }}%)
                             </td>
                             <td class="tm_width_3" style="text-align:right">

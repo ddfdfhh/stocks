@@ -36,9 +36,7 @@
                                         <a class="dropdown-item"
                                             href="{{ route(strtolower($module) . '.export', ['type' => 'csv']) }}?{{ http_build_query($_GET) }}"><span><i
                                                     class="bx bx-file me-2"></i>CSV</span></a>
-                                        <a class="dropdown-item"
-                                            href="{{ route(strtolower($module) . '.export', ['type' => 'pdf']) }}?{{ http_build_query($_GET) }}"><span><i
-                                                    class="bx bxs-file-pdf me-2"></i>PDF</span></a>
+                                       
 
                                     </li>
 

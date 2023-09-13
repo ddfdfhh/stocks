@@ -22,7 +22,9 @@ class CreateOrder extends Model
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
     
-   
+   public function setAttributeCreatedById($value){
+    $this->attributes['created_by_id']=auth()->id();
+   }
   
 
 	public function customer():BelongsTo

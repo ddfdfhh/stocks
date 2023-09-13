@@ -858,7 +858,7 @@ class StoreController extends Controller
             ],
             [
                 'column' => 'admin_recieved_quantity',
-                'label' => 'Admin Recieved Quantity',
+                'label' => 'Admin Transferred Quantity',
                 'sortable' => 'Yes',
             ]
           

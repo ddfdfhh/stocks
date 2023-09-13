@@ -11,7 +11,11 @@
                         <h5 class="mb-0">Generate Product</h5>
                       
 </div>
-  <p class="badge bg-label-success ml-3 p-2" style="width:300px">Total  Manufacturing Cost-<span id="cost">Rs.0</span></p>
+  <p class="badge bg-label-success ml-3 p-2" style="width: 367px;
+    background: #5a8dee!important;
+    color: white!important;
+    padding: 21px 15px!important;
+    font-size: 14px;">Total Cost-<span id="cost">Rs.0</span></p>
                     <div class="card-body">
                         <!--modalable content-->
                         {!! Form::open()->route($plural_lowercase . '.store')->id(strtolower($module) . '_form')->multipart()->attrs(['data-module' => $module]) !!}

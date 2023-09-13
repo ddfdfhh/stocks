@@ -37,6 +37,11 @@ class GeneratedProductStockController extends Controller
                 'label' => 'Quantity Produced',
                 'sortable' => 'Yes',
             ],
+            [
+                'column' => 'created_at',
+                'label' => 'Created Date',
+                'sortable' => 'Yes',
+            ],
         ];
         $this->form_image_field_name = [];
         $this->repeating_group_inputs = [
@@ -203,7 +208,7 @@ class GeneratedProductStockController extends Controller
                         'label' => 'Product',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
+                        'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('Product'),
@@ -286,7 +291,7 @@ class GeneratedProductStockController extends Controller
             $material_names_array = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('name', 'id')->toArray();
             $material_unit_array = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('unit_id', 'id')->toArray();
             $unit_name_array = \DB::table('unit')->whereIn('id', array_values($material_unit_array))->pluck('name', 'id')->toArray();
-            $material_qty_array = \DB::table('create_material_stock')->whereIn('material_id', $material_ids)->pluck('current_quantity', 'material_id')->toArray();
+            $material_qty_array = \DB::table('material_stocks')->whereIn('material_id', $material_ids)->pluck('current_stock', 'material_id')->toArray();
             // dd( $material_ids);
             $post = formatPostForJsonColumn($post);
             $ar = json_decode($post['raw_materials']);
@@ -320,9 +325,8 @@ class GeneratedProductStockController extends Controller
                             return createResponse(false, 'Please add stock for raw material ' . $item->name);
 
                         }
-                        \DB::table('create_material_stock')->where('material_id', $item->material_id)
-                            ->decrement('current_quantity', $item->quantity);
-                        \DB::table('create_material_stock')->where('material_id', $item->material_id)->increment('used_quantity', $item->quantity);
+                        \DB::table('material_stocks')->where('material_id', $item->material_id)
+                            ->decrement('current_stock', $item->quantity,['total_outgoing'=>\DB::raw('total_outgoing+'. $item->quantity)]);
                     }
 
                 }
@@ -570,7 +574,7 @@ class GeneratedProductStockController extends Controller
                             'label' => 'Product',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
+                            'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => getList('Product'),

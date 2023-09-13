@@ -19,7 +19,8 @@
                 <div class="tm_invoice_in">
                     <div class="tm_invoice_head tm_align_center tm_mb20">
                         <div class="tm_invoice_left">
-                            <div class="tm_logo"><img src="{{ 'storage/settings/' . $settings->image }}" alt="Logo"></div>
+                            <div class="tm_logo"><img src="{{ 'storage/settings/' . $settings->image }}" alt="Logo" style="width:50px;height:50px">
+                            </div>
                         </div>
                         <div class="tm_invoice_right tm_text_right">
                             <div class="tm_primary_color tm_f50 tm_text_uppercase">Invoice</div>
@@ -29,7 +30,7 @@
                         <div class="tm_invoice_seperator tm_gray_bg" style="background:white"></div>
                         <div class="tm_invoice_info_list">
                             <p class="tm_invoice_number tm_m0">Invoice No: <b
-                                    class="tm_primary_color">#RBK{{ $row->id }}</b></p>
+                                    class="tm_primary_color">#RBK{{ $order_id }}</b></p>
 
                             <p class="tm_invoice_date tm_m0">Date: <b class="tm_primary_color">{{ date('Y.m.d') }}</b>
                             </p>
@@ -69,7 +70,7 @@
                                 $total_cgst_tax = 0;
                                 $discount = 0;
                             @endphp
-                         
+
                             <div class="tm_table_responsive">
                                 <table>
                                     <thead>
@@ -87,9 +88,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (json_decode($row->items, true) as $item)
+                                        @foreach ($item_rows as $item)
                                             @php
-                                           
+                                                $item = (array) $item;
                                                 $item['cgst'] = isset($item['cgst']) ? $item['cgst'] : 18;
                                                 $item['sgst'] = isset($item['sgst']) ? $item['sgst'] : 18;
                                                 $item['tax_inclusive'] = isset($item['tax_inclusive']) ? $item['tax_inclusive'] : 'Yes';
@@ -102,21 +103,20 @@
                                                 $total_cgst_tax += $sub_cgst * $item['quantity'];
                                             @endphp
                                             <tr>
-                                                <td
-                                                    class="tm_width_1">{{ $item['name'] }}</td>
+                                                <td class="tm_width_1">{{ $item['name'] }}</td>
                                                 <td class="tm_width_1">
                                                     &#8377;{{ number_format($item['price'], 2) }}</td>
 
                                                 <td class="tm_width_1">{{ $item['quantity'] }}</td>
                                                 <td class="tm_width_1">{{ $item['tax_inclusive'] }}</td>
                                                 <td class="tm_width_3">
-                                                     &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )
-                                                    &#8377;{{ $sub_cgst }}  csgst(@ {{ $item['cgst'] }}%) 
+                                                    &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )<br>
+                                                    &#8377;{{ $sub_cgst }} csgst(@ {{ $item['cgst'] }}%)
                                                 </td>
-                                                 <td class="tm_width_3" style="text-align:right">
-                                                    &#8377;{{$sub_total}}
+                                                <td class="tm_width_3" style="text-align:right">
+                                                    &#8377;{{ $sub_total }}
                                                 </td>
-                              
+
                                             </tr>
                                         @endforeach
 
@@ -139,13 +139,13 @@
                                                 &#8377;{{ $sub_total }}</td>
                                         </tr>
                                         <tr>
-                                            <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Total SGST
+                                            <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Total SGST
                                             </td>
                                             <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">
                                                 &#8377;{{ $total_sgst_tax }}</td>
                                         </tr>
                                         <tr>
-                                            <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Total CGST
+                                            <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Total CGST
                                             </td>
                                             <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">
                                                 &#8377;{{ $total_cgst_tax }} </td>

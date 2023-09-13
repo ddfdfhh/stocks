@@ -19,7 +19,7 @@ class ExpenseController extends Controller
         $this->storage_folder = $this->view_folder;
         $this->has_upload = 0;
         $this->is_multiple_upload = 0;
-        $this->has_export = 0;
+        $this->has_export = 1;
         $this->pagination_count = 100;
 
         $this->table_columns = [

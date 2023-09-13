@@ -224,6 +224,13 @@ class AdminController extends Controller
                 'type' => 'date',
             ],
         ];
+        $searchable_fields = [
+            [
+                'name' => 'name',
+                'label' => 'Title',
+                'type' => 'text',
+            ],
+        ];
         $this->pagination_count = 100;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -242,7 +249,7 @@ class AdminController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -258,13 +265,13 @@ class AdminController extends Controller
             $query = \App\Models\CompanyLedger::query();
 
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
 
             $view_data = [
                 'list' => $list,
 
                 'title' => 'Company Ledger',
-                'searchable_fields' => [],
+                'searchable_fields' => $searchable_fields,
                 'filterable_fields' => $filterable_fields,
 
                 'table_columns' => $table_columns,

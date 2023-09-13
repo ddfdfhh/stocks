@@ -141,6 +141,12 @@ class CreateOrderController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
+            [
+                'name' => 'created_by_id',
+                'label' => 'Store orders',
+                'type' => 'select',
+                'options'=>getUserListWithRoles('Store Incharge')
+            ],
         ];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
@@ -162,7 +168,7 @@ class CreateOrderController extends Controller
                     return $query->orderBy($sort_by, $sort_type);
                 })->when(auth()->user()->hasRole(['Store Incharge']), function ($query) use ($sort_by, $sort_type) {
                 return $query->whereCreatedById(auth()->id());
-            })->paginate($this->pagination_count);
+            })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -325,13 +331,20 @@ class CreateOrderController extends Controller
     }
     public function store(CreateOrderRequest $request)
     {
+          $store_id=null;
+    if(auth()->user()->hasRole(['Store Incharge'])){
+        $store_row=\DB::table('stores')->whereOwnerId(auth()->id())->first();
+        if(!is_null($store_row))
+        $store_id=$store_row->id;
+          
+    }
         try {
             $post = $request->all();
 
             $ids = $post['items__json__product_id'];
             $total_qty = array_sum($post['items__json__quantity']);
             //dd($post['items__json__quantity']);
-            $product_names_array = \DB::table('product')->whereIn('id', $ids)->get(['name', 'price', 'id']);
+            $product_names_array = \DB::table('product')->whereIn('id', $ids)->get();
             $product_stock_array = [];
             if (is_admin()) {
                 $product_stock_array = \DB::table('admin_product_stocks')->whereIn('product_id', $ids)->pluck('current_quantity', 'product_id')->toArray();
@@ -342,9 +355,9 @@ class CreateOrderController extends Controller
             }
             $t = [];
             foreach ($product_names_array as $v) {
-                $t[$v->id] = $v->toArray();
+                $t[$v->id] = (array)$v;
             }
-
+           // dd($t);
             $post = formatPostForJsonColumn($post);
 
             $ar = json_decode($post['items']);
@@ -353,8 +366,8 @@ class CreateOrderController extends Controller
                 $name = isset($t[$v->product_id]) ? $t[$v->product_id]['name'] : '';
                 $price = isset($t[$v->product_id]) ? $t[$v->product_id]['price'] : '';
                 $sgst = isset($t[$v->product_id]) ? $t[$v->product_id]['sgst'] : '';
-                $csgt = isset($t[$v->product_id]) ? $t[$v->product_id]['csgst'] : '';
-                $inclusive = isset($t[$v->product_id]) ? $t[$v->product_id]['inclusive'] : 'Yes';
+                $csgt = isset($t[$v->product_id]) ? $t[$v->product_id]['cgst'] : '';
+                $inclusive = isset($t[$v->product_id]) ? $t[$v->product_id]['tax_inclusive'] : 'Yes';
                 $v->name = $name;
                 $v->price = $price;
                 $v->sgst = $sgst;
@@ -398,8 +411,11 @@ class CreateOrderController extends Controller
             $post['items'] = json_encode($ar);
             $post['total'] = $total;
             //$post['uid']=
-            $post['created_by_id'] = auth()->id();
+          
+            $post['store_id'] = $store_id;
+
             $createorder = CreateOrder::create($post);
+
             $createorder->uid = $createorder->id . mt_rand(1000000, 9999999);
             $createorder->save();
 
@@ -433,7 +449,15 @@ class CreateOrderController extends Controller
                 }
 
             }
-            $data['settings'] = \DB::table('setting')->whereId(1)->first();
+            $data['settings'] = \DB::table('setting')->whereId(1)->first(); 
+             $customer = \App\Models\Customer::with(['state', 'city'])->whereId($post['customer_id'])->first();
+       
+       
+            $data['item_rows'] = $ar;
+            $data['order_id'] =  $createorder->id;
+            
+            $data['customer'] = $customer;
+
             $pdf = PDF::loadView('admin.create_orders.invoice', $data);
             $path = storage_path('pdf/');
             $file_name = "invoice-" . $createorder->id . ".pdf";

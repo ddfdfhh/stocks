@@ -75,7 +75,7 @@
                                         <th>{{ $t['label'] }}</th>
                                     @endif
                                 @endforeach
-                                <th>Action</th>
+                             {{--   <th>Action</th>--}}
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="tbody">

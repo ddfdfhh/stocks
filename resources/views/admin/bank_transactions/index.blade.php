@@ -26,8 +26,7 @@
                     <div class="d-flex">
 
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            @if (auth()->user()->hasRole(['Admin']) ||
-                                    auth()->user()->can('create_' . $plural_lowercase))
+                            @if (auth()->user()->hasRole(['Admin','Store Incharge']))
                                <button class="rounded-0  btn btn-primary" type="button"
                                     onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
                                     aria-controls="offcanvasEnd"> <i class="bx bx-plus-circle" style="margin-top:-3px"></i>  Add New</button>

@@ -3,12 +3,12 @@
     //dd(url()->full());
     $last_uri = str_contains(url()->full(), 'admin/dashboard') ? request()->segment(2) : request()->segment(1);
     
-    $routes_arr = ['bank_transactions', 'receive_payments', 'create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
+    $routes_arr = ['bank_transactions', 'ledger', 'receive_payments', 'create_order', 'generated_product_stocks', 'create_material_stocks', 'units', 'input_materials', 'drivers', 'vehicles', 'products', 'settings', 'suppliers', 'customers', 'roles', 'states', 'cities', 'permissions', 'users', 'categories'];
     $raw_arr = ['create_material_stocks', 'units', 'input_materials'];
     $product_arr = ['generated_product_stocks', 'products'];
     $leads_arr = ['lead_sources', 'leads', 'followup_leads'];
     $spend_arr = ['spendable_items', 'expenses'];
-    $store_arr = ['stores', 'add_product_stocks', 'transfer_product_stocks', 'store_product_stocks'];
+    $store_arr = ['stores', 'add_product_stocks', 'transfer_product_stocks', 'store_product_stocks','store_products'];
 @endphp
 
 <ul class="menu-inner py-1">
@@ -165,9 +165,9 @@
             </ul>
         </li>
     @endif
-     @if (auth()->user()->hasRole(['Admin']) ||
+    @if (auth()->user()->hasRole(['Admin']) ||
             auth()->user()->can('list_create_orders'))
-        <li class="menu-item @if ($last_uri == 'create_orders') active @endif">
+        <li class="menu-item @if ($last_uri == 'ledger') active @endif">
             <a href="{{ route('admin.company_ledger') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-diamond"></i>
                 <div data-i18n="Calendar">Company Ledger </div>
@@ -183,7 +183,7 @@
             </a>
         </li>
     @endif
-    @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
+    @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||
             auth()->user()->can('list_receive_payments'))
         <li class="menu-item @if ($last_uri == 'receive_payments') active @endif">
             <a href="{{ route('receive_payments.index') }}" class="menu-link">
@@ -348,11 +348,45 @@
             </ul>
         </li>
     @endif
+    @if (auth()->user()->hasRole(['Store Incharge']))
+        <li class="menu-item @if (in_array($last_uri, $store_arr)) open @endif">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-package"></i>
+                <div data-i18n="Authentications">Manage Product Stocks</div>
+            </a>
+
+            <ul class="menu-sub ">
+
+
+             
+                @if (auth()->user()->hasRole(['Store Incharge']))
+                    <li class="menu-item @if ($last_uri == 'store_products') active @endif">
+                        <a href="{{ route('store.products') }}" class="menu-link">
+
+                            <div data-i18n="Calendar">Product Stocks</div>
+                        </a>
+                    </li>
+                @endif
+                <li class="menu-item @if ($last_uri == 'add_product_stocks') active @endif">
+                    <a href="{{ route('add_product_stocks.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Add Product Stock</div>
+                    </a>
+                </li>
+
+                
+
+            </ul>
+        </li>
+    @endif
+
+   
+
     @if (auth()->user()->hasRole(['Admin']) ||
             auth()->user()->can('list_contractor_works'))
         <li class="menu-item @if ($last_uri == 'contractor_works') active @endif">
             <a href="{{ route('contractor_works.index') }}" class="menu-link">
-  <i class="menu-icon tf-icons bx bx-dumbbell"></i>
+                <i class="menu-icon tf-icons bx bx-dumbbell"></i>
                 <div data-i18n="Calendar">Manage Contractor Works</div>
             </a>
         </li>

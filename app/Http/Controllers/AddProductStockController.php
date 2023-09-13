@@ -119,7 +119,13 @@ class AddProductStockController extends Controller
     }
     public function index(Request $request)
     {
-
+    $store_id=null;
+    if(auth()->user()->hasRole(['Store Incharge'])){
+        $store_row=\DB::table('stores')->whereOwnerId(auth()->id())->first();
+        if(!is_null($store_row))
+        $store_id=$store_row->id;
+          
+    }
         if (!can('list_add_product_stocks')) {
             return redirect(route('admin.unauthorized'));
         }
@@ -176,7 +182,12 @@ class AddProductStockController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })
+                ->when($store_id, function ($query) use ($store_id) {
+                   return $query->whereStoreId($store_id);
+
+                })
+                ->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -195,9 +206,13 @@ class AddProductStockController extends Controller
 
             $query = null;
             if (count($this->model_relations) > 0) {
-                $query = AddProductStock::with(array_column($this->model_relations, 'name'));
+                $query = AddProductStock::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
+                 return $query->whereStoreId($store_id);
+                });
             } else {
-                $query = AddProductStock::query();
+                $query = AddProductStock::when($store_id, function ($query) use ($store_id) {
+                    return $query->whereStoreId($store_id);
+                });
             }
             $query = $this->buildFilter($request, $query);
             $list = $query->paginate($this->pagination_count);
@@ -372,7 +387,7 @@ class AddProductStockController extends Controller
             'current_quantity' => DB::raw('current_quantity+' . $qty),
         ];
         if ($post['location']) {
-            $update['other_location_recieved_quantity'] = DB::raw('other_location_recieved_quantity+' . $qty);
+            $update['other_location_quantity'] = DB::raw('other_location_quantity+' . $qty);
 
         }
 
@@ -407,7 +422,7 @@ class AddProductStockController extends Controller
             }
 
             \DB::commit();
-            return createResponse(true, $this->module . ' created successfully', $this->index_url);
+            return createResponse(true, 'Stock added successfully', $this->index_url);
         } catch (\Exception $ex) {
             \DB::rollback();
             return createResponse(false, $ex->getMessage());

@@ -100,7 +100,7 @@ class {{modelName}}Controller extends Controller
                       })
                       ->when(!empty($sort_by),function($query) use($sort_by,$sort_type){
                         return $query->orderBy($sort_by, $sort_type);
-                     })->paginate($this->pagination_count);
+                     })->latest()->paginate($this->pagination_count);
             $data=[
                 'table_columns'=> $table_columns,
                 'list'=>$list,
@@ -127,7 +127,7 @@ class {{modelName}}Controller extends Controller
             $query={{modelName}}::query();
         }
         $query=$this->buildFilter($request,$query);
-        $list=$query->paginate($this->pagination_count);
+        $list=$query->latest()->paginate($this->pagination_count);
         $view_data=[ 
             'list'=>$list,
             'dashboard_url'=>$this->dashboard_url,

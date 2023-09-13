@@ -22,11 +22,11 @@
                     <div class="d-flex">
                         <div class="form-group mr-2" style="width: 50%;">
                             <label style="font-size: 12px;" for="start_{{ $t['name'] }}">Start</label>
-                            <input type="date" class="form-control" name="start_{{ $t['name'] }}">
+                            <input type="date" placeholder="Start Date" class="form-control" name="start_{{ $t['name'] }}">
                         </div>
                         <div class="form-group" style="width: 50%;">
                             <label style="font-size: 12px;" for="end-{{ $t['name'] }}">End</label>
-                            <input type="date" class="form-control" name="end_{{ $t['name'] }}">
+                            <input type="date" placeholder="End Date" class="form-control" name="end_{{ $t['name'] }}">
                         </div>
                     </div>
                  @elseif ($t['type'] == 'number')
@@ -34,11 +34,11 @@
                     <div class="d-flex">
                         <div class="form-group mr-2" style="width: 50%;">
                             <label style="font-size: 12px;" for="min_{{ $t['name'] }}">Min</label>
-                            <input type="number" class="form-control" name="min_{{ $t['name'] }}">
+                            <input type="number" value="0" class="form-control" name="min_{{ $t['name'] }}">
                         </div>
                         <div class="form-group" style="width: 50%;">
                             <label style="font-size: 12px;" for="max-{{ $t['name'] }}">Max</label>
-                            <input type="number" class="form-control" name="max_{{ $t['name'] }}">
+                            <input type="number" value="0" class="form-control" name="max_{{ $t['name'] }}">
                         </div>
                     </div>
                 @elseif($t['type'] == 'select')
