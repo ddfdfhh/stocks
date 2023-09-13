@@ -350,7 +350,7 @@ class CreateOrderController extends Controller
                 $product_stock_array = \DB::table('admin_product_stocks')->whereIn('product_id', $ids)->pluck('current_quantity', 'product_id')->toArray();
 
             } else {
-                $product_stock_array = \DB::table('store_assigned_product_stocks')->whereIn('product_id', $ids)->pluck('product_id', 'current_quantity')->toArray();
+                $product_stock_array = \DB::table('store_assigned_product_stocks')->whereIn('product_id', $ids)->pluck('current_quantity', 'product_id')->toArray();
 
             }
             $t = [];
