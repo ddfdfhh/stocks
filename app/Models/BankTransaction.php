@@ -21,6 +21,13 @@ class BankTransaction extends Model
      public function setAttributeHandledById($value){
     $this->attributes['handled_by_id']=auth()->id();
    }
-   
+   public function handled_by():BelongsTo
+{
+  return $this->belongsTo(User::class,'handled_by_id','id')->withDefault();
+}
+public function store():BelongsTo
+{
+  return $this->belongsTo(Store::class,'store_id','id')->withDefault();
+}
   
 }

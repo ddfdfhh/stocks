@@ -108,17 +108,12 @@
             @endforeach
             <td>
 
-                @if (auth()->user()->hasRole(['Admin']) ||
+                @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
                     <a class="btn  btn-info btn-icon" title="Edit" href="{{ $editurl }}">
                         <i class="bx bx-edit"></i> </a>
                 @endif
-                @if (auth()->user()->hasRole(['Admin']) ||
-                        auth()->user()->can('delete_' . $plural_lowercase))
-                    <a class="btn  btn-danger btn-icon" title="Delete"
-                        href="javascript:deleteRecord('{!! $r->id !!}','{!! $deleteurl !!}');">
-                        <i class="bx bx-trash"></i></a>
-                @endif
+               
 
                 <a class="btn  btn-warning btn-icon" title="Invoice" href="{{route('createorders.generateInvoice',['id'=>$r->id])}}" 
                     >

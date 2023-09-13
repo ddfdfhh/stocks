@@ -22,7 +22,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
-                    <h5>All {{ properPluralName($plural_lowercase) }}</h5>
+                    <h5>Added Product Stock  History</h5>
                     <div class="d-flex">
 
                         <div class="btn-group" role="group" aria-label="Basic example">

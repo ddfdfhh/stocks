@@ -120,7 +120,7 @@ class ReceivePaymentController extends Controller
     public function index(Request $request)
     {
 
-        if (!can('list_receivepayment')) {
+        if (!can('list_receive_payments')) {
             return redirect(route('admin.unauthorized'));
         }
         $searchable_fields = [
@@ -440,9 +440,15 @@ class ReceivePaymentController extends Controller
     }
     public function store(ReceivePaymentRequest $request)
     {
-        if (!can('add_receivepayment')) {
-            return createResponse(false, 'Dont have permission');
+         $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
         }
+       
         \DB::beginTransaction();
         try {
             $post = $request->all();
@@ -455,6 +461,8 @@ class ReceivePaymentController extends Controller
                     }
                 }
             }
+            $post['handled_by_id']=auth()->id();
+            $post['store_id']=$store_id;
             $receivepayment = ReceivePayment::create($post);
             if ($receivepayment->order_id) {
                 $orderid = $receivepayment->order_id;
@@ -687,7 +695,7 @@ class ReceivePaymentController extends Controller
     }
     public function show($id)
     {
-        if (!can('view_receivepayment')) {
+        if (!can('view_receive_payments')) {
             return createResponse(false, 'Dont have permission for this action');
         }
 
@@ -731,7 +739,7 @@ class ReceivePaymentController extends Controller
 
     public function update(ReceivePaymentRequest $request, $id)
     {
-        if (!can('edit_receivepayment')) {
+        if (!can('edit_receive_payments')) {
             return createResponse(false, 'Dont have permission');
         }
         \DB::beginTransaction();
@@ -812,7 +820,7 @@ class ReceivePaymentController extends Controller
 
     public function destroy($id)
     {
-        if (!can('delete_receivepayment')) {
+        if (!can('delete_receive_payments')) {
             return createResponse(false, 'Dont have permission to delete');
         }
         \DB::beginTransaction();
@@ -895,7 +903,7 @@ class ReceivePaymentController extends Controller
         $form_type = $request->form_type;
         $id = $request->id;
         if ($form_type == 'add') {
-            if (!can('create_receivepayment')) {
+            if (!can('create_receive_payments')) {
                 return createResponse(false, 'Dont have permission to create ');
             }
             $data1 = [
@@ -1063,7 +1071,7 @@ class ReceivePaymentController extends Controller
 
         }
         if ($form_type == 'edit') {
-            if (!can('edit_receivepayment')) {
+            if (!can('edit_receive_payments')) {
                 return createResponse(false, 'Dont have permission to update');
             }
             $model = ReceivePayment::findOrFail($id);
@@ -1276,7 +1284,7 @@ class ReceivePaymentController extends Controller
 
         }
         if ($form_type == 'view') {
-            if (!can('view_receivepayment')) {
+            if (!can('view_receive_payments')) {
                 return createResponse(false, 'Dont have permission to view');
             }
             $html = view('admin.' . $this->view_folder . '.' . $form_type . '_modal', with($data))->render();

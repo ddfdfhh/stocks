@@ -31,8 +31,7 @@
 
                         <x-filter :data="$filterable_fields" />
                     </div>
-                    <x-search :searchableFields="$searchable_fields" />
-
+                   
                 </div>
 
 
@@ -55,7 +54,7 @@
                                     @endif
                                 @endforeach
                                
-                                <th>Action</th>
+                                
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="tbody">
@@ -82,20 +81,12 @@
                                         </td>
                                         <td>{{ $r->current_quantity  }}
                                         </td>
-                                        <td>{{ $r->other_location_quantity  }}
+                                        <td>{{ $r->other_location_recieved_quantity  }}
                                         </td>
                                         
                                         <td>{{ $r->admin_recieved_quantity  }}
                                         </td>
-                                        <td>
-
-                                            <a class="btn btn-success btn-icon" title="View"
-                                                href="javascript:load_form('Product','view','{!! route('product.loadAjaxForm') !!}','{!! $r->id !!}','products')">
-                                                <i class="bx bx-dice-4"></i>
-                                            </a>
-
-
-                                        </td>
+                                       
 
 
                                     </tr>

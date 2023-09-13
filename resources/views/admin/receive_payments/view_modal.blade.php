@@ -40,7 +40,8 @@
                             <x-showImages :row=$row :fieldName=$t :storageFolder=$storage_folder :tableName="getTableNameFromImageFieldList($image_field_names, $t)" />
                         </td>
                     @else
-                        <td>{{ getForeignKeyFieldValue($model_relations, $row, $t, ['BelongsTo' => 'name']) }}</td>
+                <td>{!! $t!='order_id'?getForeignKeyFieldValue($model_relations, $row, $t, ['BelongsTo' => 'name']):"<a href=\"create_orders/$row->order_id\">View</a>" !!}</td>
+
                     @endif
                 @elseif(isFieldPresentInRelation($model_relations, $t) < 0 &&
                         $row->{$t} &&

@@ -75,6 +75,16 @@ class CreateOrderController extends Controller
                 'class' => 'App\\Models\\CreateOrder',
                 'type' => 'BelongsTo',
             ],
+            [
+                'name' => 'store',
+                'class' => 'App\\Models\\Store',
+                'type' => 'BelongsTo',
+            ],
+            [
+                'name' => 'created_by',
+                'class' => 'App\\Models\\User',
+                'type' => 'BelongsTo',
+            ],
         ];
 
     }
@@ -111,20 +121,15 @@ class CreateOrderController extends Controller
     }
     public function index(Request $request)
     {
-      /*  $order_id = 1;
-        $row = \DB::table('create_order')->whereId($order_id)->first();
-        $customer = \App\Models\Customer::with(['state', 'city'])->whereId($row->customer_id)->first();
-        $settings = \DB::table('setting')->whereId(1)->first();
-        if ($row) {
-            $data['row'] = $row;
-            $data['settings'] = $settings;
-            $data['customer'] = $customer;
-            return view('admin.create_orders.invoice', with($data));
-            // return createResponse(true,$h591tml);
-        } else {
-            return createResponse(false, 'Order Not found');
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
         }
-*/
+
         $searchable_fields = [
             [
                 'name' => 'customer_id',
@@ -145,7 +150,7 @@ class CreateOrderController extends Controller
                 'name' => 'created_by_id',
                 'label' => 'Store orders',
                 'type' => 'select',
-                'options'=>getUserListWithRoles('Store Incharge')
+                'options' => getUserListWithRoles('Store Incharge'),
             ],
         ];
         $table_columns = $this->table_columns;
@@ -168,6 +173,9 @@ class CreateOrderController extends Controller
                     return $query->orderBy($sort_by, $sort_type);
                 })->when(auth()->user()->hasRole(['Store Incharge']), function ($query) use ($sort_by, $sort_type) {
                 return $query->whereCreatedById(auth()->id());
+            })->when($store_id, function ($query) use ($store_id) {
+                return $query->whereStoreId($store_id);
+
             })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
@@ -187,12 +195,14 @@ class CreateOrderController extends Controller
 
             $query = null;
             if (count($this->model_relations) > 0) {
-                $query = CreateOrder::with(array_column($this->model_relations, 'name'))->when(auth()->user()->hasRole(['Store Incharge']), function ($query) {
-                    return $query->whereCreatedById(auth()->id());
+                $query = CreateOrder::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
+                    return $query->whereStoreId($store_id);
+
                 });
             } else {
-                $query = CreateOrder::when(auth()->user()->hasRole(['Store Incharge']), function ($query) {
-                    return $query->whereCreatedById(auth()->id());
+                $query = CreateOrder::when($store_id, function ($query) use ($store_id) {
+                    return $query->whereStoreId($store_id);
+
                 });
             }
             $query = $this->buildFilter($request, $query);
@@ -331,13 +341,15 @@ class CreateOrderController extends Controller
     }
     public function store(CreateOrderRequest $request)
     {
-          $store_id=null;
-    if(auth()->user()->hasRole(['Store Incharge'])){
-        $store_row=\DB::table('stores')->whereOwnerId(auth()->id())->first();
-        if(!is_null($store_row))
-        $store_id=$store_row->id;
-          
-    }
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
+        }
+        \DB::beginTransaction();
         try {
             $post = $request->all();
 
@@ -355,9 +367,9 @@ class CreateOrderController extends Controller
             }
             $t = [];
             foreach ($product_names_array as $v) {
-                $t[$v->id] = (array)$v;
+                $t[$v->id] = (array) $v;
             }
-           // dd($t);
+            // dd($t);
             $post = formatPostForJsonColumn($post);
 
             $ar = json_decode($post['items']);
@@ -410,8 +422,9 @@ class CreateOrderController extends Controller
 //dd($update_string);
             $post['items'] = json_encode($ar);
             $post['total'] = $total;
+          //  $post['due_amount'] = $total;
             //$post['uid']=
-          
+
             $post['store_id'] = $store_id;
 
             $createorder = CreateOrder::create($post);
@@ -449,13 +462,12 @@ class CreateOrderController extends Controller
                 }
 
             }
-            $data['settings'] = \DB::table('setting')->whereId(1)->first(); 
-             $customer = \App\Models\Customer::with(['state', 'city'])->whereId($post['customer_id'])->first();
-       
-       
+            $data['settings'] = \DB::table('setting')->whereId(1)->first();
+            $customer = \App\Models\Customer::with(['state', 'city'])->whereId($post['customer_id'])->first();
+
             $data['item_rows'] = $ar;
-            $data['order_id'] =  $createorder->id;
-            
+            $data['order_id'] = $createorder->id;
+
             $data['customer'] = $customer;
 
             $pdf = PDF::loadView('admin.create_orders.invoice', $data);
@@ -464,9 +476,10 @@ class CreateOrderController extends Controller
             $pdf->save($path . $file_name);
 
             SendInvoiceMail::dispatch($createorder->id, $file_name);
-
+             \DB::commit();
             return createResponse(true, ' Order created successfully', $this->index_url);
         } catch (\Exception $ex) {
+             \DB::rollback();
             return createResponse(false, $ex->getLine() . '==' . $ex->getMessage());
         }
     }
@@ -474,6 +487,35 @@ class CreateOrderController extends Controller
     {
 
         $model = CreateOrder::findOrFail($id);
+$repeating_group_inputs = [
+    [
+        'colname' => 'items',
+        'label' => 'Sold Items',
+        'inputs' => [
+            [
+                'name' => 'items__json__product_id[]',
+                'label' => 'Product',
+                'tag' => 'select',
+                'type' => 'select',
+                'default' => '',
+                'attr' => [],
+                'custom_key_for_option' => 'name',
+                'options' => is_admin() ? getListProductWithQty() : getListAssignedProduct(),
+                'custom_id_for_option' => 'id',
+                'multiple' => false,
+            ],
+            [
+                'placeholder' => 'Enter quantity',
+                'name' => 'items__json__quantity[]',
+                'label' => 'Quantity',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => '',
+                'attr' => [],
+            ],
+        ],
+    ],
+];
 
         $data = [
             [
@@ -566,7 +608,7 @@ class CreateOrderController extends Controller
             'is_multiple' => $this->is_multiple_upload,
             'image_field_names' => $this->form_image_field_name,
             'storage_folder' => $this->storage_folder,
-            'repeating_group_inputs' => $this->repeating_group_inputs,
+            'repeating_group_inputs' => $repeating_group_inputs,
             'toggable_group' => $this->toggable_group,
             'plural_lowercase' => 'create_orders', 'model' => $model,
         ];
@@ -598,7 +640,25 @@ class CreateOrderController extends Controller
 
             $data['image_list'] = $this->getImageList($id);
         }
-        return createResponse(true, view('admin.' . $this->view_folder . '.view_modal', with($data))->render());
+        $columns = \DB::getSchemaBuilder()->getColumnListing('create_order');
+        natcasesort($columns);
+
+        $cols = [];
+        $exclude_cols = ['id','updated_at','uid','mail_resp','is_mail_sent','deleted_at'];
+        foreach ($columns as $col) {
+            
+
+            $label = ucwords(str_replace('_', ' ', $col));
+            $label = ucwords(str_replace(' Id', ' ', $label));
+
+            if (!in_array($col, $exclude_cols)) {
+                array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+            }
+
+        }
+        $data['table_columns'] = $cols;
+
+        return view('admin.' . $this->view_folder . '.view', with($data));
 
     }
     public function view(Request $request)

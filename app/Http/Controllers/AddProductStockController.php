@@ -30,12 +30,12 @@ class AddProductStockController extends Controller
             ],
             [
                 'column' => 'store_id',
-                'label' => 'Assigned Store',
+                'label' => 'Added To Store',
                 'sortable' => 'Yes',
             ],
             [
                 'column' => 'product_id',
-                'label' => 'Product Assigned',
+                'label' => 'Product',
                 'sortable' => 'Yes',
             ],
             [

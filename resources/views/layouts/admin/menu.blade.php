@@ -219,6 +219,12 @@
                         </a>
                     </li>
                 @endif
+                  <li class="menu-item @if ($last_uri == 'add_product_stocks') active @endif">
+                    <a href="{{ route('add_product_stocks.index') }}" class="menu-link">
+
+                        <div data-i18n="Calendar">Add Product Stock</div>
+                    </a>
+                </li>
 
 
             </ul>
@@ -331,12 +337,7 @@
                         </a>
                     </li>
                 @endif
-                <li class="menu-item @if ($last_uri == 'add_product_stocks') active @endif">
-                    <a href="{{ route('add_product_stocks.index') }}" class="menu-link">
-
-                        <div data-i18n="Calendar">Add Product Stock</div>
-                    </a>
-                </li>
+               
 
                 <li class="menu-item @if ($last_uri == 'transfer_product_stocks') active @endif">
                     <a href="{{ route('transfer_product_stocks.index') }}" class="menu-link">

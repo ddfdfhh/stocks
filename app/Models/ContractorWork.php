@@ -20,7 +20,10 @@ class ContractorWork extends Model
      public function getTableColumns() {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
-    
+    public function customer():BelongsTo
+{
+  return $this->belongsTo(Customer::class,'customer_id','id')->withDefault();
+}
    
   
 

@@ -18,7 +18,7 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-           
+
 
             </td>
             @foreach ($table_columns as $t)
@@ -53,7 +53,7 @@
                             <x-showImages :row=$r :fieldName=$t :storageFolder=$storage_folder :tableName="getTableNameFromImageFieldList($image_field_names, $t)" />
                         </td>
                     @else
-                        <td>{{ getForeignKeyFieldValue($model_relations, $r, $t, ['BelongsTo' => 'name']) }}</td>
+                        <td>{!! $t!='order_id'?getForeignKeyFieldValue($model_relations, $r, $t, ['BelongsTo' => 'name']):"<a href=\"create_orders/$r->order_id\">View</a>" !!}</td>
                     @endif
                 @elseif(isFieldPresentInRelation($model_relations, $t) < 0 &&
                         $r->{$t} &&
@@ -98,7 +98,9 @@
                                     echo $r->{$t};
                                 }
                             } else {
-                                echo $r->{$t};
+                                
+                                    echo  $r->{$t};
+                                
                             }
                             
                         @endphp

@@ -862,21 +862,23 @@ class StoreController extends Controller
                 'sortable' => 'Yes',
             ]
           
+          
             
 
         ];
 
-        $searchable_fields = [
-            [
-                'name' => 'name',
-                'label' => 'Name',
-            ],
-        ];
+        $searchable_fields =[];
         $filterable_fields = [
             [
                 'name' => 'created_at',
                 'label' => 'Created At',
                 'type' => 'date',
+            ],
+            [
+                'name' => 'product_id',
+                'label' => 'Select Product ',
+                'type' => 'select',
+                'options'=>getListAssignedProduct()
             ],
         ];
 

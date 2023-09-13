@@ -107,9 +107,7 @@
                             $rs='';
                             if(in_array($table_columns[$l - 1]['column'],['total_cost','payment_recieved','payment_due','transport_cost']))
                                 echo '&#8377;'.$row->{$t};
-                             elseif($table_columns[$l - 1]['column']=='work_done')
-                             echo $row->{$t};
-                             elseif()
+                            else
                              echo $row->{$t};
                              }
                             

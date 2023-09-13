@@ -32,6 +32,16 @@ class CreateOrder extends Model
   return $this->belongsTo(Customer::class,'customer_id','id')->withDefault()->withTrashed();
 } 
 
+	public function store():BelongsTo
+{
+  return $this->belongsTo(Store::class,'store_id','id')->withDefault()->withTrashed();
+} 
+
+	public function created_by():BelongsTo
+{
+  return $this->belongsTo(User::class,'created_by_id','id')->withDefault()->withTrashed();
+} 
+
  
 	public function driver():BelongsTo
 {

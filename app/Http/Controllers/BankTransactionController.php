@@ -67,7 +67,18 @@ class BankTransactionController extends Controller
         $this->form_image_field_name = [];
         $this->repeating_group_inputs = [];
         $this->toggable_group = [];
-        $this->model_relations = [];
+        $this->model_relations = [
+              [
+                'name' => 'handled_by',
+                'class' => 'App\\Models\\User',
+                'type' => 'BelongsTo',
+            ],
+              [
+                'name' => 'store',
+                'class' => 'App\\Models\\Store',
+                'type' => 'BelongsTo',
+            ],
+        ];
 
     }
     public function buildFilter(Request $r, $query)
@@ -181,12 +192,12 @@ class BankTransactionController extends Controller
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
                 })->when($store_id, function ($query) use ($store_id) {
-                   return $query->whereStoreId($store_id);
+                return $query->whereStoreId($store_id);
 
-                })->when($store_id, function ($query) use ($store_id) {
-                   return $query->whereStoreId($store_id);
+            })->when($store_id, function ($query) use ($store_id) {
+                return $query->whereStoreId($store_id);
 
-                })->paginate($this->pagination_count);
+            })->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -206,12 +217,12 @@ class BankTransactionController extends Controller
             $query = null;
             if (count($this->model_relations) > 0) {
                 $query = BankTransaction::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
-                   return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
 
                 });
             } else {
                 $query = BankTransaction::when($store_id, function ($query) use ($store_id) {
-                   return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
 
                 });
             }
@@ -408,20 +419,21 @@ class BankTransactionController extends Controller
     }
     public function store(BankTransactionRequest $request)
     {
-         $store_id=null;
-    if(auth()->user()->hasRole(['Store Incharge'])){
-        $store_row=\DB::table('stores')->whereOwnerId(auth()->id())->first();
-        if(!is_null($store_row))
-        $store_id=$store_row->id;
-          
-    }
-        if (!can('add_banktransaction')) {
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
+        }
+        if (!can('create_banktransactions')) {
             return createResponse(false, 'Dont have permission');
         }
         \DB::beginTransaction();
         try {
             $post = $request->all();
-        $post['store_id']=$store_id;
+            $post['store_id'] = $store_id;
             $post = formatPostForJsonColumn($post);
             if (count($this->model_relations) > 0 && in_array('BelongsToMany', array_column($this->model_relations, 'type'))) {
                 foreach (array_keys($post) as $key) {
@@ -430,6 +442,8 @@ class BankTransactionController extends Controller
                     }
                 }
             }
+            $post['handled_by_id'] = auth()->id();
+
             $banktransaction = BankTransaction::create($post);
             \DB::table('company_ledger')->insert(
                 [
@@ -437,7 +451,7 @@ class BankTransactionController extends Controller
                     'amount' => $post['amount'],
                     'order_id' => isset($post['order_id']) ? $post['order_id'] : null,
                     'mode' => $post['mode'] == 'Recieve' ? 'Income' : 'Spent',
-                    'receive_payment_id' => null,
+                    'bank_txn_id' => $banktransaction->id,
 
                 ]
             );
@@ -631,7 +645,7 @@ class BankTransactionController extends Controller
     }
     public function show($id)
     {
-        if (!can('view_banktransaction')) {
+        if (!can('view_banktransactions')) {
             return createResponse(false, 'Dont have permission for this action');
         }
 
@@ -1121,7 +1135,7 @@ class BankTransactionController extends Controller
 
         }
         if ($form_type == 'view') {
-            if (!can('view_banktransaction')) {
+            if (!can('view_banktransactions')) {
                 return createResponse(false, 'Dont have permission to view');
             }
             $html = view('admin.' . $this->view_folder . '.' . $form_type . '_modal', with($data))->render();
