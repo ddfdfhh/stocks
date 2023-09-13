@@ -39,7 +39,7 @@ class CreateMaterialStockController extends Controller
                 'label' => 'Total Quantity',
                 'sortable' => 'Yes',
             ],
-           
+
             [
                 'column' => 'amount',
                 'label' => 'Amount',
@@ -329,8 +329,21 @@ class CreateMaterialStockController extends Controller
                 }
             }
             $post['current_quantity'] = $post['quantity'];
-            \DB::table('material_stocks')->whereMaterialId($post['material_id'])
+            $metial_stock_row=\DB::table('material_stocks')->whereMaterialId($post['material_id'])->first();
+            if(!is_null($metial_stock_row)){
+                    \DB::table('material_stocks')->whereMaterialId($post['material_id'])
                 ->increment('current_stock', $post['quantity'], ['total_incoming' => \DB::raw('total_incoming+' . $post['quantity'])]);
+            }
+            else{
+               // dd($post);
+                  \DB::table('material_stocks')->insert(
+                     [
+                        'material_id'=>$post['material_id'],
+                        'current_stock'=> $post['quantity'],
+                         'total_incoming' => \DB::raw('total_incoming+' . $post['quantity'])
+                    ]
+                );
+            }
             $creatematerialstock = CreateMaterialStock::create($post);
 
             if ($this->has_upload) {
@@ -737,7 +750,7 @@ class CreateMaterialStockController extends Controller
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
-                         [
+                        [
                             'placeholder' => 'Enter location',
                             'name' => 'location',
                             'label' => 'Source Location',
@@ -856,7 +869,7 @@ class CreateMaterialStockController extends Controller
                             'default' => isset($model) ? $model->quantity : "",
                             'attr' => [],
                         ],
-                         [
+                        [
                             'placeholder' => 'Enter location',
                             'name' => 'location',
                             'label' => 'Source Location',

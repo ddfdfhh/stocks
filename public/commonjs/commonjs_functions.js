@@ -306,9 +306,12 @@ $(".morelink").click(function () {
 /****================================================== */
 /*******************View rcord in modal form not sidepopup  *******/
 function viewRecord(id, url, module) {
+    loading = true;
+    disableBtn();
     $(`#${module}_modal .modal-body`).html(
         '<div class="spinner-border text-muted"></div>'
     );
+    $(`#${module}_modal .modal-body`).css('textAlign', 'center');
     let obj = {
         id: id,
     };
@@ -318,9 +321,11 @@ function viewRecord(id, url, module) {
             {}
         );
         myModal.show();
+        enableBtn();
         setTimeout(function () {
             $(`#${module}_modal .modal-body`).html(res["message"]);
-        }, 2000);
+            $(`#${module}_modal .modal-body`).css("textAlign", "left");
+        }, 1000);
     };
     objectAjaxNoLoaderNoAlert(obj, url, callbackSuccess, undefined, "GET");
 }

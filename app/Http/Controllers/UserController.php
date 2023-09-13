@@ -18,7 +18,7 @@ class UserController extends Controller
         $this->module = 'User';
         $this->view_folder = 'users';
         $this->storage_folder = $this->view_folder;
-        $this->has_upload = 1;
+        $this->has_upload = 0;
         $this->is_multiple_upload = 0;
         $this->has_export = 0;
         $this->pagination_count = 100;
@@ -56,10 +56,7 @@ class UserController extends Controller
             ],
         ];
         $this->form_image_field_name = [
-            [
-                'field_name' => 'image',
-                'single' => true,
-            ],
+
         ];
         $this->repeating_group_inputs = [];
         $this->toggable_group = [];
@@ -73,6 +70,16 @@ class UserController extends Controller
                 'name' => 'permissions',
                 'class' => 'App\\Models\\User',
                 'type' => 'BelongsToMany',
+            ],
+            [
+                'name' => 'state',
+                'class' => 'App\\Models\\State',
+                'type' => 'BelongsTo',
+            ],
+            [
+                'name' => 'city',
+                'class' => 'App\\Models\\City',
+                'type' => 'BelongsTo',
             ],
         ];
 
@@ -264,7 +271,7 @@ class UserController extends Controller
                         'default' => isset($model) ? $model->phone : "",
                         'attr' => [],
                     ],
-                      [
+                    [
                         'placeholder' => 'Enter password',
                         'name' => 'password',
                         'label' => 'Password (Minimum 8 Characters ,combination of uppercase ,lowercase ,digits and special characters)',
@@ -278,7 +285,7 @@ class UserController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' =>  '',
+                        'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),
@@ -286,15 +293,15 @@ class UserController extends Controller
                         'multiple' => false,
                     ],
                     [
-                         
+
                         'name' => 'city_id',
                         'label' => 'City',
                         'tag' => 'select',
                         'type' => 'select',
-                         'default' => isset($model) ?$model->city:"",
+                        'default' => isset($model) ? $model->city : "",
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' =>[],
+                        'options' => [],
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -316,13 +323,13 @@ class UserController extends Controller
                         'default' => isset($model) ? $model->pincode : "",
                         'attr' => [],
                     ],
-                   
+
                     [
                         'name' => 'role',
                         'label' => 'Assign Role',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('Role')) ? getList('Role')[0]->id : ''),
+                        'default' =>'',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('Role'),
@@ -357,18 +364,18 @@ class UserController extends Controller
         if (count($this->form_image_field_name) > 0) {
 
             foreach ($this->form_image_field_name as $g) {
-               
-                    $y = [
-                        'placeholder' => '',
-                        'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
-                        'label' => $g['single'] ? $g['field_name'] : \Str::plural($g['field_name']),
-                        'tag' => 'input',
-                        'type' => 'file',
-                        'default' => '',
-                        'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
-                    ];
-                    array_push($data[0]['inputs'], $y);
-                
+
+                $y = [
+                    'placeholder' => '',
+                    'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
+                    'label' => $g['single'] ? $g['field_name'] : \Str::plural($g['field_name']),
+                    'tag' => 'input',
+                    'type' => 'file',
+                    'default' => '',
+                    'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
+                ];
+                array_push($data[0]['inputs'], $y);
+
             }
         }
 
@@ -399,12 +406,30 @@ class UserController extends Controller
         } else {
             $data['row'] = User::findOrFail($id);
         }
-        $data['has_image'] = $this->has_upload;
+        $data['has_image'] = 0;
         $data['model_relations'] = $this->model_relations;
         $data['storage_folder'] = $this->storage_folder;
         $data['image_field_names'] = $this->form_image_field_name;
         $data['table_columns'] = $this->table_columns;
         $data['module'] = $this->module;
+        $table = getTableNameFromModel('users');
+        $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+//natcasesort($columns);
+
+        $cols = [];
+        $exclude_cols = ['id', 'updated_at', 'plain_password', 'password', 'remember_token', 'image', 'deleted_at', 'country'];
+        foreach ($columns as $col) {
+
+            $label = ucwords(str_replace('_', ' ', $col));
+            $label = str_replace('Id', '', $label);
+
+            if (!in_array($col, $exclude_cols)) {
+                array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
+            }
+
+        }
+        $data['table_columns'] = $cols;
+
         $html = view('admin.' . $this->view_folder . '.view', with($data))->render();
         return createResponse(true, $html);
     }
@@ -425,7 +450,7 @@ class UserController extends Controller
                     }
                 }
             }
-           // dd($post);
+            // dd($post);
             $user = User::create($post);
             $user->assignRole($request->role);
             if ($this->has_upload) {
@@ -463,7 +488,7 @@ class UserController extends Controller
     {
 
         $model = User::findOrFail($id);
-$roles=$model->getRoleNames()->toArray();
+        $roles = $model->getRoleNames()->toArray();
 
         $data = [
             [
@@ -496,7 +521,7 @@ $roles=$model->getRoleNames()->toArray();
                         'default' => isset($model) ? $model->phone : "",
                         'attr' => [],
                     ],
-                      [
+                    [
                         'placeholder' => 'Enter password',
                         'name' => 'password',
                         'label' => 'Password ',
@@ -510,7 +535,7 @@ $roles=$model->getRoleNames()->toArray();
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'default' =>'',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),
@@ -518,19 +543,19 @@ $roles=$model->getRoleNames()->toArray();
                         'multiple' => false,
                     ],
                     [
-                         
+
                         'name' => 'city_id',
                         'label' => 'City',
                         'tag' => 'select',
                         'type' => 'select',
-                         'default' => isset($model) ?$model->city_id:"",
+                        'default' => isset($model) ? $model->city_id : "",
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' =>getList('City',['state_id'=>$model->state_id]),
+                        'options' => getList('City', ['state_id' => $model->state_id]),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
-                  
+
                     [
                         'placeholder' => 'Enter address',
                         'name' => 'address',
@@ -550,19 +575,19 @@ $roles=$model->getRoleNames()->toArray();
                         'attr' => [],
                     ],
                     [
-                         
+
                         'name' => 'role',
                         'label' => 'Assign Role',
                         'tag' => 'select',
                         'type' => 'select',
-                         'default' =>$roles[0],
+                        'default' => $roles[0],
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' =>getListWithSameIdAndName('Role'),
+                        'options' => getListWithSameIdAndName('Role'),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
-                   
+
                     [
                         'name' => 'status',
                         'label' => 'Status',
@@ -589,20 +614,20 @@ $roles=$model->getRoleNames()->toArray();
         ];
         if (count($this->form_image_field_name) > 0) {
             foreach ($this->form_image_field_name as $g) {
-                $field_name=$g['field_name'];
-                
-                    $y = [
-                        'placeholder' => '',
-                        'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
-                        'label' =>'Photo',
-                        'tag' => 'input',
-                        'type' => 'file',
-                        'default' => $g['single'] ? $this->storage_folder . '/' . $model->{$field_name} : json_encode($this->getImageList($id, $g['table_name'], $g['parent_table_field'])),
-                        'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
-                    ];
-                  //  dd($y);
-                    array_push($data[0]['inputs'], $y);
-                
+                $field_name = $g['field_name'];
+
+                $y = [
+                    'placeholder' => '',
+                    'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
+                    'label' => 'Photo',
+                    'tag' => 'input',
+                    'type' => 'file',
+                    'default' => $g['single'] ? $this->storage_folder . '/' . $model->{$field_name} : json_encode($this->getImageList($id, $g['table_name'], $g['parent_table_field'])),
+                    'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
+                ];
+                //  dd($y);
+                array_push($data[0]['inputs'], $y);
+
             }
         }
         $view_data = [
@@ -651,15 +676,16 @@ $roles=$model->getRoleNames()->toArray();
 
             $data['image_list'] = $this->getImageList($id);
         }
-        $table = getTableNameFromModel($this->module);
+        $table = getTableNameFromModel('User');
         $columns = \DB::getSchemaBuilder()->getColumnListing($table);
-        //natcasesort($columns);
+//natcasesort($columns);
 
         $cols = [];
-        $exclude_cols = ['updated_at', 'id'];
+        $exclude_cols = ['id', 'updated_at', 'plain_password', 'password', 'remember_token', 'image', 'deleted_at', 'country'];
         foreach ($columns as $col) {
 
             $label = ucwords(str_replace('_', ' ', $col));
+            $label = str_replace('Id', '', $label);
 
             if (!in_array($col, $exclude_cols)) {
                 array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
@@ -667,6 +693,7 @@ $roles=$model->getRoleNames()->toArray();
 
         }
         $data['table_columns'] = $cols;
+
         return createResponse(true, view('admin.' . $this->view_folder . '.view_modal', with($data))->render());
 
     }
@@ -691,11 +718,11 @@ $roles=$model->getRoleNames()->toArray();
                     }
                 }
             }
-            if(empty($post['password'])){
-    unset($post['password']);
+            if (empty($post['password'])) {
+                unset($post['password']);
             }
             $user->update($post);
-           // dd($request->role);
+            // dd($request->role);
             $user->assignRole($request->role);
 
             if ($this->has_upload) {
@@ -849,30 +876,30 @@ $roles=$model->getRoleNames()->toArray();
                             'attr' => [],
                         ],
                         [
-                        'name' => 'state_id',
-                        'label' => 'State',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getList('State'),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
-                    [
-                         
-                        'name' => 'city_id',
-                        'label' => 'City',
-                        'tag' => 'select',
-                        'type' => 'select',
-                         'default' => isset($model) ?$model->city:"",
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' =>[],
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
+                            'name' => 'state_id',
+                            'label' => 'State',
+                            'tag' => 'select',
+                            'type' => 'select',
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                            'attr' => [],
+                            'custom_key_for_option' => 'name',
+                            'options' => getList('State'),
+                            'custom_id_for_option' => 'id',
+                            'multiple' => false,
+                        ],
+                        [
+
+                            'name' => 'city_id',
+                            'label' => 'City',
+                            'tag' => 'select',
+                            'type' => 'select',
+                            'default' => isset($model) ? $model->city : "",
+                            'attr' => [],
+                            'custom_key_for_option' => 'name',
+                            'options' => [],
+                            'custom_id_for_option' => 'id',
+                            'multiple' => false,
+                        ],
                         [
                             'placeholder' => 'Enter address',
                             'name' => 'address',
@@ -980,30 +1007,30 @@ $roles=$model->getRoleNames()->toArray();
                             'attr' => [],
                         ],
                         [
-                        'name' => 'state_id',
-                        'label' => 'State',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getList('State'),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
-                    [
-                         
-                        'name' => 'city_id',
-                        'label' => 'City',
-                        'tag' => 'select',
-                        'type' => 'select',
-                         'default' => isset($model) ?$model->city:"",
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' =>getList('City',['state_id'=>$model->state_id]),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
+                            'name' => 'state_id',
+                            'label' => 'State',
+                            'tag' => 'select',
+                            'type' => 'select',
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                            'attr' => [],
+                            'custom_key_for_option' => 'name',
+                            'options' => getList('State'),
+                            'custom_id_for_option' => 'id',
+                            'multiple' => false,
+                        ],
+                        [
+
+                            'name' => 'city_id',
+                            'label' => 'City',
+                            'tag' => 'select',
+                            'type' => 'select',
+                            'default' => isset($model) ? $model->city : "",
+                            'attr' => [],
+                            'custom_key_for_option' => 'name',
+                            'options' => getList('City', ['state_id' => $model->state_id]),
+                            'custom_id_for_option' => 'id',
+                            'multiple' => false,
+                        ],
                         [
                             'placeholder' => 'Enter address',
                             'name' => 'address',

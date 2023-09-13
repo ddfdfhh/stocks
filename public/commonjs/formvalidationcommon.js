@@ -89,14 +89,18 @@ function errorAlert(error = "") {
     // });
 }
 function disableBtn(btn) {
-    btn.prop("disabled", true);
-    btn.css("opacity", "0.7");
+    if (btn!==undefined) {
+        btn.prop("disabled", true);
+        btn.css("opacity", "0.7");
+    }
     // loaderRef.css('display','inline-block');
     blockUi();
 }
 function enableBtn(btn) {
-    btn.css("opacity", "1");
-    btn.prop("disabled", false);
+   if (btn !== undefined) {
+       btn.css("opacity", "1");
+       btn.prop("disabled", false);
+   }
     // loaderRef.css('display','none');
     if (typeof $.unblockUI !== "undefined") $.unblockUI();
 }

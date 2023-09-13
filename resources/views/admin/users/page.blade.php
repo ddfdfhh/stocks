@@ -153,7 +153,7 @@
     </tr>
 @endif
 <div id="{{ strtolower($module) }}_modal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
 
         <!-- Modal content-->
         <div class="modal-content">
@@ -162,7 +162,7 @@
                 <h4 class="modal-title">View {{ $module }}</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center">
+            <div class="modal-body">
                 <div class="spinner-border text-muted"></div>
             </div>
             <div class="modal-footer">

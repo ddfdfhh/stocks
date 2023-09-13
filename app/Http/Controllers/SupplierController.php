@@ -136,7 +136,7 @@ class SupplierController extends Controller
                 'name' => 'status',
                 'label' => 'Status',
                 'type' => 'select',
-                'options'=>getListFromIndexArray(['Active','in-Active'])
+                'options' => getListFromIndexArray(['Active', 'in-Active']),
             ],
         ];
         $table_columns = $this->table_columns;
@@ -250,7 +250,7 @@ class SupplierController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', true) : "",
+                        'default' => "",
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),
@@ -417,7 +417,7 @@ class SupplierController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', true) : "",
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),

@@ -60,13 +60,13 @@ class User extends Authenticatable
         $this->attributes['plain_password'] = $value;
 
     }
-    public function withState()
+    public function state()
     {
         return $this->belongsTo(\App\Models\State::class, 'state_id', 'id')->withDefault()->withTrashed();
     }
-    public function withCity()
+    public function city()
     {
-        return $this->belongsTo(\App\Models\Country::class, 'city_id', 'id')->withDefault()->withTrashed();
+        return $this->belongsTo(\App\Models\City::class, 'city_id', 'id')->withDefault()->withTrashed();
     }
 
 }

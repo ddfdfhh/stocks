@@ -835,7 +835,7 @@ class DriverController extends Controller
                             'label' => 'Vehicle',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'vehicle_id', true) : getList('Vehicle')[0]->id,
+                            'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => getList('Vehicle'),

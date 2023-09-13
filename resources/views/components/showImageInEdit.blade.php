@@ -28,9 +28,9 @@
                 $path = asset('storage/'.$default);
             }
         @endphp
-        @if ($path)
+        @if ($path && $default )
             <br>
-            <i class="bx bx-download"></i> <a href="{{ $path }}" download>{{ $row->{$image_field_name} }}</a>
+            <i class="bx bx-download"></i> <a href="{{ $path }}" download>{{ $default }}</a>
         @endif
     @endif
 

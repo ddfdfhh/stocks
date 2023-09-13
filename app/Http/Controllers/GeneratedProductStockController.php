@@ -301,6 +301,7 @@ class GeneratedProductStockController extends Controller
                 $name = isset($material_names_array[$v->material_id]) ? $material_names_array[$v->material_id] : '';
                 $v->name = $name;
                 $v->unit = isset($unit_name_array[$unit_id]) ? $unit_name_array[$unit_id] : '';
+                $v->quantity=$v->quantity;
                 return $v;
             }, $ar);
             //dd($material_qty_array);
@@ -805,7 +806,7 @@ class GeneratedProductStockController extends Controller
 
                 $i++;
             }
-            return createResponse(true, $sum);
+            return createResponse(true, $sum*$post['quantity_produced']);
         }
     }
 }
