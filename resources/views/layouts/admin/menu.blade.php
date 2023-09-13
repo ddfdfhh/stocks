@@ -47,7 +47,7 @@
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->hasRole(['Admin']) ||
+               {{-- @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('list_permissions'))
                     <li class="menu-item @if ($last_uri == 'permissions') active @endif">
                         <a href="{{ route('permissions.index') }}" class="menu-link">
@@ -56,7 +56,7 @@
                         </a>
                     </li>
                 @endif
-
+--}}
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('list_states'))
                     <li class="menu-item @if ($last_uri == 'states') active @endif">
