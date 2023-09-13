@@ -298,6 +298,28 @@ class CreateOrderController extends Controller
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
+                    [
+                        'name' => 'should_be_taxed',
+                        'label' => 'Is Tax Applicable?',
+                        'tag' => 'input',
+                        'type' => 'radio',
+                        'default' => isset($model) ? $model->should_be_taxed : 'Yes',
+                        'attr' => [],
+                        'value' => [
+                            (object) [
+                                'label' => 'Yes',
+                                'value' => 'Yes',
+                            ],
+                            (object) [
+                                'label' => 'No',
+                                'value' => 'No',
+                            ],
+
+                        ],
+                        'has_toggle_div' => [],
+                        'multiple' => false,
+                        'inline' => true,
+                    ],
 
                 ],
             ],
@@ -422,11 +444,11 @@ class CreateOrderController extends Controller
 //dd($update_string);
             $post['items'] = json_encode($ar);
             $post['total'] = $total;
-          //  $post['due_amount'] = $total;
+            //  $post['due_amount'] = $total;
             //$post['uid']=
 
             $post['store_id'] = $store_id;
-
+//dd($post);
             $createorder = CreateOrder::create($post);
 
             $createorder->uid = $createorder->id . mt_rand(1000000, 9999999);
@@ -476,10 +498,10 @@ class CreateOrderController extends Controller
             $pdf->save($path . $file_name);
 
             SendInvoiceMail::dispatch($createorder->id, $file_name);
-             \DB::commit();
+            \DB::commit();
             return createResponse(true, ' Order created successfully', $this->index_url);
         } catch (\Exception $ex) {
-             \DB::rollback();
+            \DB::rollback();
             return createResponse(false, $ex->getLine() . '==' . $ex->getMessage());
         }
     }
@@ -487,35 +509,35 @@ class CreateOrderController extends Controller
     {
 
         $model = CreateOrder::findOrFail($id);
-$repeating_group_inputs = [
-    [
-        'colname' => 'items',
-        'label' => 'Sold Items',
-        'inputs' => [
+        $repeating_group_inputs = [
             [
-                'name' => 'items__json__product_id[]',
-                'label' => 'Product',
-                'tag' => 'select',
-                'type' => 'select',
-                'default' => '',
-                'attr' => [],
-                'custom_key_for_option' => 'name',
-                'options' => is_admin() ? getListProductWithQty() : getListAssignedProduct(),
-                'custom_id_for_option' => 'id',
-                'multiple' => false,
+                'colname' => 'items',
+                'label' => 'Sold Items',
+                'inputs' => [
+                    [
+                        'name' => 'items__json__product_id[]',
+                        'label' => 'Product',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => '',
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => is_admin() ? getListProductWithQty() : getListAssignedProduct(),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter quantity',
+                        'name' => 'items__json__quantity[]',
+                        'label' => 'Quantity',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                ],
             ],
-            [
-                'placeholder' => 'Enter quantity',
-                'name' => 'items__json__quantity[]',
-                'label' => 'Quantity',
-                'tag' => 'input',
-                'type' => 'number',
-                'default' => '',
-                'attr' => [],
-            ],
-        ],
-    ],
-];
+        ];
 
         $data = [
             [
@@ -576,6 +598,28 @@ $repeating_group_inputs = [
                         'options' => getListFromIndexArray(['Pending', 'Dispatched', 'Cancelled', 'On The Way']),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
+                    ],
+                    [
+                        'name' => 'should_be_taxed',
+                        'label' => 'Is Tax Applicable?',
+                        'tag' => 'input',
+                        'type' => 'radio',
+                        'default' => isset($model) ? $model->should_be_taxed : 'Yes',
+                        'attr' => [],
+                        'value' => [
+                            (object) [
+                                'label' => 'Yes',
+                                'value' => 'Yes',
+                            ],
+                            (object) [
+                                'label' => 'No',
+                                'value' => 'No',
+                            ],
+
+                        ],
+                        'has_toggle_div' => [],
+                        'multiple' => false,
+                        'inline' => true,
                     ],
 
                 ],
@@ -644,9 +688,8 @@ $repeating_group_inputs = [
         natcasesort($columns);
 
         $cols = [];
-        $exclude_cols = ['id','updated_at','uid','mail_resp','is_mail_sent','deleted_at'];
+        $exclude_cols = ['id', 'updated_at', 'uid', 'mail_resp', 'is_mail_sent', 'deleted_at'];
         foreach ($columns as $col) {
-            
 
             $label = ucwords(str_replace('_', ' ', $col));
             $label = ucwords(str_replace(' Id', ' ', $label));
