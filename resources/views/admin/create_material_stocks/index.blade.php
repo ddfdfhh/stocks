@@ -23,12 +23,27 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
                     <h5>Materials Purchased Report</h5>
-                  
+                    <div class="d-flex">
+
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            @if (auth()->user()->hasRole(['Admin']) ||
+                                    auth()->user()->can('create_' . $plural_lowercase))
+                               <button class="btn btn-primary" type="button"
+                                    onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
+                                    aria-controls="offcanvasEnd">
+                                   <i class="bx bx-plus-circle" style="margin-top:-3px"></i> 
+                                     Add New  Stock</button>
+                            @endif
+
+                          
+
+                        </div>
+                    </div>
                 </div>
                <br>
                 <div class="d-flex justify-content-between flex-wrap mt-3">
                     <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
-                      
+                     
                         <x-filter :data="$filterable_fields" />
                     </div>
                     <x-search :searchableFields="$searchable_fields" />
