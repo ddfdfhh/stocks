@@ -15,8 +15,8 @@ class CustomerRequest extends FormRequest
     {
         return [
         'name' => 'required',
-        'email' => 'required',
-        'mobile_no' => 'required',
+        'email' => 'required|email|unique:customer,email,'.$this->customer,
+        'mobile_no' => 'required|unique:customer,mobile_no,'.$this->customer,
         'address' => 'required',
         'state_id' => 'required|numeric',
         'city_id' => 'required|numeric',

@@ -14,16 +14,16 @@ class DriverRequest extends FormRequest
     public function rules()
     {
         return [
-    'name' => 'required',
-    'phone_no' => 'required',
-    'address' => 'required',
-    'image' => 'required|image',
-    'adhar_number' => 'nullable',
-    'adhar_image' => 'image|nullable',
-    'dl_number' => 'nullable',
-    'dl_image' => 'image|nullable',
-    'status' => 'nullable',
-    'vehicle_id' => 'numeric|nullable'
-];
+            'name' => 'required',
+            'phone_no' => 'required',
+            'address' => 'required',
+            'image' => 'somtimes|image',
+            'adhar_number' => 'nullable',
+            'adhar_image' => 'image|nullable',
+            'dl_number' => 'nullable',
+            'dl_image' => 'image|nullable',
+            'status' => 'nullable',
+            'vehicle_id' => 'numeric|nullable',
+        ];
     }
 }
