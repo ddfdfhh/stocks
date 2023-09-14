@@ -33,13 +33,28 @@ class LoginController extends Controller
         $cr = ['email' => $request->email, 'password' => $request->password];
 
         if (Auth::attempt($cr)) {
-           // dd(auth()->user()->getRoleNames());
-            //return createResponse(true, 'Admin Logged In Successfully', route('admin.dashboard'));
+
             if (auth()->user()->hasRole(['Admin'])) {
 
                 return createResponse(true, 'Logged In Successfully', route('admin.dashboard'));
             } else {
-                return createResponse(true, 'Admin Logged In Successfully', route('user.dashboard'));
+                if (auth()->user()->status == 'Active') {
+                    $store_id = null;
+                    if (auth()->user()->hasRole(['Store Incharge'])) {
+                        $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+                        if (!is_null($store_row)) {
+                            $store_id = $store_row->id;
+                            session(['store_name'=>$store_row->name,'store_id'=>$store_row->id]);
+                           
+
+                        }
+
+                    }
+                    return createResponse(true, 'Admin Logged In Successfully', route('user.dashboard'));
+                } else {
+                    return createResponse(false, 'Account is deactive');
+                }
+
             }
 
         } else {

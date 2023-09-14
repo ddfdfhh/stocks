@@ -8,7 +8,7 @@
             <div class="col-xxl">
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0">Add {{ properSingularName($plural_lowercase) }}</h5>
+                        <h5 class="mb-0">{{ properSingularName($plural_lowercase) }} For Order</h5>
 </div>
                     <div class="card-body">
                         <!--modalable content-->

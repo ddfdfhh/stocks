@@ -132,6 +132,12 @@ class CreateMaterialStockController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
+            [
+                'name' => 'material_id',
+                'label' => 'Select Material ',
+                'type' => 'select',
+                'options'=>getList('InputMaterial')
+            ],
         ];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
@@ -674,7 +680,7 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Supplier',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'supplier_id', true) : getList('Supplier')[0]->id,
+                            'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => getList('Supplier'),
@@ -686,7 +692,7 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Driver',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', true) : getList('Driver')[0]->id,
+                            'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => getList('Driver'),
@@ -743,7 +749,7 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Select Material',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'material_id', true) : getList('InputMaterial')[0]->id,
+                            'default' => '',
                             'attr' => ['onChange' => 'setUnitOnMaterialSelect(this.value)'],
                             'custom_key_for_option' => 'name',
                             'options' => getList('InputMaterial'),

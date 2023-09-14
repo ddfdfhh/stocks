@@ -62,12 +62,12 @@ class DashboardController extends Controller
                 return '<center><h1>Please assign some store,then login </h1></center';
             }
             $data['total_products_count']=\DB::table('store_assigned_product_stocks')->whereStoreId($store->id)->count();
-            $data['top_five_orders'] = \DB::table('create_order')->whereCreatedById(auth()->id())->orderBy('created_at', 'DESC')->take(5)->get();
-           $data['top_five_orders_paid'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();
-            $data['total_orders_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->count();
-           $data['total_orders_paid_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->count();
-           $data['today_orders_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->count();
-           $data['today_orders_paid_count'] = \DB::table('create_order')->whereCreatedById(auth()->id())->wherePaidStatus('paid')->count();
+            $data['top_five_orders'] = \DB::table('create_order')->whereStoreId($store->id)->orderBy('created_at', 'DESC')->take(5)->get();
+           $data['top_five_orders_paid'] = \DB::table('create_order')->whereStoreId($store->id)->wherePaidStatus('paid')->orderBy('created_at', 'DESC')->take(5)->get();
+            $data['total_orders_count'] = \DB::table('create_order')->whereStoreId($store->id)->count();
+           $data['total_orders_paid_count'] = \DB::table('create_order')->whereStoreId($store->id)->wherePaidStatus('paid')->count();
+           $data['today_orders_count'] = \DB::table('create_order')->whereStoreId($store->id)->count();
+           $data['today_orders_paid_count'] = \DB::table('create_order')->whereStoreId($store->id)->wherePaidStatus('paid')->count();
 
         }
         

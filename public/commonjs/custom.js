@@ -572,3 +572,29 @@ function calculateProductPrice() {
         },
     });
 }
+function calculatArea(val, type,a) {
+    let target = $(event.target);
+    let nearest_col_md = target.closest(".col-md-6");
+    let height=0;
+    let length = 0;
+    let first_col = nearest_col_md;
+    if (a == 'height') {
+        height = val;
+        let col_sibling = $(nearest_col_md).next('.col-md-6')
+        let input = col_sibling.find('input')
+        length = input.val()
+        console.log('lengt', length)
+    }
+    else { 
+       
+         length = val;
+        let col_sibling = first_col=$(nearest_col_md).prev(".col-md-6");
+         
+        let input = $(col_sibling).find("input");
+       
+         height = input.val();
+         console.log("height", height);
+    }
+    first_col.find('#' + type).remove();
+    first_col.append('<span class="badge bg-label-info" id="'+type+'">'+type+' Area:-<b>'+(length*height)+' sqft.</b></span>');
+}

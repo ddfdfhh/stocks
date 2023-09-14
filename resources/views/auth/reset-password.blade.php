@@ -7,7 +7,7 @@
         <div class="card-header"><h4>Set a New Password</h4></div>
 
         <div class="card-body">
-            <div id="validation-errors">
+            <div id="validation_errors">
 
             </div>
             <form method="POST" action="/reset-password" id="pwd">

@@ -91,7 +91,7 @@
                                   
                                 /*   $delete_data_info=['row_id_val'=>$r->id,'table'=>'leads','json_column_name'=>'conversations','delete_url'=>route('deleteInJsonColumnData')];
                                     echo showArrayInColumn($tr, $l,'by_user_id','lg','Remarks',true,$delete_data_info);*/
-                                    echo showArrayInColumn($tr, $l);
+                                    echo showArrayInColumn($tr, $l,'id','lg');
                                 } else {
                                     echo $r->{$t};
                                 }
@@ -151,7 +151,7 @@
     </tr>
 @endif
 <div id="{{ strtolower($module) }}_modal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
 
         <!-- Modal content-->
         <div class="modal-content">

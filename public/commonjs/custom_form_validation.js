@@ -70,7 +70,7 @@ function getModuleWiseRules(module) {
             password: {
                 required: $("#user_form").attr("data-edit") ? false : true,
                 minlength: 8,
-                 pwcheck:true,
+                pwcheck: $("#user_form").attr("data-edit") ? false : true,
             },
             phone: {
                 required: true,
@@ -272,15 +272,37 @@ function getModuleWiseValidationMessages(module) {
             phone: {
                 phone: "Enter valid phone no",
             },
+            state_id: {
+                required: "Select State",
+            },
+            city_id: {
+                required: "Select city",
+            },
         };
-    } else return {};
+    } 
+     else if (module == "Customer") {
+        return {
+           
+            mobile_no: {
+                phone: "Enter valid phone no",
+            },
+            state_id: {
+                required: "Select State",
+            },
+            city_id: {
+                required: "Select city",
+            },
+        };
+    } 
+    
+    else return {};
 }
 function getModuleWiseCallbacks(module) {
     let callbackSuccess = function (res) {
         if (res["redirect_url"]) {
             setTimeout(function () {
                 window.location.href = res["redirect_url"];
-            }, 2500);
+            }, 1000);
         }
     };
     let callbackError = function (error = "") {

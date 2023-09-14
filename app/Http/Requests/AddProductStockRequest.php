@@ -16,7 +16,7 @@ class AddProductStockRequest extends FormRequest
         return [
     'store_id' => 'numeric|nullable',
     'product_id' => 'required|numeric',
-    'location' => 'nullable|string',
+    'location' => 'required|string',
     'title' => 'required',
     'total_cost' => 'required|numeric',
     'quantity' => 'required|numeric'

@@ -344,6 +344,7 @@ class {{modelName}}Controller extends Controller
             foreach($columns as $col){
             
             $label=ucwords(str_replace('_',' ',$col));
+     $label = ucwords(str_replace(' Id', '', $label));
 
             if(!in_array($col,$exclude_cols))
             array_push($cols,['column'=>$col,'label'=>$label,'sortable'=>'No']);

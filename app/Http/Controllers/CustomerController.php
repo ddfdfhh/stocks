@@ -279,12 +279,21 @@ class CustomerController extends Controller
                 'attr' => []
             ],
             [
-                'placeholder' => 'Enter pan_number',
+                'placeholder' => 'Enter pan number',
                 'name' => 'pan_number',
                 'label' => 'Pan Number',
                 'tag' => 'input',
                 'type' => 'text',
                 'default' => isset($model) ? $model->pan_number : "",
+                'attr' => []
+            ],
+            [
+                'placeholder' => 'Enter Adhaar Number',
+                'name' => 'adhaar_no',
+                'label' => 'Adhar Number',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->adhaar_no : "",
                 'attr' => []
             ],
            /* [
@@ -450,7 +459,7 @@ class CustomerController extends Controller
                 'default' => isset($model) ? formatDefaultValueForSelectEdit($model,'city_id', true) : "",
                 'attr' => [],
                 'custom_key_for_option' => 'name',
-                'options' => [],
+                'options' => getList('City', ['state_id' => $model->state_id]),
                 'custom_id_for_option' => 'id',
                 'multiple' => false
             ],
@@ -470,6 +479,15 @@ class CustomerController extends Controller
                 'tag' => 'input',
                 'type' => 'text',
                 'default' => isset($model) ? $model->pan_number : "",
+                'attr' => []
+            ],
+             [
+                'placeholder' => 'Enter Adhaar Number',
+                'name' => 'adhaar_no',
+                'label' => 'Adhar Number',
+                'tag' => 'input',
+                'type' => 'number',
+                'default' => isset($model) ? $model->adhaar_no : "",
                 'attr' => []
             ],
             [

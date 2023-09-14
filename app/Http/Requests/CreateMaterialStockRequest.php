@@ -14,13 +14,15 @@ class CreateMaterialStockRequest extends FormRequest
     public function rules()
     {
         return [
-    'supplier_id' => 'required|numeric',
-    'driver_id' => 'numeric|nullable',
-    'driver_name' => 'nullable',
-    'eway_bill' => 'image|nullable',
-    'vehicle_number' => 'required',
-    'material_id' => 'required|numeric',
-    'quantity' => 'required|numeric'
-];
+            'supplier_id' => 'required|numeric',
+            'driver_id' => 'numeric|nullable',
+            'driver_name' => 'nullable',
+            'eway_bill' => 'image|nullable',
+            'vehicle_number' => 'nullable',
+            'material_id' => 'required|numeric',
+            'location' => 'required',
+            'amount' => 'required|numeric',
+            'quantity' => 'required|numeric',
+        ];
     }
 }

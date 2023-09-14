@@ -15,7 +15,7 @@ class ReceivePaymentRequest extends FormRequest
     {
         return [
     'title' => 'required',
-    'order_id' => 'numeric|nullable',
+    'order_id' => 'numeric|required',
     'paid_amount' => 'required|numeric',
     'due_amount' => 'numeric|nullable',
     'paid_date' => 'required',

@@ -55,7 +55,7 @@ class ContractorWorkController extends Controller
             ],
             [
                 'column' => 'loaded_products',
-                'label' => 'Loaded Products',
+                'label' => 'Stock',
                 'sortable' => 'Yes',
             ],
         ];
@@ -63,7 +63,7 @@ class ContractorWorkController extends Controller
         $this->repeating_group_inputs = [
             [
                 'colname' => 'loaded_products',
-                'label' => 'Loaded Products Detail',
+                'label' => 'Stock Detail',
                 'inputs' => [
                     [
                         'name' => 'loaded_products__json__product_id[]',
@@ -71,7 +71,7 @@ class ContractorWorkController extends Controller
                         'tag' => 'select',
                         'type' => 'select',
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
-                        'attr' =>[],
+                        'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getListProductWithQty(),
                         'custom_id_for_option' => 'id',
@@ -80,16 +80,26 @@ class ContractorWorkController extends Controller
                     [
                         'placeholder' => 'Enter sent quantity',
                         'name' => 'loaded_products__json__send_quantity[]',
-                        'label' => 'Sent Quantity',
+                        'label' => 'Sent Stock',
                         'tag' => 'input',
                         'type' => 'number',
                         'default' => 0,
-                        'attr' => isset($model)?['readonly'=>true]:[],
+                        'attr' => isset($model) ? ['readonly' => true] : [],
+                    ],
+
+                    [
+                        'placeholder' => 'Enter back stock ',
+                        'name' => 'loaded_products__json__back_stock_quantity[]',
+                        'label' => 'Back Stock',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => [],
                     ],
                     [
-                        'placeholder' => 'Enter unused quantity',
-                        'name' => 'loaded_products__json__unused_quantity[]',
-                        'label' => 'Unused Quantity',
+                        'placeholder' => 'Enter defected quantity ',
+                        'name' => 'loaded_products__json__defected_quantity[]',
+                        'label' => 'Defected Quantity',
                         'tag' => 'input',
                         'type' => 'number',
                         'default' => 0,
@@ -209,7 +219,7 @@ class ContractorWorkController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -233,7 +243,7 @@ class ContractorWorkController extends Controller
                 $query = ContractorWork::query();
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -348,15 +358,15 @@ class ContractorWorkController extends Controller
                         'default' => isset($model) ? $model->transport_cost : "",
                         'attr' => [],
                     ],
-                    [
-                        'placeholder' => 'Enter area done with unit',
-                        'name' => 'work_done',
-                        'label' => 'Area Done ',
-                        'tag' => 'input',
-                        'type' => 'text',
-                        'default' => isset($model) ? $model->work_done : "",
-                        'attr' => [],
-                    ],
+                    // [
+                    //     'placeholder' => 'Enter area done with unit',
+                    //     'name' => 'work_done',
+                    //     'label' => 'Area Done ',
+                    //     'tag' => 'input',
+                    //     'type' => 'text',
+                    //     'default' => isset($model) ? $model->work_done : "",
+                    //     'attr' => [],
+                    // ],
                     [
                         'placeholder' => 'Enter work_date',
                         'name' => 'work_date',
@@ -366,7 +376,7 @@ class ContractorWorkController extends Controller
                         'default' => isset($model) ? $model->work_date : "",
                         'attr' => [],
                     ],
-                     [
+                    [
                         'name' => 'customer_id',
                         'label' => 'Select Customer',
                         'tag' => 'select',
@@ -377,6 +387,47 @@ class ContractorWorkController extends Controller
                         'options' => getList('Customer'),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
+                    ],
+                ],
+            ],
+            [
+                'label' => 'Area Detaiils',
+                'inputs' => [
+                    [
+                        'placeholder' => 'Enter running height',
+                        'name' => 'running_height',
+                        'label' => 'Running Height(ft.)',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->running_height : "",
+                        'attr' => ['onChange' => 'calculatArea(this.value,"Running","height")'],
+                    ],
+                    [
+                        'placeholder' => 'Enter running length',
+                        'name' => 'running_length',
+                        'label' => 'Running Length(ft.)',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->running_length : "",
+                        'attr' => ['onChange' => 'calculatArea(this.value,"Running","length")'],
+                    ],
+                    [
+                        'placeholder' => 'Enter convered height',
+                        'name' => 'covered_height',
+                        'label' => 'Covered Height(ft.)',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->covered_height : "",
+                        'attr' => ['onChange' => 'calculatArea(this.value,"Covered","height")'],
+                    ],
+                    [
+                        'placeholder' => 'Enter covered length',
+                        'name' => 'covered_length',
+                        'label' => 'Covered Length(ft.)',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->covered_length : "",
+                        'attr' => ['onChange' => 'calculatArea(this.value,"Covered","length")'],
                     ],
                 ],
             ],
@@ -501,7 +552,8 @@ class ContractorWorkController extends Controller
 
                 $name = isset($product_names_array[$v->product_id]) ? $product_names_array[$v->product_id] : '';
                 $v->name = $name;
-                $v->unused_quantity = is_null($v->unused_quantity) ? 0.0 : $v->unused_quantity;
+                $v->back_stock_quantity = is_null($v->back_stock_quantity) ? 0.0 : $v->back_stock_quantity;
+                $v->defected_quantity = is_null($v->defected_quantity) ? 0.0 : $v->defected_quantity;
                 return $v;
             }, $ar);
             unset($post['loaded_products']);
@@ -545,44 +597,54 @@ class ContractorWorkController extends Controller
     {
 
         $model = ContractorWork::findOrFail($id);
-$this->repeating_group_inputs = [
-    [
-        'colname' => 'loaded_products',
-        'label' => 'Loaded Products Detail',
-        'inputs' => [
+        $this->repeating_group_inputs = [
             [
-                'name' => 'loaded_products__json__product_id[]',
-                'label' => 'Select Product_id',
-                'tag' => 'select',
-                'type' => 'select',
-                'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
-                'attr' => [],
-                'custom_key_for_option' => 'name',
-                'options' => getListProductWithQty(),
-                'custom_id_for_option' => 'id',
-                'multiple' => false,
+                'colname' => 'loaded_products',
+                'label' => 'Stock Detail',
+                'inputs' => [
+                    [
+                        'name' => 'loaded_products__json__product_id[]',
+                        'label' => 'Select Product_id',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getListProductWithQty(),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter sent quantity',
+                        'name' => 'loaded_products__json__send_quantity[]',
+                        'label' => 'Sent Quantity',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => ['readonly' => true],
+                    ],
+
+                    [
+                        'placeholder' => 'Enter back stock ',
+                        'name' => 'loaded_products__json__back_stock_quantity[]',
+                        'label' => 'Back Stock',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter defected quantity ',
+                        'name' => 'loaded_products__json__defected_quantity[]',
+                        'label' => 'Defected Quantity',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => [],
+                    ],
+                ],
             ],
-            [
-                'placeholder' => 'Enter sent quantity',
-                'name' => 'loaded_products__json__send_quantity[]',
-                'label' => 'Sent Quantity',
-                'tag' => 'input',
-                'type' => 'number',
-                'default' => 0,
-                'attr' =>  ['readonly' => true],
-            ],
-            [
-                'placeholder' => 'Enter unused quantity',
-                'name' => 'loaded_products__json__unused_quantity[]',
-                'label' => 'Unused Quantity',
-                'tag' => 'input',
-                'type' => 'number',
-                'default' => 0,
-                'attr' => [],
-            ],
-        ],
-    ],
-];
+        ];
 
         $data = [
             [
@@ -693,13 +755,13 @@ $this->repeating_group_inputs = [
                         'default' => isset($model) ? $model->work_date : "",
                         'attr' => [],
                     ],
-                        [
+                    [
                         'name' => 'customer_id',
                         'label' => 'Select Customer',
                         'tag' => 'select',
                         'type' => 'select',
-                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', false) : (!empty(getList('Customer')) ? getList('Customer')[0]->id : ''),
-                          'attr' => [],
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', false) : (!empty(getList('Customer')) ? getList('Customer')[0]->id : ''),
+                        'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('Customer'),
                         'custom_id_for_option' => 'id',

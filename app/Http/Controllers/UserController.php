@@ -155,12 +155,14 @@ class UserController extends Controller
                 'label' => 'State',
                 'type' => 'select',
                 'options' => getList('State'),
+
             ],
             [
                 'name' => 'city_id',
                 'label' => 'City',
                 'type' => 'select',
                 'options' => [],
+                'attr' => ['id' => 'inp-city_id'],
             ],
             [
                 'name' => 'status',
@@ -329,7 +331,7 @@ class UserController extends Controller
                         'label' => 'Assign Role',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' =>'',
+                        'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('Role'),
@@ -535,7 +537,8 @@ class UserController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' =>'',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('State'),

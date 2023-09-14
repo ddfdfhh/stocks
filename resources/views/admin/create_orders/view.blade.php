@@ -26,7 +26,7 @@
                                         <th>{{ ucwords($table_columns[$l - 1]['label']) }}</th>
                                         @if (str_contains($t, 'status'))
                                             <td>
-                                                <x-status :status='$row->{$t}' />
+                                                  <span class="badge bg-label-info me-1">{!!$row->{$t} !!}</span>
                                             </td>
                                         @elseif(str_contains($t, '_at') || str_contains($t, 'date'))
                                             <td>{{ formateDate($row->{$t}) }}</td>

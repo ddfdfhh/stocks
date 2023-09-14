@@ -18,8 +18,7 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-                <input name="ids[]" class="form-check-input" type="checkbox" id="check_all" value="{{ $r->id }}" />
-
+         
 
             </td>
             @foreach ($table_columns as $t)
@@ -107,6 +106,11 @@
                 @endif
             @endforeach
             <td>
+              @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
+                        auth()->user()->can('edit_' . $plural_lowercase))
+                    <a class="btn  btn-primary btn-icon" title="Edit" href="{{ $viewurl }}">
+                       <i class="bx bx-dice-4"></i> </a>
+                @endif
 
                 @if (auth()->user()->hasRole(['Admin','Store Incharge']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))

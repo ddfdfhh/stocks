@@ -17,7 +17,7 @@ class ReceivePaymentController extends Controller
         $this->module = 'ReceivePayment';
         $this->view_folder = 'receive_payments';
         $this->storage_folder = $this->view_folder;
-        $this->has_upload = 0;
+        $this->has_upload = 1;
         $this->is_multiple_upload = 0;
         $this->has_export = 0;
         $this->pagination_count = 100;
@@ -59,7 +59,13 @@ class ReceivePaymentController extends Controller
                 'sortable' => 'Yes',
             ],
         ];
-        $this->form_image_field_name = [];
+          $this->form_image_field_name = [
+            [
+                'field_name' => 'payment_proof_image',
+                'single' => true,
+            ],
+           
+        ];
         $this->repeating_group_inputs = [];
         $this->toggable_group = [];
         $this->model_relations = [
@@ -71,6 +77,11 @@ class ReceivePaymentController extends Controller
             [
                 'name' => 'payment_collected_by',
                 'class' => 'App\\Models\\User',
+                'type' => 'BelongsTo',
+            ],
+            [
+                'name' => 'store',
+                'class' => 'App\\Models\\Store',
                 'type' => 'BelongsTo',
             ],
         ];
@@ -119,6 +130,15 @@ class ReceivePaymentController extends Controller
     }
     public function index(Request $request)
     {
+        $store_id = null;
+if (auth()->user()->hasRole(['Store Incharge'])) {
+    $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+    if (!is_null($store_row)) {
+        $store_id = $store_row->id;
+    }
+
+}
+
 
         if (!can('list_receive_payments')) {
             return redirect(route('admin.unauthorized'));
@@ -150,9 +170,9 @@ class ReceivePaymentController extends Controller
             ],
             [
                 'name' => 'order_id',
-                'label' => 'Order Id',
+                'label' => 'Select Order ',
                 'type' => 'select',
-                'options' => getList('CreateOrder', [], 'title')
+                'options' => getList('CreateOrder', ['store_id'=>$store_id], 'title')
             ],
             [
                 'name' => 'paid_amount',
@@ -189,7 +209,10 @@ class ReceivePaymentController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->when($store_id, function ($query) use ($store_id) {
+                return $query->whereStoreId($store_id);
+
+            })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -208,12 +231,18 @@ class ReceivePaymentController extends Controller
 
             $query = null;
             if (count($this->model_relations) > 0) {
-                $query = ReceivePayment::with(array_column($this->model_relations, 'name'));
+                $query = ReceivePayment::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
+                return $query->whereStoreId($store_id);
+
+            });
             } else {
-                $query = ReceivePayment::query();
+                $query = ReceivePayment::when($store_id, function ($query) use ($store_id) {
+                return $query->whereStoreId($store_id);
+
+            });
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -262,6 +291,15 @@ class ReceivePaymentController extends Controller
                         'custom_id_for_option' => 'id',
                         'multiple' => false
                     ],
+                    
+                    
+                    
+                ],
+            ],
+            [
+                'label' =>'Payment Details',
+                'inputs' => [
+                   
                     [
                         'placeholder' => 'Enter paid_amount',
                         'name' => 'paid_amount',
@@ -337,13 +375,37 @@ class ReceivePaymentController extends Controller
                         'label' => 'Payment Collected By',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'payment_collected_by_id', false) : (!empty(getList('User')) ? getList('User')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'payment_collected_by_id', false) : auth()->id(),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => getList('User'),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
+                     [
+                        'placeholder' => 'Enter quantity paid',
+                        'name' => 'quantity_paid',
+                        'label' => 'Quantity Paid',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->quantity_paid : "",
+                        'attr' => [],
+                    ],
+                     [
+                        'placeholder' => 'Enter quantity not paid',
+                        'name' => 'quantity_unpaid',
+                        'label' => 'Quantity Not Paid',
+                        'tag' => 'input',
+                        'type' => 'text',
+                        'default' => isset($model) ? $model->quantity_unpaid : "",
+                        'attr' => [],
+                    ],
+                    
+                ],
+            ],
+            [
+                'label' =>'Bank Details',
+                'inputs' => [
                     [
                         'placeholder' => 'Enter bank_name',
                         'name' => 'bank_name',
@@ -380,6 +442,9 @@ class ReceivePaymentController extends Controller
                         'default' => isset($model) ? $model->bank_ifsc : "",
                         'attr' => [],
                     ],
+                   
+                   
+                    
                 ],
             ],
         ];
@@ -387,18 +452,18 @@ class ReceivePaymentController extends Controller
         if (count($this->form_image_field_name) > 0) {
 
             foreach ($this->form_image_field_name as $g) {
-                if ($model->field_name) {
+              
                     $y = [
                         'placeholder' => '',
                         'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
-                        'label' => $g['single'] ? $g['field_name'] : \Str::plural($g['field_name']),
+                        'label' => "Payment Proof ",
                         'tag' => 'input',
                         'type' => 'file',
                         'default' => '',
                         'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
                     ];
                     array_push($data[0]['inputs'], $y);
-                }
+                
             }
         }
 
@@ -466,26 +531,26 @@ class ReceivePaymentController extends Controller
             $receivepayment = ReceivePayment::create($post);
             if ($receivepayment->order_id) {
                 $orderid = $receivepayment->order_id;
-                $previous_payments_sum_order = ReceivePayment::whereOrderId($orderid)->sum('paid_amount');
+                 $total_paid = ReceivePayment::whereOrderId($orderid)->sum('paid_amount');
                 // dd( $previous_payments_for_order);
                 $order = \App\Models\CreateOrder::whereId($orderid)->first();
-                $total = $order->total;
-                $previous_paid = $previous_payments_sum_order;
-                $total_paid = $previous_paid + $receivepayment->paid_amount;
-                $due_amount = $total - $total_paid;
+                $total_to_pay = $order->total;
+             // dd($total_paid);
+                $due_amount = $total_to_pay - $total_paid;
                 if (!is_null($order)) {
-                    $ar = ['due_amount' => $due_amount, 'paid_amount' => $receivepayment->paid_amount];
+                    $ar = ['due_amount' => $due_amount, 'paid_amount' =>  $total_paid ];
                     if ($due_amount < 1) {
                         $ar['paid_status'] = 'Paid';
                     } else {
                         $ar['paid_status'] = 'Partial';
                     }
-
+                   //  dd($ar);
                     $order->update($ar);
 
                 }
 
             }
+            $ppost['payment_collected_by_id']=$store_id?auth()->id():$post['payment_collected_by_id'];
             \DB::table('company_ledger')->insert(
                 [
                     'name' => $post['title'],
@@ -527,10 +592,10 @@ class ReceivePaymentController extends Controller
                         'label' => 'Select Order',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', [], 'title')) ? getList('CreateOrder', [], 'title')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', ['status!=','Paid'], 'title')) ? getList('CreateOrder', ['status!=','Paid'], 'title')[0]->id : ''),
                         'attr' => ['onChange' => 'fetchOrderTotalAmount(this.value)'],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('CreateOrder', [], 'title'),
+                        'options' => getList('CreateOrder', ['status!=','Paid'], 'title'),
                         'custom_id_for_option' => 'id',
                         'multiple' => false
                     ],
@@ -722,10 +787,11 @@ class ReceivePaymentController extends Controller
         //natcasesort($columns);
 
         $cols = [];
-        $exclude_cols = ['updated_at', 'id'];
+        $exclude_cols = ['updated_at', 'id','deleted_at',];
         foreach ($columns as $col) {
 
             $label = ucwords(str_replace('_', ' ', $col));
+            $label = ucwords(str_replace(' Id', ' ', $label));
 
             if (!in_array($col, $exclude_cols)) {
                 array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
@@ -924,10 +990,10 @@ class ReceivePaymentController extends Controller
                             'label' => 'Select Order',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', [], 'title')) ? getList('CreateOrder', [], 'title')[0]->id : ''),
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', ['status!=','Paid'], 'title')) ? getList('CreateOrder', ['status!=','Paid'], 'title')[0]->id : ''),
                             'attr' => ['onChange' => 'fetchOrderTotalAmount(this.value)'],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('CreateOrder', [], 'title'),
+                            'options' => getList('CreateOrder', ['status!=','Paid'], 'title'),
                             'custom_id_for_option' => 'id',
                             'multiple' => false
                         ],

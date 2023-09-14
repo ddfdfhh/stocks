@@ -143,7 +143,7 @@ function getForeignKeyFieldValue($rel_ar, $row, $field, $key_toget_as_per_relati
         if ($field == $item['name']) {
 
             if ($item['type'] == 'BelongsTo' || $item['type'] == 'HasOne') {
-                $resp = $row->{$field}->{$get_by_field};
+                $resp = $row->{$field}? $row->{$field}->{$get_by_field}:'';
             } elseif ($item['type'] == 'HasMany' || $item['type'] == 'ManyToMany') {
 
                 if ($row->{$field}) {
@@ -644,7 +644,7 @@ function getList($model, $where = [], $by_field = 'name')
     $model_class = "\App\Models" . '\\' . $model;
     $lists = $model_class::query();
     if (count($where) > 0) {
-        $lists = $lists->where('status', 'Active')->where($where);
+        $lists = $lists->where($where);
     }
     $lists = $lists->get(['id', $by_field]);
 

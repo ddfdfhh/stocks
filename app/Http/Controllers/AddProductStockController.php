@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddProductStockRequest;
 use App\Models\AddProductStock;
+use DB;
 use File;
 use Maatwebsite\Excel\Facades\Excel;
 use \Illuminate\Http\Request;
-use DB;
+
 class AddProductStockController extends Controller
 {
     public function __construct()
@@ -73,6 +74,11 @@ class AddProductStockController extends Controller
                 'class' => 'App\\Models\\Store',
                 'type' => 'BelongsTo',
             ],
+            [
+                'name' => 'created_by',
+                'class' => 'App\\Models\\User',
+                'type' => 'BelongsTo',
+            ],
         ];
 
     }
@@ -119,13 +125,14 @@ class AddProductStockController extends Controller
     }
     public function index(Request $request)
     {
-    $store_id=null;
-    if(auth()->user()->hasRole(['Store Incharge'])){
-        $store_row=\DB::table('stores')->whereOwnerId(auth()->id())->first();
-        if(!is_null($store_row))
-        $store_id=$store_row->id;
-          
-    }
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
+        }
         if (!can('list_add_product_stocks')) {
             return redirect(route('admin.unauthorized'));
         }
@@ -143,7 +150,7 @@ class AddProductStockController extends Controller
             ],
             [
                 'name' => 'product_id',
-                'label' => 'Product Id',
+                'label' => 'Product',
                 'type' => 'select',
                 'options' => getList('Product'),
             ],
@@ -154,7 +161,7 @@ class AddProductStockController extends Controller
             ],
             [
                 'name' => 'store_id',
-                'label' => 'Store Id',
+                'label' => 'Store',
                 'type' => 'select',
                 'options' => getList('Store'),
             ],
@@ -184,10 +191,10 @@ class AddProductStockController extends Controller
                     return $query->orderBy($sort_by, $sort_type);
                 })
                 ->when($store_id, function ($query) use ($store_id) {
-                   return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
 
                 })
-                ->paginate($this->pagination_count);
+                ->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -207,7 +214,7 @@ class AddProductStockController extends Controller
             $query = null;
             if (count($this->model_relations) > 0) {
                 $query = AddProductStock::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
-                 return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
                 });
             } else {
                 $query = AddProductStock::when($store_id, function ($query) use ($store_id) {
@@ -215,7 +222,7 @@ class AddProductStockController extends Controller
                 });
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -364,6 +371,7 @@ class AddProductStockController extends Controller
     public function upsertStoreProductStock($post)
     {
         $qty = $post['quantity'];
+
         $update = [
             'total_quantity' => DB::raw('total_quantity+' . $qty),
             'current_quantity' => DB::raw('current_quantity+' . $qty),
@@ -405,20 +413,20 @@ class AddProductStockController extends Controller
         \DB::beginTransaction();
         try {
             $post = $request->all();
+            $store_id = $post['store_id'];
 
+            if (empty($store_id) && auth()->user()->hasRole(['Store Incharge'])) {
+                $assigned_store = \App\Models\Store::whereOwnerId(auth()->id())->first();
+                $post['store_id'] = !is_null($assigned_store) ? $assigned_store->id : null;
+            }
+            $post['created_by_id'] = auth()->id();
             $addproductstock = AddProductStock::create($post);
             if ($post['store_id']) {
 
                 $this->upsertStoreProductStock($post);
 
             } else {
-                if (auth()->user()->hasRole(['Store Incharge'])) {
-                    $this->upsertStoreProductStock($post);
-
-                } else {
-                    $this->upsertAdminProductStock($post);
-
-                }
+                $this->upsertAdminProductStock($post);
             }
 
             \DB::commit();

@@ -115,7 +115,7 @@
                         <i class="bx bx-dice-4"></i>
                     </a>
                 @endif
-                @if (auth()->user()->hasRole(['Admin']) ||
+              {{--  @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('edit_' . $plural_lowercase))
                     <a class="btn  btn-info btn-icon" title="Edit" href="{{ $editurl }}">
                         <i class="bx bx-edit"></i> </a>
@@ -124,7 +124,7 @@
                     <a class="btn  btn-warning btn-icon" title="Invoice"
                         href="{{ route('receivepayment.generateReceipt', ['id' => $r->order_id]) }}">
                         <i class="bx bx-receipt"></i></a>
-                @endif
+                @endif--}}
             </td>
 
 

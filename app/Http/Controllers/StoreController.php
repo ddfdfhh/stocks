@@ -895,12 +895,12 @@ class StoreController extends Controller
             }
             $list = [];
             if ($assigned_store) {
-                $list = \App\Models\StoreAssignedProductStock::with('admin_product_stock')->whereStoreId($assigned_store->id)->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
+                $list = \App\Models\StoreAssignedProductStock::with('product')->whereStoreId($assigned_store->id)->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
                     return $query->where($search_by, 'like', '%' . $search_val . '%');
                 })
                     ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                         return $query->orderBy($sort_by, $sort_type);
-                    })->paginate($this->pagination_count);
+                    })->latest()->paginate($this->pagination_count);
             }
 
             $data = [
@@ -919,13 +919,14 @@ class StoreController extends Controller
             return view('admin.' . $this->view_folder . '.page', with($data));
         } else {
             $list = [];
+           
             if ($assigned_store) {
                 $query = \App\Models\StoreAssignedProductStock::with('product')->whereStoreId($assigned_store->id);
 
                 $query = $this->buildFilter($request, $query);
-                $list = $query->paginate(100);
+                $list = $query->latest()->paginate(100);
             }
-            // dd($list->toArray());
+          //  dd($list->toArray());
             $view_data = [
                 'list' => $list,
 

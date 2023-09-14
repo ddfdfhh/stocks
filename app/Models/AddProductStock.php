@@ -23,6 +23,10 @@ class AddProductStock extends Model
 {
   return $this->belongsTo(Store::class,'store_id','id')->withDefault();
 } 
+   public function created_by():BelongsTo
+{
+  return $this->belongsTo(User::class,'created_by_id','id')->withDefault();
+} 
   
 
 	public function product():BelongsTo

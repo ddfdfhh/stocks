@@ -151,7 +151,7 @@ class GeneratedProductStockController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -175,7 +175,7 @@ class GeneratedProductStockController extends Controller
                 $query = GeneratedProductStock::query();
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -222,7 +222,7 @@ class GeneratedProductStockController extends Controller
                         'tag' => 'input',
                         'type' => 'number',
                         'default' => isset($model) ? $model->quantity_produced : "",
-                        'attr' => [],
+                        'attr' => ['onChange' => 'calculateProductPrice()'],
                     ],
                 ],
             ],
@@ -372,7 +372,7 @@ class GeneratedProductStockController extends Controller
                         'tag' => 'input',
                         'type' => 'number',
                         'default' => isset($model) ? $model->quantity_produced : "",
-                        'attr' => [],
+                        'attr' => ['onChange' => 'calculateProductPrice()'],
                     ],
                 ],
             ],
@@ -793,19 +793,20 @@ class GeneratedProductStockController extends Controller
         if ($r->ajax()) {
             $post = $r->all();
             $sum = 0;
-            $material_ids = $post['raw_materials__json__material_id'];
-            $material_qty = array_values($post['raw_materials__json__quantity']);
+            $material_ids = isset($post['raw_materials__json__material_id'])?$post['raw_materials__json__material_id']:[];
+            $material_qty = isset($post['raw_materials__json__quantity'])?array_values($post['raw_materials__json__quantity']):[];
 
             $material_ids = array_values($material_ids);
             $t = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('rate', 'id')->toArray();
             $i = 0;
-
+           if(count($material_ids)>0 && count($material_qty)>0){
             foreach ($material_ids as $id) {
-
+               if(isset($material_qty[$i]) && isset( $t[$id]))
                 $sum += $t[$id] * $material_qty[$i];
 
                 $i++;
             }
+        }
             return createResponse(true, $sum*$post['quantity_produced']);
         }
     }

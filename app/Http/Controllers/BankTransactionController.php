@@ -38,29 +38,21 @@ class BankTransactionController extends Controller
                 'label' => 'Bank Name',
                 'sortable' => 'Yes',
             ],
-            [
-                'column' => 'bank_ifsc',
-                'label' => 'IFSC',
-                'sortable' => 'Yes',
-            ],
-            [
-                'column' => 'branch_location',
-                'label' => 'Bank Address',
-                'sortable' => 'Yes',
-            ],
+           
             [
                 'column' => 'amount',
                 'label' => 'Amount',
                 'sortable' => 'Yes',
             ],
-            [
-                'column' => 'payment_mode',
-                'label' => 'Payment Mode',
-                'sortable' => 'Yes',
-            ],
+            
             [
                 'column' => 'mode',
                 'label' => 'Sent/Recieved?',
+                'sortable' => 'Yes',
+            ],
+            [
+                'column' => 'created_at',
+                'label' => 'Created At',
                 'sortable' => 'Yes',
             ],
         ];
@@ -197,7 +189,7 @@ class BankTransactionController extends Controller
             })->when($store_id, function ($query) use ($store_id) {
                 return $query->whereStoreId($store_id);
 
-            })->paginate($this->pagination_count);
+            })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -227,7 +219,7 @@ class BankTransactionController extends Controller
                 });
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -1120,7 +1112,7 @@ class BankTransactionController extends Controller
             //natcasesort($columns);
 
             $cols = [];
-            $exclude_cols = ['id', 'updated_at'];
+            $exclude_cols = ['id', 'updated_at','deleted_at'];
             foreach ($columns as $col) {
 
                 $label = ucwords(str_replace('_', ' ', $col));

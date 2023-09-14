@@ -287,6 +287,15 @@ class SupplierController extends Controller
                         'default' => isset($model) ? $model->pan_number : "",
                         'attr' => [],
                     ],
+                    [
+                        'placeholder' => 'Enter Adhaar Number',
+                        'name' => 'adhaar_no',
+                        'label' => 'Adhar Number',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->adhaar_no : "",
+                        'attr' => [],
+                    ],
                 ],
             ],
         ];
@@ -432,7 +441,7 @@ class SupplierController extends Controller
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'city_id', true) : "",
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => [],
+                        'options' => getList('City', ['state_id' => $model->state_id]),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -452,6 +461,15 @@ class SupplierController extends Controller
                         'tag' => 'input',
                         'type' => 'text',
                         'default' => isset($model) ? $model->pan_number : "",
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter Adhaar Number',
+                        'name' => 'adhaar_no',
+                        'label' => 'Adhar Number',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => isset($model) ? $model->adhaar_no : "",
                         'attr' => [],
                     ],
                 ],
@@ -519,10 +537,11 @@ class SupplierController extends Controller
         natcasesort($columns);
 
         $cols = [];
-        $exclude_cols = ['updated_at'];
+        $exclude_cols = ['updated_at','deleted_at','id'];
         foreach ($columns as $col) {
 
             $label = ucwords(str_replace('_', ' ', $col));
+            $label = ucwords(str_replace(' Id', '', $label));
 
             if (!in_array($col, $exclude_cols)) {
                 array_push($cols, ['column' => $col, 'label' => $label, 'sortable' => 'No']);
@@ -826,7 +845,7 @@ class SupplierController extends Controller
                             'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'city_id', true) : "",
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => [],
+                            'options' => getList('City', ['state_id' => $model->state_id]),
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],

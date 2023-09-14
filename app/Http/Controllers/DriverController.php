@@ -1026,7 +1026,7 @@ class DriverController extends Controller
             //natcasesort($columns);
 
             $cols = [];
-            $exclude_cols = ['id', 'updated_at'];
+            $exclude_cols = ['id', 'updated_at','deleted_at'];
             foreach ($columns as $col) {
 
                 $label = ucwords(str_replace('_', ' ', $col));

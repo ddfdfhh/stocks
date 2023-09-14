@@ -23,7 +23,9 @@
                                     @php ++$l; 
                                     $t=$t['column'];@endphp
                                     <tr>
-                                        <th>{{ ucwords(str_replace(' Id',' ',$table_columns[$l - 1]['label'])) }}</th>
+                                        <th>{{ $table_columns[$l - 1]['label']=='Loaded Products'
+                                                  ?'Stock Detail'
+                                                  :ucwords(str_replace(' Id',' ',$table_columns[$l - 1]['label'])) }}</th>
                                         @if (str_contains($t, 'status'))
                                             <td>
                                                 <x-status :status='$row->{$t}' />
@@ -105,8 +107,10 @@
                                 }
                             } else {
                             $rs='';
-                            if(in_array($table_columns[$l - 1]['column'],['total_cost','payment_recieved','payment_due','transport_cost']))
+                            if(in_array($table_columns[$l - 1]['column'],['total_cost','payment_received','payment_due','transport_cost']))
                                 echo '&#8377;'.$row->{$t};
+                            elseif(in_array($table_columns[$l - 1]['column'],['running_height','running_length','covered_height','covered_length']))
+                                echo $row->{$t}.'(ft)';
                             else
                              echo $row->{$t};
                              }

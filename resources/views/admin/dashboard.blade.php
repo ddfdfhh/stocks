@@ -653,7 +653,7 @@
                     <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
                         data-bs-target="#accordionWithIcon-3" aria-expanded="false">
                         <i class="bx bx-gift me-2"></i>
-                        Sell Report
+                        Income Report
                     </button>
                 </h2>
                 <div id="accordionWithIcon-3" class="accordion-collapse collapse">

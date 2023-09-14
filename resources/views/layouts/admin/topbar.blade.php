@@ -24,7 +24,13 @@
             <!-- Search -->
             <div class="navbar-nav align-items-center">
                 <div class="nav-item navbar-search-wrapper mb-0" style="margin-top:8px">
-                    <h5 class="text-white">Welcome,{{ ucwords(auth()->user()->name) }}</h5>
+                   
+                    @if(auth()->user()->hasRole(['Store Incharge']))
+                     <h5 class="text-white">Store Name-{{ ucwords(session()->get('store_name')) }}   </h5>
+                     @else
+                       <h5 class="text-white">Welcome,{{ ucwords(auth()->user()->name) }}   </h5>
+                     @endif
+                    
                 </div>
             </div>
             <!-- /Search -->

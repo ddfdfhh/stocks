@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y pt-5">
-       
+
 
         <div class="row">
             <!-- Basic Layout -->
@@ -9,13 +9,15 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         <h5 class="mb-0">Generate Product</h5>
-                      
-</div>
-  <p class="badge bg-label-success ml-3 p-2" style="width: 367px;
+
+                    </div>
+                    <p class="badge bg-label-success ml-3 p-2"
+                        style="width: 367px;
     background: #5a8dee!important;
     color: white!important;
     padding: 21px 15px!important;
-    font-size: 14px;">Total Cost-<span id="cost">Rs.0</span></p>
+    font-size: 14px;">
+                        Per Unit Product Cost-<span id="cost">Rs.0</span></p>
                     <div class="card-body">
                         <!--modalable content-->
                         {!! Form::open()->route($plural_lowercase . '.store')->id(strtolower($module) . '_form')->multipart()->attrs(['data-module' => $module]) !!}

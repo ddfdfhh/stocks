@@ -80,11 +80,7 @@ class CreateOrderController extends Controller
                 'class' => 'App\\Models\\Store',
                 'type' => 'BelongsTo',
             ],
-            [
-                'name' => 'created_by',
-                'class' => 'App\\Models\\User',
-                'type' => 'BelongsTo',
-            ],
+           
         ];
 
     }
@@ -146,13 +142,22 @@ class CreateOrderController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
-            [
-                'name' => 'created_by_id',
+             [
+                'name' => 'customer_id',
+                'label' => 'Customer',
+                'type' => 'select',
+                'options' => getList('Customer'),
+            ]
+           
+        ];
+        if(is_admin()){
+            array_push( $filterable_fields, [
+                'name' => 'store_id',
                 'label' => 'Store orders',
                 'type' => 'select',
-                'options' => getUserListWithRoles('Store Incharge'),
-            ],
-        ];
+                'options' => getList('Store'),
+            ]);
+        }
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -422,8 +427,8 @@ class CreateOrderController extends Controller
             if (count($ar) > 0) {
 
                 foreach ($ar as $item) {
-                    $update_string .= 'WHEN product_id=' . $item->product_id . ' THEN current_quantity-' . $item->quantity;
-                    $update_string1 .= 'WHEN product_id=' . $item->product_id . ' THEN sold_quantity+' . $item->quantity;
+                    $update_string .= ' WHEN product_id=' . $item->product_id . ' THEN current_quantity-' . $item->quantity;
+                    $update_string1 .= ' WHEN product_id=' . $item->product_id . ' THEN sold_quantity+' . $item->quantity;
                     if ($item->product_id) {
                         //  dd($material_qty_array[$item->material_id]>$item->quantity);
                         if (isset($product_stock_array[$item->product_id])) { /***Mterial has stock addedd */

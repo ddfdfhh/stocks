@@ -79,8 +79,7 @@
 
                                             <th class="tm_width_2 tm_semi_bold tm_primary_color tm_gray_bg">Price</th>
                                             <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Qty</th>
-                                            <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Tax
-                                                Inclusive?</th>
+                                            
                                             <th class="tm_width_1 tm_semi_bold tm_primary_color tm_gray_bg">Tax</th>
                                             <th
                                                 class="tm_width_2 tm_semi_bold tm_primary_color tm_gray_bg tm_text_right">
@@ -108,10 +107,15 @@
                                                     &#8377;{{ number_format($item['price'], 2) }}</td>
 
                                                 <td class="tm_width_1">{{ $item['quantity'] }}</td>
-                                                <td class="tm_width_1">{{ $item['tax_inclusive'] }}</td>
+                                              
                                                 <td class="tm_width_3">
+                                              @if ($row->should_be_taxed == 'Yes')
                                                     &#8377;{{ $sub_sgst }} sgst(@ {{ $item['sgst'] }}% )<br>
                                                     &#8377;{{ $sub_cgst }} csgst(@ {{ $item['cgst'] }}%)
+                                                    @else
+                                                     &#8377;0.0
+
+                                                    @endif
                                                 </td>
                                                 <td class="tm_width_3" style="text-align:right">
                                                     &#8377;{{ $sub_total }}

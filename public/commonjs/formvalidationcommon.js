@@ -89,7 +89,7 @@ function errorAlert(error = "") {
     // });
 }
 function disableBtn(btn) {
-    if (btn!==undefined) {
+    if (btn !== undefined) {
         btn.prop("disabled", true);
         btn.css("opacity", "0.7");
     }
@@ -97,10 +97,10 @@ function disableBtn(btn) {
     blockUi();
 }
 function enableBtn(btn) {
-   if (btn !== undefined) {
-       btn.css("opacity", "1");
-       btn.prop("disabled", false);
-   }
+    if (btn !== undefined) {
+        btn.css("opacity", "1");
+        btn.prop("disabled", false);
+    }
     // loaderRef.css('display','none');
     if (typeof $.unblockUI !== "undefined") $.unblockUI();
 }
@@ -115,6 +115,7 @@ function formatErrorMessage(
     } else if (jqXHR.status == 404) {
         msg = "The requested page not found";
     } else if (jqXHR.status == 500) {
+         msg = jqXHR.responseJSON!==undefined? jqXHR.responseJSON.message.substr(20,30)+'....':'Internal Server error ocurred';
     } else if (jqXHR.status == 403) {
         msg = "Please refresh page.";
     } else if (jqXHR.status == 500) {
@@ -150,22 +151,33 @@ function handleFormSubmitError(
     show_server_validation_in_alert = true
 ) {
     console.log(xhr);
-    if (
-        xhr.responseJSON !== undefined &&
-        xhr.responseJSON.errors !== undefined
-    ) {
-        var errorString = "";
-        let i = 1;
-        $.each(xhr.responseJSON.errors, function (key, value) {
-            errorString += "<p>" + value + "</p>";
-        });
-        if (show_server_validation_in_alert) errorAlert(errorString);
-        else {
-            $("#validation-errors").html("");
+    if (xhr.responseJSON !== undefined && xhr.status!==500) {
+        if (xhr.responseJSON.errors !== undefined) {
+            var errorString = "";
+            let i = 1;
+            $.each(xhr.responseJSON.errors, function (key, value) {
+                errorString += "<p>" + value + "</p>";
+            });
+            if (show_server_validation_in_alert) errorAlert(errorString);
+            else {
+                $("#validation_errors").html("");
 
-            $("#validation-errors").append(
-                '<div class="alert alert-danger">' + errorString + "</div"
-            );
+                $("#validation_errors").append(
+                    '<div class="alert alert-danger">' + errorString + "</div"
+                );
+            }
+        } else if (xhr.responseJSON.message !== undefined) {
+           
+            if (show_server_validation_in_alert) errorAlert(xhr.responseJSON.message);
+            else {
+                $("#validation_errors").html("");
+
+                $("#validation_errors").append(
+                    '<div class="alert alert-danger">' +
+                        xhr.responseJSON.message +
+                        "</div"
+                );
+            }
         }
     } else {
         formatErrorMessage(xhr, errorThrown, show_server_validation_in_alert);
