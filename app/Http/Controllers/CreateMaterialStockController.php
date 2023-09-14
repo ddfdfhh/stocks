@@ -134,9 +134,9 @@ class CreateMaterialStockController extends Controller
             ],
             [
                 'name' => 'material_id',
-                'label' => 'Select Material ',
+                'label' => 'Material ',
                 'type' => 'select',
-                'options'=>getList('InputMaterial')
+                'options' => getList('InputMaterial'),
             ],
         ];
         $table_columns = $this->table_columns;
@@ -323,6 +323,7 @@ class CreateMaterialStockController extends Controller
     }
     public function store(CreateMaterialStockRequest $request)
     {
+        \DB::beginTransaction();
         try {
             $post = $request->all();
 
@@ -335,23 +336,31 @@ class CreateMaterialStockController extends Controller
                 }
             }
             $post['current_quantity'] = $post['quantity'];
-            $metial_stock_row=\DB::table('material_stocks')->whereMaterialId($post['material_id'])->first();
-            if(!is_null($metial_stock_row)){
-                    \DB::table('material_stocks')->whereMaterialId($post['material_id'])
-                ->increment('current_stock', $post['quantity'], ['total_incoming' => \DB::raw('total_incoming+' . $post['quantity'])]);
-            }
-            else{
-               // dd($post);
-                  \DB::table('material_stocks')->insert(
-                     [
-                        'material_id'=>$post['material_id'],
-                        'current_stock'=> $post['quantity'],
-                         'total_incoming' => \DB::raw('total_incoming+' . $post['quantity'])
+            $metial_stock_row = \DB::table('material_stocks')->whereMaterialId($post['material_id'])->first();
+            if (!is_null($metial_stock_row)) {
+                \DB::table('material_stocks')->whereMaterialId($post['material_id'])
+                    ->increment('current_stock', $post['quantity'], ['total_incoming' => \DB::raw('total_incoming+' . $post['quantity'])]);
+            } else {
+                // dd($post);
+                \DB::table('material_stocks')->insert(
+                    [
+                        'material_id' => $post['material_id'],
+                        'current_stock' => $post['quantity'],
+                        'total_incoming' => \DB::raw('total_incoming+' . $post['quantity']),
                     ]
                 );
             }
             $creatematerialstock = CreateMaterialStock::create($post);
+            \DB::table('company_ledger')->insert(
+                [
+                    'name' => 'Material Purchase Expense',
+                    'amount' => $post['amount'],
+                    'order_id' => null,
+                    'mode' => 'Spent',
+                    'receive_payment_id' => null,
 
+                ]
+            );
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
                     $field_name = $item['field_name'];
@@ -375,8 +384,10 @@ class CreateMaterialStockController extends Controller
                 }
 
             }
+            \DB::commit();
             return createResponse(true, 'Material Stock created successfully', $this->index_url);
         } catch (\Exception $ex) {
+            \DB::rollback();
             return createResponse(false, $ex->getMessage());
         }
     }

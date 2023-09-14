@@ -98,10 +98,7 @@ class InputMaterialController extends Controller
         'name' => 'name',
         'label' => 'Name'
     ],
-    [
-        'name' => 'unit_id',
-        'label' => 'Unit Id'
-    ]
+   
 ];
         $filterable_fields=[
     [

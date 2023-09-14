@@ -34,17 +34,6 @@ class ProductController extends Controller
                 'sortable' => 'Yes',
             ],
 
-            [
-                'column' => 'sgst',
-                'label' => 'SGST(%)',
-                'sortable' => 'Yes',
-            ],
-
-            [
-                'column' => 'cgst',
-                'label' => 'CGST(%)',
-                'sortable' => 'Yes',
-            ],
 
             [
                 'column' => 'created_at',

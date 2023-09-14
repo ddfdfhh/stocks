@@ -489,7 +489,7 @@ class CreateOrderController extends Controller
                 }
 
             }
-            $data['settings'] = \DB::table('setting')->whereId(1)->first();
+         /*   $data['settings'] = \DB::table('setting')->whereId(1)->first();
             $customer = \App\Models\Customer::with(['state', 'city'])->whereId($post['customer_id'])->first();
 
             $data['item_rows'] = $ar;
@@ -502,7 +502,7 @@ class CreateOrderController extends Controller
             $file_name = "invoice-" . $createorder->id . ".pdf";
             $pdf->save($path . $file_name);
 
-            SendInvoiceMail::dispatch($createorder->id, $file_name);
+            SendInvoiceMail::dispatch($createorder->id, $file_name);*/
             \DB::commit();
             return createResponse(true, ' Order created successfully', $this->index_url);
         } catch (\Exception $ex) {
