@@ -17,7 +17,7 @@
     color: white!important;
     padding: 21px 15px!important;
     font-size: 14px;">
-                        Per Unit Product Cost-<span id="cost">Rs.0</span></p>
+                         Product Cost-<span id="cost">Rs.0</span></p>
                     <div class="card-body">
                         <!--modalable content-->
                         {!! Form::open()->route($plural_lowercase . '.store')->id(strtolower($module) . '_form')->multipart()->attrs(['data-module' => $module]) !!}
