@@ -176,8 +176,8 @@
                             $item['cgst'] = isset($item['cgst']) ? $item['cgst'] : 18;
                             $item['sgst'] = isset($item['sgst']) ? $item['sgst'] : 18;
                             $item['tax_inclusive'] = isset($item['tax_inclusive']) ? $item['tax_inclusive'] : 'Yes';
-                            $sub_sgst = $item['tax_inclusive'] == 'Yes' ? ($item['price'] - 1) * ($item['sgst'] / 100) : ($item['price'] * $item['sgst']) / 100;
-                            $sub_cgst = $item['tax_inclusive'] == 'Yes' ? ($item['price'] - 1) * ($item['cgst'] / 100) : ($item['price'] * $item['cgst']) / 100;
+                            $sub_sgst = $item['sgst'] >0 ? ($item['price'] * $item['sgst']) / 100:0.0;
+                            $sub_cgst = $item['cgst'] >0 ?  ($item['price'] * $item['cgst']) / 100:0.0;
                             $sub = $item['price'] * $item['quantity'];
                             $sub_total += $sub;
                             
@@ -199,14 +199,14 @@
                                     &#8377;0.0
                                 @endif
                             </td>
-                            <td class="tm_width_3" style="text-align:right">
+                            <td class="tm_width_3">
                                 &#8377;{{ $sub_total }}
                             </td>
 
                         </tr>
                     @endforeach
                     <tr>
-                        <td colspan="4" class="align-top px-4 py-3">
+                        <td colspan="3" class="align-top px-4 py-3">
 
                         </td>
                         <td class="text-end px-4 py-3">
