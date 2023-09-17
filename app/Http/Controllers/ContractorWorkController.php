@@ -60,54 +60,7 @@ class ContractorWorkController extends Controller
             ],
         ];
         $this->form_image_field_name = [];
-        $this->repeating_group_inputs = [
-            [
-                'colname' => 'loaded_products',
-                'label' => 'Stock Detail',
-                'inputs' => [
-                    [
-                        'name' => 'loaded_products__json__product_id[]',
-                        'label' => 'Select Product_id',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getListProductWithQty(),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
-                    [
-                        'placeholder' => 'Enter sent quantity',
-                        'name' => 'loaded_products__json__send_quantity[]',
-                        'label' => 'Sent Stock',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => 0,
-                        'attr' => isset($model) ? ['readonly' => true] : [],
-                    ],
 
-                    [
-                        'placeholder' => 'Enter back stock ',
-                        'name' => 'loaded_products__json__back_stock_quantity[]',
-                        'label' => 'Back Stock',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => 0,
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter defected quantity ',
-                        'name' => 'loaded_products__json__defected_quantity[]',
-                        'label' => 'Defected Quantity',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => 0,
-                        'attr' => [],
-                    ],
-                ],
-            ],
-        ];
         $this->toggable_group = [];
         $this->model_relations = [
             [
@@ -267,6 +220,56 @@ class ContractorWorkController extends Controller
 
     public function create()
     {
+        $prod_list = getListProductWithQty();
+        $this->repeating_group_inputs = [
+            [
+                'colname' => 'loaded_products',
+                'label' => 'Stock Detail',
+                'inputs' => [
+                    [
+                        'name' => 'loaded_products__json__product_id[]',
+                        'label' => 'Select Product_id',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty($prod_list) ? $prod_list[0]->id : ''),
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => $prod_list,
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter sent quantity',
+                        'name' => 'loaded_products__json__send_quantity[]',
+                        'label' => 'Sent Stock',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => isset($model) ? ['readonly' => true] : [],
+                    ],
+
+                    [
+                        'placeholder' => 'Enter back stock ',
+                        'name' => 'loaded_products__json__back_stock_quantity[]',
+                        'label' => 'Back Stock',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter defected quantity ',
+                        'name' => 'loaded_products__json__defected_quantity[]',
+                        'label' => 'Defected Quantity',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => 0,
+                        'attr' => [],
+                    ],
+                ],
+            ],
+        ];
+
         $data = [
             [
                 'label' => null,
@@ -597,6 +600,9 @@ class ContractorWorkController extends Controller
     {
 
         $model = ContractorWork::findOrFail($id);
+        $customer_list = getList('Customer');
+        $driver_list = getList('Driver');
+        $prod_list = getListProductWithQty();
         $this->repeating_group_inputs = [
             [
                 'colname' => 'loaded_products',
@@ -607,10 +613,10 @@ class ContractorWorkController extends Controller
                         'label' => 'Select Product_id',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty($prod_list) ? $prod_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getListProductWithQty(),
+                        'options' => $prod_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -664,10 +670,10 @@ class ContractorWorkController extends Controller
                         'label' => 'Select Driver',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', false) : (!empty(getList('Driver')) ? getList('Driver')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', false) : (!empty($driver_list) ? $driver_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Driver'),
+                        'options' => $driver_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -760,10 +766,10 @@ class ContractorWorkController extends Controller
                         'label' => 'Select Customer',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', false) : (!empty(getList('Customer')) ? getList('Customer')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', false) : (!empty($customer_list) ? $customer_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Customer'),
+                        'options' => $customer_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -873,6 +879,29 @@ class ContractorWorkController extends Controller
             $post = formatPostForJsonColumn($post);
 
             $ar = json_decode($post['loaded_products']);
+
+            $update_string = 'SET current_quantity=( CASE  ';
+            $update_string1 = ',sold_quantity=( CASE  ';
+
+            if (count($ar) > 0) {
+
+                foreach ($ar as $item) {
+                    if ($item->back_stock_quantity > 0) {
+                        $update_string .= ' WHEN product_id=' . $item->product_id . ' THEN current_quantity+' . $item->back_stock_quantity;
+                        $update_string1 .= ' WHEN product_id=' . $item->product_id . ' THEN sold_quantity+' . $item->back_stock_quantity;
+                        
+                    }
+
+                }
+                $update_string .= ' ELSE current_quantity END)';
+                $update_string1 .= ' ELSE sold_quantity END)';
+                if (is_admin()) {
+                    \DB::statement('UPDATE admin_product_stocks ' . $update_string . ' ' . $update_string1);
+                } else {
+                    \DB::statement('UPDATE store_assigned_product_stocks ' . $update_string . ' ' . $update_string1);
+
+                }
+            }
 
             $ar = array_map(function ($v) use ($product_names_array) {
 

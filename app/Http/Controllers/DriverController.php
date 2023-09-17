@@ -141,12 +141,7 @@ class DriverController extends Controller
             ],
         ];
         $filterable_fields = [
-            [
-                'name' => 'status',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => getListFromIndexArray(['Active', 'In-Active']),
-            ],
+           
             [
                 'name' => 'created_at',
                 'label' => 'Created At',
@@ -237,7 +232,7 @@ class DriverController extends Controller
                         'name' => 'phone_no',
                         'label' => 'Phone No',
                         'tag' => 'input',
-                        'type' => 'text',
+                        'type' => 'number',
                         'default' => isset($model) ? $model->phone_no : "",
                         'attr' => [],
                     ],
@@ -433,7 +428,7 @@ class DriverController extends Controller
                         'name' => 'phone_no',
                         'label' => 'Phone No',
                         'tag' => 'input',
-                        'type' => 'text',
+                        'type' => 'number',
                         'default' => isset($model) ? $model->phone_no : "",
                         'attr' => [],
                     ],
@@ -750,7 +745,7 @@ class DriverController extends Controller
                             'name' => 'phone_no',
                             'label' => 'Phone No',
                             'tag' => 'input',
-                            'type' => 'text',
+                            'type' => 'number',
                             'default' => isset($model) ? $model->phone_no : "",
                             'attr' => [],
                         ],
@@ -884,7 +879,7 @@ class DriverController extends Controller
                             'name' => 'phone_no',
                             'label' => 'Phone No',
                             'tag' => 'input',
-                            'type' => 'text',
+                            'type' => 'number',
                             'default' => isset($model) ? $model->phone_no : "",
                             'attr' => [],
                         ],

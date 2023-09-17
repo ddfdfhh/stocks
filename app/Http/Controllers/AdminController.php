@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
-
+use Maatwebsite\Excel\Facades\Excel;
+use \App\Exports\LedgerExport;
 class AdminController extends Controller
 {
     public function index()
@@ -223,6 +224,12 @@ class AdminController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
+            [
+                'name' => 'mode',
+                'label' => 'Expense/Income',
+                'type' => 'select',
+                'options'=>getListFromIndexArray(['Income','Spent'])
+            ],
         ];
         $searchable_fields = [
             [
@@ -251,13 +258,20 @@ class AdminController extends Controller
                     return $query->orderBy($sort_by, $sort_type);
                 })->latest()->paginate($this->pagination_count);
             $data = [
-                'table_columns' => $table_columns,
-                'list' => $list,
-                'sort_by' => $sort_by,
-                'sort_type' => $sort_type,
+               'table_columns'=> $table_columns,
+                'list'=>$list,
+                'sort_by'=> $sort_by,
+                'sort_type'=> $sort_type,
+                'storage_folder'=>'',
+                 'plural_lowercase'=>'company_ledger',
+                 'module'=>'ComapnyLedger',
+                'has_image'=>0,
+                'model_relations'=>[],
+                'image_field_names'=>[],
+               
 
             ];
-            return view('admin.company_ledger', with($data));
+            return view('admin.company_ledger_page', with($data));
         } else {
 
             $query = null;
@@ -279,6 +293,36 @@ class AdminController extends Controller
             ];
             return view('admin.company_ledger', $view_data);
         }
+
+    }
+     public function exportLedger(Request $request, $type)
+    {
+        $filter = [];
+        $filter_date = [];
+        $date_field = null;
+        foreach ($_GET as $key => $val) {
+            if(!empty($val)){
+            if (str_contains($key, 'start_')) {
+                $date_field = str_replace('start_', '', $key);
+                $filter_date['min'] = $val;
+            } else if (str_contains($key, 'end_')) {
+                $date_field = str_replace('end_', '', $key);
+                $filter_date['max'] = $val;
+            } else {
+                $filter[$key] = $val;
+            }
+            }
+
+        }
+        if ($type == 'excel') {
+            return Excel::download(new \App\Exports\LedgerExport([], $filter, $filter_date, $date_field), 'ledger_report' . date("Y-m-d H:i:s") . '.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+        }
+
+        if ($type == 'csv') {
+            return Excel::download(new \App\Exports\LedgerExport([], $filter, $filter_date, $date_field), 'ledger_report' . date("Y-m-d H:i:s") . '.csv', \Maatwebsite\Excel\Excel::CSV);
+        }
+
+        
 
     }
 

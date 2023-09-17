@@ -210,6 +210,29 @@ function getModuleWiseRules(module) {
                 required: true,
             },
         };
+    } else if (module == "Driver") {
+        return {
+            phone_no: {
+                required: true,
+                number: true,
+                phone: true,
+            },
+        };
+    } else if (module == "Leads") {
+        return {
+            lead_name: {
+                required: true,
+            },
+            lead_phone_no: {
+                required: true,
+                number: true,
+                phone: true,
+            },
+            email: {
+                required: true,
+                email: true,
+            },
+        };
     } else if (module == "ReceivePayment") {
         return {
             title: {
@@ -260,11 +283,9 @@ function getModuleWiseValidationMessages(module) {
             },
             password_confirmation: {
                 pwcheck: "Enter strong password",
-            }
-            
+            },
         };
-    } 
-     else if (module == "User") {
+    } else if (module == "User") {
         return {
             password: {
                 pwcheck: "Enter strong password",
@@ -279,10 +300,26 @@ function getModuleWiseValidationMessages(module) {
                 required: "Select city",
             },
         };
-    } 
-     else if (module == "Customer") {
+    } else if (module == "Driver") {
         return {
-           
+            phone_no: {
+                phone: "Enter valid phone no",
+            },
+        };
+    } else if (module == "Supplier") {
+        return {
+            mobile_no: {
+                phone: "Enter valid phone no",
+            },
+        };
+    } else if (module == "Leads") {
+        return {
+            lead_phone_no: {
+                phone: "Enter valid phone no",
+            },
+        };
+    } else if (module == "Customer") {
+        return {
             mobile_no: {
                 phone: "Enter valid phone no",
             },
@@ -293,9 +330,7 @@ function getModuleWiseValidationMessages(module) {
                 required: "Select city",
             },
         };
-    } 
-    
-    else return {};
+    } else return {};
 }
 function getModuleWiseCallbacks(module) {
     let callbackSuccess = function (res) {

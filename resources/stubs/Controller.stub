@@ -33,6 +33,7 @@ class {{modelName}}Controller extends Controller
         $get=$r->all();
         if(count($get)>0 && $r->isMethod('get'))
        { 
+         unset($get['page']);
            foreach($get as $key=>$value)
             {
                if((!is_array($value) && strlen($value)>0) || (is_array($value) && count($value)>0)){
@@ -615,17 +616,19 @@ class {{modelName}}Controller extends Controller
      public function export{{modelName}}(Request $request,$type){
        $filter=[]; $filter_date=[];
         $date_field=null;
-        foreach($_GET as $key=>$val){
-          if(str_contains($key,'start_')){
-             $date_field=str_replace('start_','',$key);
-             $filter_date['min']=$val;
-          }
-          else if(str_contains($key,'end_')){
-            $date_field=str_replace('end_','',$key);
-            $filter_date['max']=$val;
-          }
-          else
-             $filter[$key]=$val;
+       foreach ($_GET as $key => $val) {
+            if(!empty($val)){
+            if (str_contains($key, 'start_')) {
+                $date_field = str_replace('start_', '', $key);
+                $filter_date['min'] = $val;
+            } else if (str_contains($key, 'end_')) {
+                $date_field = str_replace('end_', '', $key);
+                $filter_date['max'] = $val;
+            } else {
+                $filter[$key] = $val;
+            }
+            }
+
         }
            if($type=='excel')
         return Excel::download(new \App\Exports\{{modelName}}Export($this->model_relations,$filter,$filter_date,$date_field),'{{modelNamePluralLowerCase}}'.date("Y-m-d H:i:s").'.xlsx',\Maatwebsite\Excel\Excel::XLSX);

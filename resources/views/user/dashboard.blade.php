@@ -142,7 +142,7 @@
                                     </div>
                                     <div class="card-info">
                                         <h5 class="card-title mb-0 me-2">{{ $total_leads_active }}</h5>
-                                        <small class="text-muted">Todal Active Leads </small>
+                                        <small class="text-muted">Total Active Leads </small>
                                     </div>
                                 </div>
                                 <div id="profitChart"></div>

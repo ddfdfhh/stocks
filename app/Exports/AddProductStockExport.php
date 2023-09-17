@@ -27,9 +27,9 @@ class AddProductStockExport  implements FromQuery,WithColumnFormatting, WithMapp
         $this->export_columns=[
     'created_at',
     'location',
-    'product_id',
+    'product',
     'quantity',
-    'store_id',
+    'store',
     'title',
     'total_cost'
 ];

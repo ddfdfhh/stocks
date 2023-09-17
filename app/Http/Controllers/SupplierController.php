@@ -70,6 +70,7 @@ class SupplierController extends Controller
     {
         $get = $r->all();
         if (count($get) > 0 && $r->isMethod('get')) {
+            unset($get['page']);
             foreach ($get as $key => $value) {
                 if ((!is_array($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
                     if (strpos($key, 'start') !== false) {
@@ -132,12 +133,7 @@ class SupplierController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
-            [
-                'name' => 'status',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => getListFromIndexArray(['Active', 'in-Active']),
-            ],
+         
         ];
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
@@ -157,7 +153,7 @@ class SupplierController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -181,7 +177,7 @@ class SupplierController extends Controller
                 $query = Supplier::query();
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -380,7 +376,7 @@ class SupplierController extends Controller
     {
 
         $model = Supplier::findOrFail($id);
-
+  $state_list=getList('State');
         $data = [
             [
                 'label' => null,
@@ -426,10 +422,10 @@ class SupplierController extends Controller
                         'label' => 'State',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty(getList('State')) ? getList('State')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'state_id', false) : (!empty($state_list) ?$state_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('State'),
+                        'options' => $state_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],

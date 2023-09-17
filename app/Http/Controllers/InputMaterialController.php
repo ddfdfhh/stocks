@@ -43,12 +43,12 @@ class InputMaterialController extends Controller
         $this->model_relations=[
     [
         'name' => 'unit',
-        'class' => 'App\\Models\\InputMaterial',
+        'class' => 'App\\Models\\Unit',
         'type' => 'BelongsTo'
     ],
     [
         'name' => 'material_stock',
-        'class' => 'App\\Models\\InputMaterial',
+        'class' => 'App\\Models\\MaterialStock',
         'type' => 'BelongsTo'
     ]
 ];

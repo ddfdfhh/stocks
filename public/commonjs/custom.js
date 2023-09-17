@@ -136,8 +136,10 @@ function inilizeEvents() {
         });
     }
     var myDropdown = document.getElementById("filter");
+    console.log("filter", myDropdown);
     if (myDropdown) {
         myDropdown.addEventListener("shown.bs.dropdown", function () {
+            alert()
             applySelect2("select", true, "filter");
         });
     }
@@ -469,6 +471,10 @@ function addEditRemark(id) {
                            
                             </div>`);
                 $("form").trigger("reset");
+                setTimeout(function () { 
+                     location.reload();
+                }, 1000);
+               
             } else {
                 $("#resp-" + lead_id)
                     .html(`<div class="alert alert-danger text-left align-left"  style="text-align:left!important "role="alert">
@@ -557,7 +563,7 @@ function setDueAmount(paid_amount) {
 }
 function calculateProductPrice() {
     $.ajax({
-        url: "/calculateProductPrice",
+        url: "/admin/calculateProductPrice",
         method: "POST",
         dataType: "json",
         data: $("#generatedproductstock_form").serialize(),
@@ -567,7 +573,7 @@ function calculateProductPrice() {
         },
 
         error: function (xhr, status, errorThrown) {
-            enableBtn(btn);
+            enableBtn();
             console.log("error");
         },
     });

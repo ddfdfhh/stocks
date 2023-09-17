@@ -3,94 +3,94 @@
 namespace App\Exports;
 
 use App\Models\Leads;
-
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithMapping; 
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class LeadsExport  implements FromQuery,WithColumnFormatting, WithMapping,WithHeadings
+class LeadsExport implements FromQuery, WithColumnFormatting, WithMapping, WithHeadings
 {
     use Exportable;
     /**
-    * @return \Illuminate\Support\Collection
-    */
-   public function __construct($model_relations,$filter=[],$filter_date=[],$date_field=null)
+     * @return \Illuminate\Support\Collection
+     */
+    public function __construct($model_relations, $filter = [], $filter_date = [], $date_field = null)
     {
         $this->filter = $filter;
         $this->filter_date = $filter_date;
-         $this->model_relations = $model_relations;
+        $this->model_relations = $model_relations;
         $this->date_field = $date_field;
-        $this->export_columns=[
-    'address',
-    'assigned_id',
-    'company_name',
-    'designation',
-    'email',
-    'lead_phone_no',
-    'whatsapp_no'
-];
-        
+        $this->export_columns = [
+            'lead_name',
+            'email',
+            'lead_phone_no',
+            'whatsapp_no',
+            'company_name',
+            'designation',
+            'address',
+            'assigned_id',
+            'status',
+            'type',
+            'source',
+
+        ];
+
     }
-   public function query()
+    public function query()
     {
-        
-         $query = null;
+
+        $query = null;
         if (count($this->model_relations) > 0) {
             $query = Leads::with(array_column($this->model_relations, 'name'));
         } else {
             $query = Leads::query();
         }
-        if(count($this->filter)>0){
-            $query=$query->where($this->filter);
-         }
-         if(count($this->filter_date)>0 && $this->date_field){
-              $query=$query->whereDate($this->date_field,'>=',$this->filter_date['min'])
-              ->whereDate($this->date_field,'<=',$this->filter_date['max']);
-          }
-          return $query;
+        if (count($this->filter) > 0) {
+            $query = $query->where($this->filter);
+        }
+        if (count($this->filter_date) > 0 && $this->date_field) {
+            $query = $query->whereDate($this->date_field, '>=', $this->filter_date['min'])
+                ->whereDate($this->date_field, '<=', $this->filter_date['max']);
+        }
+        return $query;
     }
     public function map($row): array
     {
         /**use here to map to relatioship or format column  */
-        $resp=[];
-         foreach ($this->export_columns as $colname) {
-            $val = $row->{$colname};
-            if (count($this->model_relations)>0 && isFieldPresentInRelation($this->model_relations, $colname) >= 0) {
-                $resp[] = getForeignKeyFieldValue($this->model_relations, $row, $colname);
-            } else {
-                $y = json_decode($val, true);
-                if (!is_numeric($val) && $y != null) {
-                    $resp[] = showArrayInColumn($y);
-                } else {
-                    $resp[] = $row->{$colname};
 
-                }
+        return [
+            $row->lead_name,
+            $row->email,
+            $row->lead_phone_no,
+            $row->whatsapp_no,
+            $row->company_name,
+            $row->designation,
+            $row->address,
+            $row->assigned_to ? $row->assigned_to->name : '',
 
-            }
-
-        }
-        return $resp;
+            $row->status,
+            $row->type,
+            $row->source ? $row->source->name : '',
+        ];
     }
-   
-     public function headings(): array
+
+    public function headings(): array
     {
-        $resp=[];
-        foreach($this->export_columns as $colname){
-                
-            $resp[]=ucwords(str_replace('_',' ',$colname));
+        $resp = [];
+        foreach ($this->export_columns as $colname) {
+            $lab = ucwords(str_replace('_', ' ', $colname));
+            $lab = ucwords(str_replace(' Id', ' ', $lab));
+            $resp[] = $lab;
         }
-       
+
         return $resp;
     }
     public function columnFormats(): array
     {
         return [
-        //    'C' => NumberFormat::FORMAT_DATE_YYYYMMDD,
-           
+            //    'C' => NumberFormat::FORMAT_DATE_YYYYMMDD,
+
         ];
     }
 }

@@ -49,11 +49,7 @@ class LeadsController extends Controller
                 'label' => 'Status',
                 'sortable' => 'Yes',
             ],
-            [
-                'column' => 'conversations',
-                'label' => 'Conversations',
-                'sortable' => 'Yes',
-            ],
+
             [
                 'column' => 'created_at',
                 'label' => 'Created At',
@@ -67,45 +63,8 @@ class LeadsController extends Controller
             ],
         ];
         $this->form_image_field_name = [];
-        //$this->repeating_group_inputs = [];
+        $this->repeating_group_inputs = [];
 
-        $this->repeating_group_inputs = [
-            [
-                'colname' => 'enquired_products_detail',
-                'label' => 'More Detail About Products/Services Enquired',
-                'inputs' => [
-                    [
-                        'name' => 'enquired_products_detail__json__product_id[]',
-                        'label' => 'Select  Product',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => '',
-                        'attr' => [],
-                        'custom_key_for_option' => 'name',
-                        'options' => getList('Product'),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
-                    [
-                        'placeholder' => 'Enter quantity',
-                        'name' => 'enquired_products_detail__json__quantity[]',
-                        'label' => 'Quantity Requested',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => '',
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter price',
-                        'name' => 'enquired_products_detail__json__price[]',
-                        'label' => 'Price Requested',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => '',
-                        'attr' => [],
-                    ],
-                ],
-            ]];
         $this->toggable_group = [];
         $this->model_relations = [
             [
@@ -194,12 +153,7 @@ class LeadsController extends Controller
             ],
         ];
         $filterable_fields = [
-            [
-                'name' => 'assigned_id',
-                'label' => 'Assigned To',
-                'type' => 'select',
-                'options' => getUserListWithRoles('Telecaller'),
-            ],
+
             [
                 'name' => 'created_at',
                 'label' => 'Created At',
@@ -236,6 +190,14 @@ class LeadsController extends Controller
                 'options' => getListFromIndexArray(['Cold', 'Warm', 'Hot']),
             ],
         ];
+        if (is_admin()) {
+            array_push($filterable_fields, [
+                'name' => 'assigned_id',
+                'label' => 'Assigned To',
+                'type' => 'select',
+                'options' => getUserListWithRoles('Telecaller'),
+            ]);
+        }
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -254,7 +216,10 @@ class LeadsController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })
+                ->when(auth()->user()->hasRole(['Telecaller']), function ($query) {
+                    return $query->where('assigned_id', auth()->id());
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -273,12 +238,19 @@ class LeadsController extends Controller
 
             $query = null;
             if (count($this->model_relations) > 0) {
-                $query = Leads::with(array_column($this->model_relations, 'name'));
+                $query = Leads::with(array_column($this->model_relations, 'name'))->when(auth()->user()->hasRole(['Telecaller']), function ($query) {
+                    return $query->where('assigned_id', auth()->id());
+                });
             } else {
-                $query = Leads::query();
+                if (auth()->user()->hasRole(['Telecaller'])) {
+                    $query = Leads::where('assigned_id', auth()->id());
+                } else {
+                    $query = Leads::query();
+                }
+
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -302,6 +274,44 @@ class LeadsController extends Controller
 
     public function create()
     {
+        $this->repeating_group_inputs = [
+            [
+                'colname' => 'enquired_products_detail',
+                'label' => 'More Detail About Products/Services Enquired',
+                'inputs' => [
+                    [
+                        'name' => 'enquired_products_detail__json__product_id[]',
+                        'label' => 'Select  Product',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => '',
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('Product'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter quantity',
+                        'name' => 'enquired_products_detail__json__quantity[]',
+                        'label' => 'Quantity Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter price',
+                        'name' => 'enquired_products_detail__json__price[]',
+                        'label' => 'Price Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                ],
+            ]];
+
         $data = [
             [
                 'label' => null,
@@ -407,7 +417,7 @@ class LeadsController extends Controller
                         'label' => 'Lead Status',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'Working',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'New',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => [
@@ -508,7 +518,7 @@ class LeadsController extends Controller
     }
     public function store(LeadsRequest $request)
     {
-        if (!can('add_leads')) {
+        if (!can('create_leads')) {
             return createResponse(false, 'Dont have permission');
         }
         \DB::beginTransaction();
@@ -574,6 +584,43 @@ class LeadsController extends Controller
     {
 
         $model = Leads::findOrFail($id);
+        $this->repeating_group_inputs = [
+            [
+                'colname' => 'enquired_products_detail',
+                'label' => 'More Detail About Products/Services Enquired',
+                'inputs' => [
+                    [
+                        'name' => 'enquired_products_detail__json__product_id[]',
+                        'label' => 'Select  Product',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => '',
+                        'attr' => [],
+                        'custom_key_for_option' => 'name',
+                        'options' => getList('Product'),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter quantity',
+                        'name' => 'enquired_products_detail__json__quantity[]',
+                        'label' => 'Quantity Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                    [
+                        'placeholder' => 'Enter price',
+                        'name' => 'enquired_products_detail__json__price[]',
+                        'label' => 'Price Requested',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => [],
+                    ],
+                ],
+            ]];
 
         $data = [
             [
@@ -674,7 +721,7 @@ class LeadsController extends Controller
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'assigned_id', false) : (!empty(getUserListWithRoles('Telecaller')) ? getUserListWithRoles('Telecaller')[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' =>getUserListWithRoles('Telecaller'),
+                        'options' => getUserListWithRoles('Telecaller'),
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -692,7 +739,7 @@ class LeadsController extends Controller
                         'label' => 'Lead Status',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'Working',
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'New',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
                         'options' => [
@@ -1085,7 +1132,7 @@ class LeadsController extends Controller
                             'label' => 'Lead Status',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'Working',
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'New',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => [
@@ -1266,7 +1313,7 @@ class LeadsController extends Controller
                             'label' => 'Lead Status',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'Working',
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'status', false) : 'New',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
                             'options' => [
@@ -1491,12 +1538,14 @@ class LeadsController extends Controller
                 $search_by = 'name';
             }
 
-            $list = Leads::whereNotIn('status', ['Convereted', 'Failed', 'Cancelled'])->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::today())->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
+            $list = Leads::whereNotIn('status', ['Convereted', 'Failed'])->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::today())->when(!empty($search_val), function ($query) use ($search_val, $search_by) {
                 return $query->where($search_by, 'like', '%' . $search_val . '%');
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->when(auth()->user()->hasRole(['Telecaller']), function ($query) {
+                return $query->where('assigned_id', auth()->id());
+            })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -1510,17 +1559,25 @@ class LeadsController extends Controller
                 'image_field_names' => $this->form_image_field_name,
                 'storage_folder' => $this->storage_folder,
             ];
-            return view('admin.leads.followup', with($data));
+            return view('admin.leads.followup_page', with($data));
         } else {
 
             $query = null;
+
             if (count($this->model_relations) > 0) {
-                $query = Leads::with(array_column($this->model_relations, 'name'))->whereNotIn('status', ['Converted', 'Failed', 'Cancelled'])->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::today());
+                $query = Leads::with(array_column($this->model_relations, 'name'))->whereNotIn('status', ['Converted', 'Failed'])
+                    ->whereNotNull('followup_date')->whereDate('followup_date', '>=', \Carbon\Carbon::now())->when(auth()->user()->hasRole(['Telecaller']), function ($query) {
+                    return $query->where('assigned_id', auth()->id());
+                });
             } else {
-                $query = Leads::whereNotNull('followup_date')->whereNotIn('status', ['Converted', 'Failed', 'Cancelled'])->whereDate('followup_date', '>=', \Carbon\Carbon::today());
+                $query = Leads::whereNotNull('followup_date')->whereNotIn('status', ['Converted', 'Failed'])->whereDate('followup_date', '>=', \Carbon\Carbon::now())->when(auth()->user()->hasRole(['Telecaller']), function ($query) {
+                    return $query->where('assigned_id', auth()->id());
+                });
+
             }
-            $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+
+            $list = $query->latest()->paginate(100);
+
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -1633,15 +1690,16 @@ class LeadsController extends Controller
                 $existing_conversations = $t->conversations ? json_decode($t->conversations, true) : [];
                 $new_conversation = [
                     'by_user_id' => auth()->id(),
+                    'id' => uniqid(),
                     'name' => auth()->user()->name,
                     'message' => $msg,
                     'date' => date("Y-m-d H:i:s"),
                 ];
-                array_push($existing_conversations, $new_conversation);
+                array_unshift($existing_conversations, $new_conversation);
                 $convetsations = json_encode($existing_conversations);
                 \App\Models\Leads::whereId($lead_id)->update(['conversations' => $convetsations]);
                 \DB::commit();
-                return createResponse(true, 'Conversation added successfullly');
+                return createResponse(true, 'Remark added successfullly');
             } catch (\Exception $ex) {
                 \DB::rollback();
                 return createResponse(false, $ex->getMessage());

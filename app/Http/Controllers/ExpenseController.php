@@ -130,7 +130,7 @@ class ExpenseController extends Controller
                 'label' => 'Item Id',
                 'type' => 'select',
                 'options' => getList('ExpsnseItem'),
-                'default'=>1
+                'default' => 1,
             ],
             [
                 'name' => 'paid_amount',
@@ -179,7 +179,6 @@ class ExpenseController extends Controller
             return view('admin.' . $this->view_folder . '.page', with($data));
         } else {
 
-             
             $query = null;
             if (count($this->model_relations) > 0) {
                 $query = Expense::with(array_column($this->model_relations, 'name'));
@@ -187,9 +186,8 @@ class ExpenseController extends Controller
                 $query = Expense::query();
             }
 
-
             $query = $this->buildFilter($request, $query);
-       
+
             $list = $query->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
@@ -245,7 +243,7 @@ class ExpenseController extends Controller
                         'label' => 'Payment Date',
                         'tag' => 'input',
                         'type' => 'datetime-local',
-                      'default' => isset($model) && !is_null($model->paid_date) ?$model->paid_date->format('Y-m-d H:i:s') : "",
+                        'default' => isset($model) && !is_null($model->paid_date) ? $model->paid_date->format('Y-m-d H:i:s') : "",
                         'attr' => [],
                     ],
                     [
@@ -263,7 +261,7 @@ class ExpenseController extends Controller
                         'label' => 'Due Date',
                         'tag' => 'input',
                         'type' => 'date',
-                         'default' => isset($model) && !is_null($model->due_date) ?$model->due_date->format('Y-m-d') : "",
+                        'default' => isset($model) && !is_null($model->due_date) ? $model->due_date->format('Y-m-d') : "",
                         'attr' => [],
                     ],
                     [
@@ -341,6 +339,14 @@ class ExpenseController extends Controller
         if (!can('create_expenses')) {
             return createResponse(false, 'Dont have permission');
         }
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
+        }
         \DB::beginTransaction();
         try {
             $post = $request->all();
@@ -353,17 +359,19 @@ class ExpenseController extends Controller
                     }
                 }
             }
+            $post['store_id']=$store_id;
+            $post['created_by_id']=auth()->id();
             $expense = Expense::create($post);
-             \DB::table('company_ledger')->insert(
-                    [
-                        'name'=>$post['title'],
-                        'amount'=>$post['paid_amount'],
-                        'order_id'=>null,
-                        'mode'=>'Spent',
-                        'expense_id'=>$expense->id
-                        
-                    ]
-                   );
+            \DB::table('company_ledger')->insert(
+                [
+                    'name' => $post['title'],
+                    'amount' => $post['paid_amount'],
+                    'order_id' => null,
+                    'mode' => 'Spent',
+                    'expense_id' => $expense->id,
+
+                ]
+            );
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
                     $field_name = $item['field_name'];
@@ -425,13 +433,13 @@ class ExpenseController extends Controller
                         'default' => isset($model) ? $model->paid_amount : "",
                         'attr' => [],
                     ],
-                   [
+                    [
                         'placeholder' => 'Enter paid_date',
                         'name' => 'paid_date',
                         'label' => 'Payment Date',
                         'tag' => 'input',
                         'type' => 'datetime-local',
-                      'default' => isset($model) && !is_null($model->paid_date) ?$model->paid_date->format('Y-m-d H:i:s') : "",
+                        'default' => isset($model) && !is_null($model->paid_date) ? $model->paid_date->format('Y-m-d H:i:s') : "",
                         'attr' => [],
                     ],
                     [
@@ -449,7 +457,7 @@ class ExpenseController extends Controller
                         'label' => 'Due Date',
                         'tag' => 'input',
                         'type' => 'date',
-                         'default' => isset($model) && !is_null($model->due_date) ?$model->due_date->format('Y-m-d') : "",
+                        'default' => isset($model) && !is_null($model->due_date) ? $model->due_date->format('Y-m-d') : "",
                         'attr' => [],
                     ],
                     [
@@ -569,8 +577,9 @@ class ExpenseController extends Controller
                     }
                 }
             }
-            $expense->update($post);
             
+            $expense->update($post);
+
             $ledger_record_for_expense = \DB::table('company_ledger')->where('expense_id', $expense->id)->first();
             if (!is_null($ledger_record_for_expense)) {
 
@@ -731,32 +740,32 @@ class ExpenseController extends Controller
                             'attr' => [],
                         ],
                         [
-                        'placeholder' => 'Enter paid_date',
-                        'name' => 'paid_date',
-                        'label' => 'Payment Date',
-                        'tag' => 'input',
-                        'type' => 'datetime-local',
-                      'default' => isset($model) && !is_null($model->paid_date) ?$model->paid_date->format('Y-m-d H:i:s') : "",
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter due_amount',
-                        'name' => 'due_amount',
-                        'label' => 'Amount Due',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => isset($model) ? $model->due_amount : "",
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter due_date',
-                        'name' => 'due_date',
-                        'label' => 'Due Date',
-                        'tag' => 'input',
-                        'type' => 'date',
-                         'default' => isset($model) && !is_null($model->due_date) ?$model->due_date->format('Y-m-d') : "",
-                        'attr' => [],
-                    ],
+                            'placeholder' => 'Enter paid_date',
+                            'name' => 'paid_date',
+                            'label' => 'Payment Date',
+                            'tag' => 'input',
+                            'type' => 'datetime-local',
+                            'default' => isset($model) && !is_null($model->paid_date) ? $model->paid_date->format('Y-m-d H:i:s') : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter due_amount',
+                            'name' => 'due_amount',
+                            'label' => 'Amount Due',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->due_amount : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter due_date',
+                            'name' => 'due_date',
+                            'label' => 'Due Date',
+                            'tag' => 'input',
+                            'type' => 'date',
+                            'default' => isset($model) && !is_null($model->due_date) ? $model->due_date->format('Y-m-d') : "",
+                            'attr' => [],
+                        ],
                         [
                             'name' => 'paid_user_id',
                             'label' => 'Payment Given To',
@@ -809,7 +818,7 @@ class ExpenseController extends Controller
                 [
                     'label' => null,
                     'inputs' => [
-                         [
+                        [
                             'placeholder' => 'Enter title',
                             'name' => 'title',
                             'label' => 'Title',
@@ -817,7 +826,7 @@ class ExpenseController extends Controller
                             'type' => 'text',
                             'default' => isset($model) ? $model->title : "",
                             'attr' => [],
-                         ],
+                        ],
                         [
                             'name' => 'item_id',
                             'label' => 'Item Spent On',
@@ -839,33 +848,33 @@ class ExpenseController extends Controller
                             'default' => isset($model) ? $model->paid_amount : "",
                             'attr' => [],
                         ],
-                       [
-                        'placeholder' => 'Enter paid_date',
-                        'name' => 'paid_date',
-                        'label' => 'Payment Date',
-                        'tag' => 'input',
-                        'type' => 'datetime-local',
-                        'default' => isset($model) && !is_null($model->paid_date) ?$model->paid_date->format('Y-m-d H:i:s') : "",
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter due_amount',
-                        'name' => 'due_amount',
-                        'label' => 'Amount Due',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => isset($model) ? $model->due_amount : "",
-                        'attr' => [],
-                    ],
-                    [
-                        'placeholder' => 'Enter due_date',
-                        'name' => 'due_date',
-                        'label' => 'Due Date',
-                        'tag' => 'input',
-                        'type' => 'date',
-                         'default' => isset($model) && !is_null($model->due_date) ?$model->due_date->format('Y-m-d') : "",
-                        'attr' => [],
-                    ],
+                        [
+                            'placeholder' => 'Enter paid_date',
+                            'name' => 'paid_date',
+                            'label' => 'Payment Date',
+                            'tag' => 'input',
+                            'type' => 'datetime-local',
+                            'default' => isset($model) && !is_null($model->paid_date) ? $model->paid_date->format('Y-m-d H:i:s') : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter due_amount',
+                            'name' => 'due_amount',
+                            'label' => 'Amount Due',
+                            'tag' => 'input',
+                            'type' => 'number',
+                            'default' => isset($model) ? $model->due_amount : "",
+                            'attr' => [],
+                        ],
+                        [
+                            'placeholder' => 'Enter due_date',
+                            'name' => 'due_date',
+                            'label' => 'Due Date',
+                            'tag' => 'input',
+                            'type' => 'date',
+                            'default' => isset($model) && !is_null($model->due_date) ? $model->due_date->format('Y-m-d') : "",
+                            'attr' => [],
+                        ],
                         [
                             'name' => 'paid_user_id',
                             'label' => 'Payment Given To',
@@ -978,6 +987,10 @@ class ExpenseController extends Controller
             } else {
                 $filter[$key] = $val;
             }
+
+        }
+        $store_id = null;
+        if (!is_admin()) {
 
         }
         if ($type == 'excel') {

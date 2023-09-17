@@ -15,9 +15,9 @@ class DriverRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'phone_no' => 'required',
+            'phone_no' => 'required|numeric||unique:driver,phone_no,'.$this->driver,
             'address' => 'required',
-            'image' => 'somtimes|image',
+            'image' => 'sometimes|image',
             'adhar_number' => 'nullable',
             'adhar_image' => 'image|nullable',
             'dl_number' => 'nullable',

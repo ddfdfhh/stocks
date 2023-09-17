@@ -876,7 +876,7 @@ class StoreController extends Controller
             ],
             [
                 'name' => 'product_id',
-                'label' => 'Select Product ',
+                'label' => 'Product ',
                 'type' => 'select',
                 'options'=>getListAssignedProduct()
             ],

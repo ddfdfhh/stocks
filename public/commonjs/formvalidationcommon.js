@@ -53,9 +53,10 @@ function blockUi() {
             textAlign: "center",
             color: "#000",
             border: "none",
+            cursor:'pointer',
             backgroundColor: "transparent",
         },
-        message: "<div class='spinner-border'></div>",
+        message: "Please wait ..",
     };
     if (typeof $.blockUI !== "undefined") $.blockUI(options);
 }

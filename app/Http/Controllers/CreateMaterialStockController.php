@@ -157,7 +157,7 @@ class CreateMaterialStockController extends Controller
             })
                 ->when(!empty($sort_by), function ($query) use ($sort_by, $sort_type) {
                     return $query->orderBy($sort_by, $sort_type);
-                })->paginate($this->pagination_count);
+                })->latest()->paginate($this->pagination_count);
             $data = [
                 'table_columns' => $table_columns,
                 'list' => $list,
@@ -181,7 +181,7 @@ class CreateMaterialStockController extends Controller
                 $query = CreateMaterialStock::query();
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -679,6 +679,9 @@ class CreateMaterialStockController extends Controller
     public function loadAjaxForm(Request $request)
     {
         $data = [];
+        $supplier_list=getList('Supplier');
+        $driver_list=getList('Driver');
+        $input_material_list=getList('InputMaterial');
         $form_type = $request->form_type;
         $id = $request->id;
         if ($form_type == 'add') {
@@ -694,7 +697,7 @@ class CreateMaterialStockController extends Controller
                             'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('Supplier'),
+                            'options' => $supplier_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -706,7 +709,7 @@ class CreateMaterialStockController extends Controller
                             'default' => '',
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('Driver'),
+                            'options' => $driver_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -763,7 +766,7 @@ class CreateMaterialStockController extends Controller
                             'default' => '',
                             'attr' => ['onChange' => 'setUnitOnMaterialSelect(this.value)'],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('InputMaterial'),
+                            'options' => $input_material_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -810,10 +813,10 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Supplier',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'supplier_id', true) : getList('Supplier')[0]->id,
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'supplier_id', true) :$supplier_list[0]->id,
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('Supplier'),
+                            'options' =>$supplier_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -822,10 +825,10 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Driver',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', true) : getList('Driver')[0]->id,
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', true) : $driver_list[0]->id,
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('Driver'),
+                            'options' => $driver_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -870,10 +873,10 @@ class CreateMaterialStockController extends Controller
                             'label' => 'Material',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'material_id', true) : getList('InputMaterial')[0]->id,
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'material_id', true) : $input_material_list[0]->id,
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('InputMaterial'),
+                            'options' => $input_material_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],

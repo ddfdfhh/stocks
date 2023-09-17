@@ -6,6 +6,7 @@ use App\Http\Requests\ReceivePaymentRequest;
 use App\Models\ReceivePayment;
 use File;
 use Maatwebsite\Excel\Facades\Excel;
+use \App\Models\CreateOrder;
 use \Illuminate\Http\Request;
 
 class ReceivePaymentController extends Controller
@@ -19,7 +20,7 @@ class ReceivePaymentController extends Controller
         $this->storage_folder = $this->view_folder;
         $this->has_upload = 1;
         $this->is_multiple_upload = 0;
-        $this->has_export = 0;
+        $this->has_export = 1;
         $this->pagination_count = 100;
 
         $this->table_columns = [
@@ -59,12 +60,12 @@ class ReceivePaymentController extends Controller
                 'sortable' => 'Yes',
             ],
         ];
-          $this->form_image_field_name = [
+        $this->form_image_field_name = [
             [
                 'field_name' => 'payment_proof_image',
                 'single' => true,
             ],
-           
+
         ];
         $this->repeating_group_inputs = [];
         $this->toggable_group = [];
@@ -131,18 +132,18 @@ class ReceivePaymentController extends Controller
     public function index(Request $request)
     {
         $store_id = null;
-if (auth()->user()->hasRole(['Store Incharge'])) {
-    $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
-    if (!is_null($store_row)) {
-        $store_id = $store_row->id;
-    }
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
 
-}
-
+        }
 
         if (!can('list_receive_payments')) {
             return redirect(route('admin.unauthorized'));
         }
+       $order_list=$store_id?getList('CreateOrder', ['store_id' => $store_id], 'title'):getList('CreateOrder', [], 'title');
         $searchable_fields = [
             [
                 'name' => 'bank_account_no',
@@ -170,9 +171,9 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
             ],
             [
                 'name' => 'order_id',
-                'label' => 'Select Order ',
+                'label' => 'Order ',
                 'type' => 'select',
-                'options' => getList('CreateOrder', ['store_id'=>$store_id], 'title')
+                'options' =>  $order_list,
             ],
             [
                 'name' => 'paid_amount',
@@ -232,14 +233,14 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
             $query = null;
             if (count($this->model_relations) > 0) {
                 $query = ReceivePayment::with(array_column($this->model_relations, 'name'))->when($store_id, function ($query) use ($store_id) {
-                return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
 
-            });
+                });
             } else {
                 $query = ReceivePayment::when($store_id, function ($query) use ($store_id) {
-                return $query->whereStoreId($store_id);
+                    return $query->whereStoreId($store_id);
 
-            });
+                });
             }
             $query = $this->buildFilter($request, $query);
             $list = $query->latest()->paginate($this->pagination_count);
@@ -266,6 +267,29 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
 
     public function create()
     {
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
+
+        }
+        $lists = CreateOrder::where('paid_status', '!=', 'Paid')->when($store_id, function ($q) use ($store_id) {
+            return $q->whereStoreId($store_id);
+        })->get(['title', 'id']);
+        $order_list = [];
+        foreach ($lists as $list) {
+            $ar = (object) ['id' => $list->id, 'name' => $list->title];
+            array_push($order_list, $ar);
+        }
+  $userl_list = [];
+        if (is_admin()) {
+            $userl_list = getList("User");
+        } else {
+            $userl_list = getUserListWithRoles('Store Incharge');
+
+        }
         $data = [
             [
                 'label' => null,
@@ -287,19 +311,17 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'default' => '',
                         'attr' => ['onChange' => 'fetchOrderTotalAmount(this.value)'],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('CreateOrder', [], 'title'),
+                        'options' => $order_list,
                         'custom_id_for_option' => 'id',
-                        'multiple' => false
+                        'multiple' => false,
                     ],
-                    
-                    
-                    
+
                 ],
             ],
             [
-                'label' =>'Payment Details',
+                'label' => 'Payment Details',
                 'inputs' => [
-                   
+
                     [
                         'placeholder' => 'Enter paid_amount',
                         'name' => 'paid_amount',
@@ -378,11 +400,11 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'payment_collected_by_id', false) : auth()->id(),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('User'),
+                        'options' =>   $userl_list ,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
-                     [
+                    [
                         'placeholder' => 'Enter quantity paid',
                         'name' => 'quantity_paid',
                         'label' => 'Quantity Paid',
@@ -391,7 +413,7 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'default' => isset($model) ? $model->quantity_paid : "",
                         'attr' => [],
                     ],
-                     [
+                    [
                         'placeholder' => 'Enter quantity not paid',
                         'name' => 'quantity_unpaid',
                         'label' => 'Quantity Not Paid',
@@ -400,11 +422,11 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'default' => isset($model) ? $model->quantity_unpaid : "",
                         'attr' => [],
                     ],
-                    
+
                 ],
             ],
             [
-                'label' =>'Bank Details',
+                'label' => 'Bank Details',
                 'inputs' => [
                     [
                         'placeholder' => 'Enter bank_name',
@@ -442,9 +464,7 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'default' => isset($model) ? $model->bank_ifsc : "",
                         'attr' => [],
                     ],
-                   
-                   
-                    
+
                 ],
             ],
         ];
@@ -452,18 +472,18 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
         if (count($this->form_image_field_name) > 0) {
 
             foreach ($this->form_image_field_name as $g) {
-              
-                    $y = [
-                        'placeholder' => '',
-                        'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
-                        'label' => "Payment Proof ",
-                        'tag' => 'input',
-                        'type' => 'file',
-                        'default' => '',
-                        'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
-                    ];
-                    array_push($data[0]['inputs'], $y);
-                
+
+                $y = [
+                    'placeholder' => '',
+                    'name' => $g['single'] ? $g['field_name'] : $g['field_name'] . '[]',
+                    'label' => "Payment Proof ",
+                    'tag' => 'input',
+                    'type' => 'file',
+                    'default' => '',
+                    'attr' => $g['single'] ? [] : ['multiple' => 'multiple'],
+                ];
+                array_push($data[0]['inputs'], $y);
+
             }
         }
 
@@ -505,7 +525,7 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
     }
     public function store(ReceivePaymentRequest $request)
     {
-         $store_id = null;
+        $store_id = null;
         if (auth()->user()->hasRole(['Store Incharge'])) {
             $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
             if (!is_null($store_row)) {
@@ -513,7 +533,7 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
             }
 
         }
-       
+
         \DB::beginTransaction();
         try {
             $post = $request->all();
@@ -526,31 +546,31 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                     }
                 }
             }
-            $post['handled_by_id']=auth()->id();
-            $post['store_id']=$store_id;
+            $post['handled_by_id'] = auth()->id();
+            $post['store_id'] = $store_id;
             $receivepayment = ReceivePayment::create($post);
             if ($receivepayment->order_id) {
                 $orderid = $receivepayment->order_id;
-                 $total_paid = ReceivePayment::whereOrderId($orderid)->sum('paid_amount');
+                $total_paid = ReceivePayment::whereOrderId($orderid)->sum('paid_amount');
                 // dd( $previous_payments_for_order);
                 $order = \App\Models\CreateOrder::whereId($orderid)->first();
                 $total_to_pay = $order->total;
-             // dd($total_paid);
+                // dd($total_paid);
                 $due_amount = $total_to_pay - $total_paid;
                 if (!is_null($order)) {
-                    $ar = ['due_amount' => $due_amount, 'paid_amount' =>  $total_paid ];
+                    $ar = ['due_amount' => $due_amount, 'paid_amount' => $total_paid];
                     if ($due_amount < 1) {
                         $ar['paid_status'] = 'Paid';
                     } else {
                         $ar['paid_status'] = 'Partial';
                     }
-                   //  dd($ar);
+                    //  dd($ar);
                     $order->update($ar);
 
                 }
 
             }
-            $ppost['payment_collected_by_id']=$store_id?auth()->id():$post['payment_collected_by_id'];
+            $ppost['payment_collected_by_id'] = $store_id ? auth()->id() : $post['payment_collected_by_id'];
             \DB::table('company_ledger')->insert(
                 [
                     'name' => $post['title'],
@@ -571,9 +591,33 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
 
     public function edit($id)
     {
+        $store_id = null;
+        if (auth()->user()->hasRole(['Store Incharge'])) {
+            $store_row = \DB::table('stores')->whereOwnerId(auth()->id())->first();
+            if (!is_null($store_row)) {
+                $store_id = $store_row->id;
+            }
 
+        }
+        $lists = CreateOrder::where('paid_status', '!=', 'Paid')->when($store_id, function ($q) use ($store_id) {
+            return $q->whereStoreId($store_id);
+        })->get(['title', 'id']);
+        $order_list = [];
+        foreach ($lists as $list) {
+            $ar = (object) ['id' => $list->id, 'name' => $list->title];
+            array_push($order_list, $ar);
+        }
+        $order_list = Createorder::where('paid_status', '!=', 'Paid')->when($store_id, function ($q) use ($store_id) {
+            return $q->whereStoreId($store_id);
+        });
         $model = ReceivePayment::findOrFail($id);
+        $userl_list = [];
+        if (is_admin()) {
+            $userl_list = getList("User");
+        } else {
+            $userl_list = getUserListWithRoles('Store Incharge');
 
+        }
         $data = [
             [
                 'label' => null,
@@ -592,12 +636,12 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                         'label' => 'Select Order',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', ['status!=','Paid'], 'title')) ? getList('CreateOrder', ['status!=','Paid'], 'title')[0]->id : ''),
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty($order_list) ? $order_list[0]->id : ''),
                         'attr' => ['onChange' => 'fetchOrderTotalAmount(this.value)'],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('CreateOrder', ['status!=','Paid'], 'title'),
+                        'options' => $order_list,
                         'custom_id_for_option' => 'id',
-                        'multiple' => false
+                        'multiple' => false,
                     ],
                     [
                         'placeholder' => 'Enter paid_amount',
@@ -787,7 +831,7 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
         //natcasesort($columns);
 
         $cols = [];
-        $exclude_cols = ['updated_at', 'id','deleted_at',];
+        $exclude_cols = ['updated_at', 'id', 'deleted_at'];
         foreach ($columns as $col) {
 
             $label = ucwords(str_replace('_', ' ', $col));
@@ -990,12 +1034,12 @@ if (auth()->user()->hasRole(['Store Incharge'])) {
                             'label' => 'Select Order',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', ['status!=','Paid'], 'title')) ? getList('CreateOrder', ['status!=','Paid'], 'title')[0]->id : ''),
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'order_id', false) : (!empty(getList('CreateOrder', ['status!=', 'Paid'], 'title')) ? getList('CreateOrder', ['status!=', 'Paid'], 'title')[0]->id : ''),
                             'attr' => ['onChange' => 'fetchOrderTotalAmount(this.value)'],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('CreateOrder', ['status!=','Paid'], 'title'),
+                            'options' => getList('CreateOrder', ['status!=', 'Paid'], 'title'),
                             'custom_id_for_option' => 'id',
-                            'multiple' => false
+                            'multiple' => false,
                         ],
                         [
                             'placeholder' => 'Enter paid_amount',

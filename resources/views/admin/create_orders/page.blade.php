@@ -93,7 +93,7 @@
                                         unset($v['product_id']);
                                         return $v;
                                     }, $tr);
-                                    echo showArrayInColumn($tr, $l);
+                                    echo showArrayInColumn($tr, $l,'id','lg');
                                 } else {
                                     echo $r->{$t};
                                 }

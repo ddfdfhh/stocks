@@ -6,6 +6,7 @@
 /app/Http/Controllers/CrudGeneratorController.php
 /app/Console/Commands/CrudGenerator.php
 .env.backup
+.env
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
@@ -14,3 +15,5 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/yml_format.md
+/crudtips.readme.txt

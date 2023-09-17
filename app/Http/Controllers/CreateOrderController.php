@@ -7,7 +7,6 @@ use App\Models\CreateOrder;
 use File;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
-use \App\Jobs\SendInvoiceMail;
 use \Illuminate\Http\Request;
 
 class CreateOrderController extends Controller
@@ -80,7 +79,7 @@ class CreateOrderController extends Controller
                 'class' => 'App\\Models\\Store',
                 'type' => 'BelongsTo',
             ],
-           
+
         ];
 
     }
@@ -142,18 +141,18 @@ class CreateOrderController extends Controller
                 'label' => 'Created At',
                 'type' => 'date',
             ],
-             [
+            [
                 'name' => 'customer_id',
                 'label' => 'Customer',
                 'type' => 'select',
                 'options' => getList('Customer'),
-            ]
-           
+            ],
+
         ];
-        if(is_admin()){
-            array_push( $filterable_fields, [
+        if (is_admin()) {
+            array_push($filterable_fields, [
                 'name' => 'store_id',
-                'label' => 'Store orders',
+                'label' => 'Store',
                 'type' => 'select',
                 'options' => getList('Store'),
             ]);
@@ -211,7 +210,7 @@ class CreateOrderController extends Controller
                 });
             }
             $query = $this->buildFilter($request, $query);
-            $list = $query->paginate($this->pagination_count);
+            $list = $query->latest()->paginate($this->pagination_count);
             $view_data = [
                 'list' => $list,
                 'dashboard_url' => $this->dashboard_url,
@@ -235,6 +234,7 @@ class CreateOrderController extends Controller
 
     public function create()
     {
+        $prod_list= is_admin() ? getListProductWithQty() : getListAssignedProduct();
         $repeating_group_inputs = [
             [
                 'colname' => 'items',
@@ -248,7 +248,7 @@ class CreateOrderController extends Controller
                         'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => is_admin() ? getListProductWithQty() : getListAssignedProduct(),
+                        'options' =>$prod_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -405,12 +405,12 @@ class CreateOrderController extends Controller
                 $name = isset($t[$v->product_id]) ? $t[$v->product_id]['name'] : '';
                 $price = isset($t[$v->product_id]) ? $t[$v->product_id]['price'] : '';
                 $sgst = isset($t[$v->product_id]) ? $t[$v->product_id]['sgst'] : '';
-                $csgt = isset($t[$v->product_id]) ? $t[$v->product_id]['cgst'] : '';
+                $cgst = isset($t[$v->product_id]) ? $t[$v->product_id]['cgst'] : '';
                 $inclusive = isset($t[$v->product_id]) ? $t[$v->product_id]['tax_inclusive'] : 'Yes';
                 $v->name = $name;
                 $v->price = $price;
                 $v->sgst = $sgst;
-                $v->csgt = $price;
+                $v->cgst = $cgst;
                 $v->tax_inclusive = $inclusive;
                 $total += $price * $v->quantity;
                 return $v;
@@ -449,7 +449,7 @@ class CreateOrderController extends Controller
 //dd($update_string);
             $post['items'] = json_encode($ar);
             $post['total'] = $total;
-            //  $post['due_amount'] = $total;
+            $post['due_amount'] = $total;
             //$post['uid']=
 
             $post['store_id'] = $store_id;
@@ -489,7 +489,7 @@ class CreateOrderController extends Controller
                 }
 
             }
-         /*   $data['settings'] = \DB::table('setting')->whereId(1)->first();
+            /*   $data['settings'] = \DB::table('setting')->whereId(1)->first();
             $customer = \App\Models\Customer::with(['state', 'city'])->whereId($post['customer_id'])->first();
 
             $data['item_rows'] = $ar;
@@ -514,6 +514,8 @@ class CreateOrderController extends Controller
     {
 
         $model = CreateOrder::findOrFail($id);
+        $prod_list = is_admin() ? getListProductWithQty() : getListAssignedProduct();
+
         $repeating_group_inputs = [
             [
                 'colname' => 'items',
@@ -527,7 +529,7 @@ class CreateOrderController extends Controller
                         'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => is_admin() ? getListProductWithQty() : getListAssignedProduct(),
+                        'options' =>$prod_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -543,7 +545,9 @@ class CreateOrderController extends Controller
                 ],
             ],
         ];
-
+      $cutomer_list=getList('Customer');
+    
+      $driver_list=getList('Driver');
         $data = [
             [
                 'label' => null,
@@ -563,10 +567,10 @@ class CreateOrderController extends Controller
                         'label' => 'Customer Id',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', true) : getList('Customer')[0]->id,
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'customer_id', true) :  (!empty($customer_list) ? $customer_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Customer'),
+                        'options' => $cutomer_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -575,10 +579,11 @@ class CreateOrderController extends Controller
                         'label' => 'Driver Id',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', true) : getList('Driver')[0]->id,
+                             'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'driver_id', true) :  (!empty($driver_list) ? $driver_list[0]->id : ''),
+                  
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Driver'),
+                        'options' => $driver_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -743,6 +748,7 @@ class CreateOrderController extends Controller
                     }
                 }
             }
+            unset($post['items']);
             $createorder->update($post);
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {

@@ -18,7 +18,6 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-                <input name="ids[]" class="form-check-input" type="checkbox" id="check_all" value="{{ $r->id }}" />
 
 
             </td>

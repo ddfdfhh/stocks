@@ -21,7 +21,7 @@ if (!function_exists('formateDate')) {
 if (!function_exists('formateNumber')) {
     function formateNumber($v, $decimal = 2)
     {
-        return strlen($v) >0 ?number_format($v,$decimal):'';
+        return strlen($v) > 0 ? number_format($v, $decimal) : '';
     }
 }
 function getFieldById($model, $id, $field)
@@ -128,6 +128,25 @@ function isFieldPresentInRelation($rel_ar, $field)
     }
     return $found;
 }
+function isFieldPresentInRelationTableAsColumn($rel_ar, $field)
+{
+    $found = -1;
+    $i = 0;
+    foreach ($rel_ar as $item) {
+        $class = $item['class'];
+        $table = app($class)->getTable();
+        $columns = \DB::getSchemaBuilder()->getColumnListing($table);
+
+        if (in_array($field, $columns)) {
+            $found = $i;
+
+            break;
+
+            $i++;
+        }
+    }
+    return $found;
+}
 
 function getForeignKeyFieldValue($rel_ar, $row, $field, $key_toget_as_per_relation = ['BelongsTo' => 'name'])
 {
@@ -143,7 +162,7 @@ function getForeignKeyFieldValue($rel_ar, $row, $field, $key_toget_as_per_relati
         if ($field == $item['name']) {
 
             if ($item['type'] == 'BelongsTo' || $item['type'] == 'HasOne') {
-                $resp = $row->{$field}? $row->{$field}->{$get_by_field}:'';
+                $resp = $row->{$field} ? $row->{$field}->{$get_by_field} : '';
             } elseif ($item['type'] == 'HasMany' || $item['type'] == 'ManyToMany') {
 
                 if ($row->{$field}) {
@@ -306,8 +325,8 @@ function showArrayInColumn($arr = [], $row_index = 0, $by_json_key = 'id', $size
             $header = '<tr>';
             foreach ($keys as $k) {
                 if (!str_contains($k, '_id') || $k != $by_json_key) {
-                    $k=str_replace('_',' ',$k);
-                    $k=ucwords($k);
+                    $k = str_replace('_', ' ', $k);
+                    $k = ucwords($k);
                     $header .= '<th>' . $k . '</th>';
                 }
 
@@ -333,7 +352,7 @@ function showArrayInColumn($arr = [], $row_index = 0, $by_json_key = 'id', $size
                     }
                 }
                 if ($show_delete) {$body .= <<<STR
-                        <td><button class="btn btn-xs btn-danger" onClick="deleteJsonColumnData({$delete_data_info["row_id_val"]},'{$by_json_key}','{$delete_data_info["table"]}',{$val[$by_json_key]},'{$delete_data_info["json_column_name"]}','{$delete_data_info["delete_url"]}')"><i class="bx bx-trash"></i></button></td>
+                        <td><button class="btn btn-xs btn-danger" onClick="deleteJsonColumnData({$delete_data_info["row_id_val"]},'{$by_json_key}','{$delete_data_info["table"]}','{$val[$by_json_key]}','{$delete_data_info["json_column_name"]}','{$delete_data_info["delete_url"]}')"><i class="bx bx-trash"></i></button></td>
                         STR;
                 }
 
@@ -657,26 +676,24 @@ function getList($model, $where = [], $by_field = 'name')
 }
 function getListAssignedProduct()
 {
-    $store=\DB::table('stores')->whereOwnerId(auth()->id())->first();
+    $store = \DB::table('stores')->whereOwnerId(auth()->id())->first();
     $lists = \App\Models\StoreAssignedProductStock::with('product:id,name')->whereStoreId($store->id)->get();
-   
-    
+
     $list2 = [];
     foreach ($lists as $list) {
-        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name.' ('.$list->current_quantity.')'];
+        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name . ' (' . $list->current_quantity . ')'];
         array_push($list2, $ar);
     }
     return $list2;
 }
 function getListProductWithQty()
 {
-   
+
     $lists = \App\Models\AdminProductStock::with('product:id,name')->get();
-   
-    
+
     $list2 = [];
     foreach ($lists as $list) {
-        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name.' ('.$list->current_quantity.')'];
+        $ar = (object) ['id' => $list->product_id, 'name' => $list->product->name . ' (' . $list->current_quantity . ')'];
         array_push($list2, $ar);
     }
     return $list2;
@@ -697,8 +714,8 @@ function getListMaterialWithQty()
 
 function getUserListWithRoles($role = 'name')
 {
-    
-    $lists = \App\Models\User::role($role)->get(['name','id'])->toArray();
+
+    $lists = \App\Models\User::role($role)->get(['name', 'id'])->toArray();
 //dd($lists);
     $list2 = [];
     foreach ($lists as $list) {
@@ -722,19 +739,19 @@ function getListOnlyNonIdValue($model, $where = [], $by_field = 'name')
 }
 function getListWithSameIdAndName($model, $where = [], $by_field = 'name')
 {
-   $model_class = "\App\Models" . '\\' . $model;
-$lists = $model_class::query();
-if (count($where) > 0) {
-    $lists = $lists->where('status', 'Active')->where($where);
-}
-$lists = $lists->get(['id', $by_field]);
+    $model_class = "\App\Models" . '\\' . $model;
+    $lists = $model_class::query();
+    if (count($where) > 0) {
+        $lists = $lists->where('status', 'Active')->where($where);
+    }
+    $lists = $lists->get(['id', $by_field]);
 
-$list2 = [];
-foreach ($lists as $list) {
-    $ar = (object) ['id' => $list[$by_field], 'name' => $list[$by_field]];
-    array_push($list2, $ar);
-}
-return $list2;
+    $list2 = [];
+    foreach ($lists as $list) {
+        $ar = (object) ['id' => $list[$by_field], 'name' => $list[$by_field]];
+        array_push($list2, $ar);
+    }
+    return $list2;
 
 }
 
@@ -845,7 +862,7 @@ function formatDefaultValueForCheckbox($model, $field)
 }
 function is_admin()
 {
-   
+
     return auth()->user()->hasRole(['Admin']);
 }
 function can($permission)
@@ -858,7 +875,7 @@ function getDailyRecord($table, $date_column = 'created_at', $to_do = 'sum', $co
 {
     $perday_records = null;
     if ($to_do == 'sum') {
-        $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, Date(`" . $date_column . "`) AS d FROM  " . $table . " WHERE Date(`" . $date_column . "`) BETWEEN ADDDATE(NOW(),-" . $for_days . ") 
+        $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, Date(`" . $date_column . "`) AS d FROM  " . $table . " WHERE Date(`" . $date_column . "`) BETWEEN ADDDATE(NOW(),-" . $for_days . ")
         AND NOW()  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY Date(`" . $date_column . "`) ORDER BY DATE(`" . $date_column . "`) DESC";
     } else {
         $query = "SELECT COUNT(*) AS c, Date(`" . $date_column . "`) AS d FROM  " . $table . " WHERE Date(`" . $date_column . "`)
@@ -881,7 +898,7 @@ function getMonthlyRecord($table, $date_column = 'created_at', $to_do = 'sum', $
         $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, MONTH(`" . $date_column . "`) AS m FROM  " . $table . "
          WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY MONTH(`" . $date_column . "`)";
     } else {
-       $query = "SELECT COUNT(*) AS c, MONTH(`" . $date_column . "`) AS m FROM  " . $table . "
+        $query = "SELECT COUNT(*) AS c, MONTH(`" . $date_column . "`) AS m FROM  " . $table . "
          WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY MONTH(`" . $date_column . "`)";
 
     }
@@ -906,20 +923,20 @@ function getMonthlyRecord($table, $date_column = 'created_at', $to_do = 'sum', $
         }
     }
 
-    return  array_values($monthly_records_val);
+    return array_values($monthly_records_val);
 
 }
-function getWeeklyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount",$no_weeks=4)
+function getWeeklyRecord($table, $date_column = 'created_at', $to_do = 'sum', $cond = "", $column_for_sum = "amount", $no_weeks = 4)
 {
-    
+
     $monthly_records = null;
     if ($to_do == 'sum') {
         $query = "SELECT SUM(`" . $column_for_sum . "`) AS total, WEEK(`" . $date_column . "`) AS w FROM  " . $table . "
-         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())   AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL ".$no_weeks." WEEK)
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW())   AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL " . $no_weeks . " WEEK)
         AND NOW() " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY WEEK(`" . $date_column . "`) ORDER BY WEEK(`" . $date_column . "`) DESC";
     } else {
         $query = "SELECT COUNT(*) AS c, WEEK(`" . $date_column . "`) AS w FROM  " . $table . "
-         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW()) AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL ".$no_weeks." WEEK)
+         WHERE YEAR(`" . $date_column . "`) =YEAR(NOW()) AND  Date(`" . $date_column . "`) BETWEEN (NOW() - INTERVAL " . $no_weeks . " WEEK)
         AND NOW()  " . (strlen($cond) > 1 ? "AND " . $cond : null) . " GROUP BY WEEK(`" . $date_column . "`) ORDER BY WEEK(`" . $date_column . "`) DESC";
 
     }
@@ -927,11 +944,9 @@ function getWeeklyRecord($table, $date_column = 'created_at', $to_do = 'sum', $c
     //dd($query);
     $weekly_records = \DB::select($query);
 
-    
-
     $weekly_records = collect($weekly_records)->pluck($to_do == 'sum' ? 'total' : 'c', 'w')->toArray();
     $weekly_records_val = [];
-    $i=1;
+    $i = 1;
     foreach (array_keys($weekly_records) as $w) {
         if (isset($weekly_records[$w])) {
             $weekly_records_val[$i] = $weekly_records[$w];
@@ -945,3 +960,38 @@ function getWeeklyRecord($table, $date_column = 'created_at', $to_do = 'sum', $c
 
 }
 
+function getIndianCurrency(float $number)
+{
+    $decimal = round($number - ($no = floor($number)), 2) * 100;
+    $hundred = null;
+    $digits_length = strlen($no);
+    $i = 0;
+    $str = array();
+    $words = array(0 => '', 1 => 'one', 2 => 'two',
+        3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six',
+        7 => 'seven', 8 => 'eight', 9 => 'nine',
+        10 => 'ten', 11 => 'eleven', 12 => 'twelve',
+        13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
+        16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen',
+        19 => 'nineteen', 20 => 'twenty', 30 => 'thirty',
+        40 => 'forty', 50 => 'fifty', 60 => 'sixty',
+        70 => 'seventy', 80 => 'eighty', 90 => 'ninety');
+    $digits = array('', 'hundred', 'thousand', 'lakh', 'crore');
+    while ($i < $digits_length) {
+        $divider = ($i == 2) ? 10 : 100;
+        $number = floor($no % $divider);
+        $no = floor($no / $divider);
+        $i += $divider == 10 ? 1 : 2;
+        if ($number) {
+            $plural = (($counter = count($str)) && $number > 9) ? 's' : null;
+            $hundred = ($counter == 1 && $str[0]) ? ' and ' : null;
+            $str[] = ($number < 21) ? $words[$number] . ' ' . $digits[$counter] . $plural . ' ' . $hundred : $words[floor($number / 10) * 10] . ' ' . $words[$number % 10] . ' ' . $digits[$counter] . $plural . ' ' . $hundred;
+        } else {
+            $str[] = null;
+        }
+
+    }
+    $Rupees = implode('', array_reverse($str));
+    $paise = ($decimal > 0) ? "." . ($words[$decimal / 10] . " " . $words[$decimal % 10]) . ' Paise' : '';
+    return ($Rupees ? $Rupees . 'Rupees ' : '') . $paise;
+}

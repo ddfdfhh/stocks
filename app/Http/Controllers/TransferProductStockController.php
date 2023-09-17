@@ -123,13 +123,13 @@ class TransferProductStockController extends Controller
         $filterable_fields = [
             [
                 'name' => 'store_id',
-                'label' => 'Store Id',
+                'label' => 'Store',
                 'type' => 'select',
                 'options' => getList('Store'),
             ],
             [
                 'name' => 'product_id',
-                'label' => 'Product Id',
+                'label' => 'Product',
                 'type' => 'select',
                 'options' => getList('Product'),
             ],
@@ -717,7 +717,8 @@ class TransferProductStockController extends Controller
                 return createResponse(false, 'Dont have permission to update');
             }
             $model = TransferProductStock::findOrFail($id);
-
+           $store_list=getList('Store');
+           $prod_list=getListProductWithQty();
             $data1 = [
                 [
                     'label' => null,
@@ -736,10 +737,10 @@ class TransferProductStockController extends Controller
                             'label' => 'Select Store',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'store_id', false) : (!empty(getList('Store')) ? getList('Store')[0]->id : ''),
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'store_id', false) : (!empty($store_list) ?$store_list[0]->id : ''),
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getList('Store'),
+                            'options' => $store_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],
@@ -748,10 +749,10 @@ class TransferProductStockController extends Controller
                             'label' => 'Select Product',
                             'tag' => 'select',
                             'type' => 'select',
-                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty(getListProductWithQty()) ? getListProductWithQty()[0]->id : ''),
+                            'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', false) : (!empty($prod_list) ? $prod_list[0]->id : ''),
                             'attr' => [],
                             'custom_key_for_option' => 'name',
-                            'options' => getListProductWithQty(),
+                            'options' =>$prod_list,
                             'custom_id_for_option' => 'id',
                             'multiple' => false,
                         ],

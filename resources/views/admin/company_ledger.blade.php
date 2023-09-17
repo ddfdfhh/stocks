@@ -7,12 +7,41 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap">
                     <h5>Company Ledger </h5>
+                  <div class="d-flex">
 
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                           
+
+                           
+                                <button type="button"
+                                    class="rounded-0 dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span><i class="bx bx-export me-sm-2"></i> <span
+                                            class="d-none d-sm-inline-block">Export</span></span>
+                                </button>
+                                <ul class="dropdown-menu">
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                            href="{{ route('ledger.export', ['type' => 'excel']) }}?{{ http_build_query($_GET) }}"><span><i
+                                                    class="bx bx-printer me-2"></i>XLS</span></a>
+                                        <a class="dropdown-item"
+                                            href="{{ route('ledger.export', ['type' => 'csv']) }}?{{ http_build_query($_GET) }}"><span><i
+                                                    class="bx bx-file me-2"></i>CSV</span></a>
+                                       
+
+                                    </li>
+
+                                </ul>
+                           
+
+                        </div>
+                    </div>
                 </div>
                 <br>
                 <div class="d-flex justify-content-between flex-wrap mt-3">
                     <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
-
+                     
                         <x-filter :data="$filterable_fields" />
                     </div>
                     <x-search :searchableFields="$searchable_fields" />

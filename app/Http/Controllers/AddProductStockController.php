@@ -159,18 +159,21 @@ class AddProductStockController extends Controller
                 'label' => 'Quantity',
                 'type' => 'number',
             ],
-            [
-                'name' => 'store_id',
-                'label' => 'Store',
-                'type' => 'select',
-                'options' => getList('Store'),
-            ],
+           
             [
                 'name' => 'total_cost',
                 'label' => 'Total Cost',
                 'type' => 'number',
             ],
         ];
+        if(is_admin()){
+            array_push($filterable_fields, [
+                'name' => 'store_id',
+                'label' => 'Store',
+                'type' => 'select',
+                'options' => getList('Store'),
+            ]);
+        }
         $table_columns = $this->table_columns;
         if ($request->ajax()) {
             $sort_by = $request->get('sortby');
@@ -428,7 +431,16 @@ class AddProductStockController extends Controller
             } else {
                 $this->upsertAdminProductStock($post);
             }
+            \DB::table('company_ledger')->insert(
+                [
+                    'name' => 'Product Purchase Expense',
+                    'amount' => $post['total_cost'],
+                    'order_id' => null,
+                    'mode' => 'Spent',
+                    'receive_payment_id' => null,
 
+                ]
+            );
             \DB::commit();
             return createResponse(true, 'Stock added successfully', $this->index_url);
         } catch (\Exception $ex) {

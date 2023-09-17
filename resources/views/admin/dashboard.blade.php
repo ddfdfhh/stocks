@@ -689,7 +689,7 @@
                                     <div class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                         <h5 class="card-title mb-0 text-white ">Latest Sales <i
                                                 class="fa fa-long-arrow-right"></i> </h5>
-                                        <a href="{{ route('create_orders.index') }}" class="text-white btn btn-xs btn-warning"
+                                        <a href="{{ route('admin.company_ledger') }}" class="text-white btn btn-xs btn-warning"
                                             style="margin-left:5px">View All</a>
                                     </div>
                                     <div class="table-responsive mt-2">
@@ -771,7 +771,7 @@
                                             class="card-header bg-info text-white d-flex justify-content-between flex-wrap">
                                             <h5 class="card-title mb-0 text-white ">Latest Expenses <i
                                                     class="fa fa-long-arrow-right"></i> </h5>
-                                            <a href="{{ route('expenses.index') }}" class="text-white btn btn-xs btn-warning"
+                                            <a href="{{ route('admin.company_ledger') }}" class="text-white btn btn-xs btn-warning"
                                                 style="margin-left:5px">View All</a>
                                         </div>
                                         <div class="table-responsive mt-2">

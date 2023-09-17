@@ -29,8 +29,7 @@ class VehicleExport  implements FromQuery,WithColumnFormatting, WithMapping,With
     'vehicle_number',
     'model',
     'vehicle_type',
-    'document1',
-    'document2',
+   
     'created_at'
 ];
         

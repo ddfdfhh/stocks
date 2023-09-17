@@ -86,7 +86,7 @@
                     <div class="card-body">
 
                         <h5 class="pb-2 border-bottom mb-4">Enquired Products Details</h5>
-                     {!! showArrayInColumnNoPopup(json_decode($row->enquired_products_detail, true), 'product_id') !!}
+                        {!! showArrayInColumnNoPopup(json_decode($row->enquired_products_detail, true), 'product_id') !!}
                     </div>
                 </div>
                 <!-- /Plan Card -->
@@ -113,20 +113,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @php
-                           $conversations=$row->conversations?json_decode($row->conversations,true):[];
-                            @endphp
+                                @php
+                                    $conversations = $row->conversations ? json_decode($row->conversations, true) : [];
+                                @endphp
                                 @if ($row->conversations && count($conversations) > 0)
-                                    @foreach($conversations as $item)
+                                    @foreach ($conversations as $item)
                                         <tr id="row-{{ $item['by_user_id'] }}">
 
-                                            <td class="text-truncate"
-                                                style="word-wrap: break-word;max-width:600px;">
+                                            <td class="text-truncate" style="word-wrap: break-word;max-width:600px;">
                                                 {{ $item['message'] }}</td>
                                             <td class="text-truncate">{{ formateDate($item['date'], true) }}</td>
                                             <td class="text-truncate">
                                                 <button class="btn btn-xs btn-danger"
-                                                    onClick="deleteJsonColumnData({!! $row->id !!},'by_user_id','leads','{!! $item['by_user_id'] !!}','conversations','{!! route('deleteInJsonColumnData') !!}')">
+                                                    onClick="deleteJsonColumnData({!! $row->id !!},'id','leads','{!! $item['id'] !!}','conversations','{!! route('deleteInJsonColumnData') !!}')">
                                                     <i class="bx bx-trash"></i></button>
                                             </td>
 
@@ -151,7 +150,7 @@
 
                             <div class="row">
                                 <div class="mb-3 col-12 col-sm-12 ">
-                                    <div id="resp"></div>
+                                    <div id="resp-{{ $row->id }}"></div>
                                     <input type="hidden" name="lead_id" id="lead_id-{{ $row->id }}"
                                         value="{{ $row->id }}" />
                                     <textarea type="text" required name="conversation" id="conversation-{{ $row->id }}"

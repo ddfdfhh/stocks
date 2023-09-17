@@ -21,20 +21,24 @@
         <!-- Basic Bootstrap Table -->
         <div class="card">
             <div class="card-header">
-                <div class="d-flex justify-content-between flex-wrap">
+               <div class="d-flex justify-content-between">
                     <h5>All {{ properPluralName($plural_lowercase) }}</h5>
                     <div class="d-flex">
 
+
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            @if (auth()->user()->hasRole(['Admin','Store Incharge']))
-                               <button class="rounded-0  btn btn-primary" type="button"
-                                    onclick="load_form('{!! $module !!}','add','{!! route(strtolower($module) . '.loadAjaxForm') !!}',null,'{!! properSingularName($plural_lowercase) !!}')"
-                                    aria-controls="offcanvasEnd"> <i class="bx bx-plus-circle" style="margin-top:-3px"></i>  Add New</button>
+                            @if (!auth()->user()->hasRole(['Admin']))
+                                <button type="button" class="btn btn-primary text-white">
+                                    <a href="{{ route($plural_lowercase . '.create') }}"
+                                        class="text-decoration-none text-white">
+                                        <i class="bx bx-plus me-sm-2"></i>Add
+                                        {{ properSingularName($plural_lowercase) }}</a>
+                                </button>
                             @endif
 
                             @if ($has_export)
                                 <button type="button"
-                                    class="rounded-0 dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
+                                    class="dt-button buttons-collection btn btn-label-primary dropdown-toggle me-2"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <span><i class="bx bx-export me-sm-2"></i> <span
                                             class="d-none d-sm-inline-block">Export</span></span>
@@ -58,7 +62,22 @@
                             @endif
 
                         </div>
+
                     </div>
+
+
+
+
+
+                </div>
+                <br>
+                <div class="d-flex justify-content-between">
+
+                    <div class="d-flex flex-wrap justify-content-between " style="align-items: start;max-width:660px; ">
+
+                        <x-filter :data="$filterable_fields" />
+                    </div>
+                    <x-search :searchableFields="$searchable_fields" />
                 </div>
                
 

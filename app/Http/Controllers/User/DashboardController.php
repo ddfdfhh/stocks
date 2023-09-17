@@ -53,8 +53,8 @@ class DashboardController extends Controller
         $data['today_leads'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereDay('created_at', '=', Carbon::now()->day)->count();
         $data['total_leads_success'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->count();
         $data['today_leads_success'] = \DB::table('leads')->where('assigned_id',auth()->id())->whereStatus('Converted')->whereDay('created_at', '=', Carbon::now()->day)->count();
-        $data['top_five_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->orderBy('followup_date', 'ASC')->take(5)->get();
-        $data['top_five_today_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->where('assigned_id',auth()->id())->whereDay('followup_date', '=', Carbon::now()->day)->orderBy('followup_date', 'ASC')->take(5)->get();
+        $data['top_five_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->whereNotNull('followup_date')->where('assigned_id',auth()->id())->whereDate('created_at', '>=', Carbon::now())->orderBy('followup_date', 'ASC')->take(5)->get();
+        $data['top_five_today_followup'] = \DB::table('leads')->whereNotIn('status',['Failed','Converted'])->whereNotNull('followup_date')->where('assigned_id',auth()->id())->whereDay('followup_date', '=', Carbon::now()->day)->orderBy('followup_date', 'ASC')->take(5)->get();
         }
         else{
             $store=\DB::table('stores')->whereOwnerId(auth()->id())->first();

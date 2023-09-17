@@ -66,7 +66,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'IsAdmin'=>\App\Http\Middleware\IsAdmin::class,
         'IsUser'=>\App\Http\Middleware\IsUser::class,
-        'IsCustomer'=>\App\Http\Middleware\IsCustomer::class,
+        'IsTelecaller'=>\App\Http\Middleware\IsTelecaller::class,
+        'IsStoreIncharge'=>\App\Http\Middleware\IsStoreIncharge::class,
       
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,

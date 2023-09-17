@@ -115,17 +115,26 @@
                     <span>Date Issues:</span>
                     <span class="fw-semibold">{{ formateDate(date('Y-m-d')) }}</span>
                 </div>
+                
+                @if($row->due_amount)
                 <div>
-                    <span>Date Due:</span>
-                    <span class="fw-semibold">{{ formateDate(date('Y-m-d')) }}</span>
+                    <span>Payment Due:</span>
+                    <span class="fw-semibold">&#8377;{{ $row->due_amount }}</span>
                 </div>
+                @endif
+               
+                <div>
+                    <span>Paid Status:</span>
+                    <span class="fw-semibold">{{ $row->paid_status }}</span>
+                </div>
+              
             </div>
         </div>
 
         <hr />
 
-        <div class="row d-flex justify-content-between mb-4">
-            <div class="col-sm-6 w-8">
+        <div class="flex-row  d-flex justify-content-between mb-4">
+            <div class="mb-4">
                 <h6>Invoice To:</h6>
                 <p class="mb-1">{{ ucwords($customer->name) }}</p>
                 <p class="mb-1"><span class="me-1 fw-bold">Address-</span> {{ ucwords($customer->address) }}</p>
@@ -136,16 +145,16 @@
                 <p class="mb-0"><span class="me-1 fw-bold">Email-</span>{{ $customer->email }}</p>
                 <p class="mb-0"><span class="me-1 fw-bold">GSTIN-</span>{{ $customer->gst_number }}</p>
             </div>
-            <div class="col-sm-6 w-2" style="text-align:right;">
+            <div class="mb-4" style="text-align:right;">
                 <h6>Bill To:</h6>
-                <p class="mb-1">{{ ucwords($customer->name) }}</p>
-                <p class="mb-1"> {{ ucwords($customer->address) }}</p>
+               <p class="mb-1">{{ ucwords($customer->name) }}</p>
+                <p class="mb-1"><span class="me-1 fw-bold">Address-</span> {{ ucwords($customer->address) }}</p>
                 <p class="mb-1">{{ ucwords($customer->city->name) }},{{ ucwords($customer->state->name) }},INDIA
                 </p>
 
-                <p class="mb-1"> +91 {{ $customer->mobile_no }}</p>
-                <p class="mb-0">{{ $customer->email }}</p>
-                <p class="mb-0">{{ $customer->gst_number }}</p>
+                <p class="mb-1"><span class="me-1 fw-bold">Phone No-</span> +91 {{ $customer->mobile_no }}</p>
+                <p class="mb-0"><span class="me-1 fw-bold">Email-</span>{{ $customer->email }}</p>
+                <p class="mb-0"><span class="me-1 fw-bold">GSTIN-</span>{{ $customer->gst_number }}</p>
             </div>
         </div>
         @php
@@ -172,9 +181,9 @@
                 <tbody>
                     @foreach (json_decode($row->items, true) as $item)
                         @php
-                            
-                            $item['cgst'] = isset($item['cgst']) ? $item['cgst'] : 18;
-                            $item['sgst'] = isset($item['sgst']) ? $item['sgst'] : 18;
+                           
+                            $item['cgst'] = isset($item['cgst']) && $item['cgst']>0 ? $item['cgst'] : 0;
+                            $item['sgst'] = isset($item['sgst']) && $item['sgst']>0  ? $item['sgst'] : 0;
                             $item['tax_inclusive'] = isset($item['tax_inclusive']) ? $item['tax_inclusive'] : 'Yes';
                             $sub_sgst = $item['sgst'] >0 ? ($item['price'] * $item['sgst']) / 100:0.0;
                             $sub_cgst = $item['cgst'] >0 ?  ($item['price'] * $item['cgst']) / 100:0.0;
@@ -200,12 +209,16 @@
                                 @endif
                             </td>
                             <td class="tm_width_3">
-                                &#8377;{{ $sub_total }}
+                                &#8377;{{ number_format($sub,2) }}
                             </td>
 
                         </tr>
                     @endforeach
                     <tr>
+                        @php
+                        $total_sgst_tax=($row->should_be_taxed == 'Yes')?$total_sgst_tax:0;
+                        $total_cgst_tax=($row->should_be_taxed == 'Yes')?$total_cgst_tax:0;
+                        @endphp
                         <td colspan="3" class="align-top px-4 py-3">
 
                         </td>
@@ -215,15 +228,23 @@
                             <p class="mb-2">Total SGST Tax:</p>
                             <p class="mb-2">Total CGST Tax:</p>
                             <p class="mb-0">Total:</p>
+                            <p class="mb-0">In Words:</p>
                         </td>
                         <td class="px-4 py-3">
-                            <p class="fw-semibold mb-2"> &#8377;{{ $sub_total }}</p>
-                            <p class="fw-semibold mb-2"> &#8377;{{ $total_sgst_tax }}</p>
-                            <p class="fw-semibold mb-2"> &#8377;{{ $total_cgst_tax }}</p>
+                            <p class="fw-semibold mb-2"> &#8377;{{ number_format($sub_total,2) }}</p>
+                            <p class="fw-semibold mb-2">
+                                 &#8377;{{ number_format($total_sgst_tax,2) }}</p>
+                            <p class="fw-semibold mb-2"> &#8377;{{ number_format($total_cgst_tax,2) }}</p>
                             <p class="fw-semibold mb-0">
-                                &#8377;{{ $sub_total + $total_cgst_tax + $total_sgst_tax }}
-                        </td>
-                        </p>
+                                &#8377;{{ number_format($sub_total + $total_cgst_tax + $total_sgst_tax,2) }}
+                               
+                        
+                            </p>
+                             <p class="fw-semibold mb-0">
+                               
+                                {{getIndianCurrency($sub_total + $total_cgst_tax + $total_sgst_tax)}}
+                        
+                            </p>
                         </td>
                     </tr>
                 </tbody>

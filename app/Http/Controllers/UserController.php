@@ -242,6 +242,14 @@ class UserController extends Controller
 
     public function create()
     {
+        $lists = \App\Models\Role::where('id', '!=', 1)->get(['id', 'name']);
+
+        $list_roles = [];
+        foreach ($lists as $list) {
+            $ar = (object) ['id' => $list['name'], 'name' => $list['name']];
+            array_push($list_roles, $ar);
+        }
+
         $data = [
             [
                 'label' => null,
@@ -334,7 +342,7 @@ class UserController extends Controller
                         'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Role'),
+                        'options' =>$list_roles,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -454,6 +462,8 @@ class UserController extends Controller
             }
             // dd($post);
             $user = User::create($post);
+            $user->syncRoles([]);
+
             $user->assignRole($request->role);
             if ($this->has_upload) {
                 foreach ($this->form_image_field_name as $item) {
@@ -491,7 +501,13 @@ class UserController extends Controller
 
         $model = User::findOrFail($id);
         $roles = $model->getRoleNames()->toArray();
+ $lists = \App\Models\Role::where('id', '!=', 1)->get(['id', 'name']);
 
+        $list_roles = [];
+        foreach ($lists as $list) {
+            $ar = (object) ['id' => $list['name'], 'name' => $list['name']];
+            array_push($list_roles, $ar);
+        }
         $data = [
             [
                 'label' => null,
@@ -586,7 +602,7 @@ class UserController extends Controller
                         'default' => $roles[0],
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getListWithSameIdAndName('Role'),
+                        'options' => $list_roles,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -725,7 +741,7 @@ class UserController extends Controller
                 unset($post['password']);
             }
             $user->update($post);
-            // dd($request->role);
+            $user->syncRoles([]);
             $user->assignRole($request->role);
 
             if ($this->has_upload) {

@@ -18,8 +18,7 @@
         <tr id="row-{{ $r->id }}">
             <td>
                 {{ $i++ }}
-                <input name="ids[]" class="form-check-input" type="checkbox" id="check_all" value="{{ $r->id }}" />
-
+             
 
             </td>
             @foreach ($table_columns as $t)
@@ -93,7 +92,7 @@
                                     }, $tr);
                                   
                                    $delete_data_info=['row_id_val'=>$r->id,'table'=>'leads','json_column_name'=>'conversations','delete_url'=>route('deleteInJsonColumnData')];
-                                    echo showArrayInColumn($tr, $l,'by_user_id','lg','Remarks',true,$delete_data_info);
+                                    echo showArrayInColumn($tr, $l,'id','lg','Remarks',true,$delete_data_info);
                                 } else {
                                     echo $r->{$t};
                                 }

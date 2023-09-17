@@ -92,7 +92,8 @@
                                                         $tr = json_decode($row->{$t}, true);
                                                     
                                                         if ($tr !== null) {
-                                                            echo showArrayInColumn($tr, $l);
+                                                            
+                                                            echo showArrayInColumn($tr, $l,'product_id','lg');
                                                         } else {
                                                             echo $row->{$t};
                                                         }

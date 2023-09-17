@@ -16,9 +16,19 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-       $user=auth()->user();
-        if($user->hasRole(['User','Rider']))
-         return redirect(route('login'))->withError('You are not allowed to access this route');
-        return $next($request);
+        $user = auth()->user();
+        if (!is_null($user)) {
+            if (!$user->hasRole(['Admin'])) {
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'You are not allowed to access this route']);
+                } else {
+                    return redirect(route('login'));
+                }
+
+            }
+            return $next($request);
+        } else {
+            return redirect(route('login'));
+        }
     }
 }

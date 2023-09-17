@@ -38,7 +38,7 @@
                     </li>
                 @endif
 
-                @if (auth()->user()->hasRole(['Admin']) ||
+               {{-- @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('list_roles'))
                     <li class="menu-item @if ($last_uri == 'roles') active @endif">
                         <a href="{{ route('roles.index') }}" class="menu-link">
@@ -46,7 +46,7 @@
                             <div data-i18n="Calendar">Manage Roles</div>
                         </a>
                     </li>
-                @endif
+                @endif --}}
                {{-- @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('list_permissions'))
                     <li class="menu-item @if ($last_uri == 'permissions') active @endif">
@@ -165,34 +165,7 @@
             </ul>
         </li>
     @endif
-    @if (auth()->user()->hasRole(['Admin']) ||
-            auth()->user()->can('list_create_orders'))
-        <li class="menu-item @if ($last_uri == 'ledger') active @endif">
-            <a href="{{ route('admin.company_ledger') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-diamond"></i>
-                <div data-i18n="Calendar">Company Ledger </div>
-            </a>
-        </li>
-    @endif
-    @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||
-            auth()->user()->can('list_create_orders'))
-        <li class="menu-item @if ($last_uri == 'create_orders') active @endif">
-            <a href="{{ route('create_orders.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-diamond"></i>
-                <div data-i18n="Calendar">Manage Orders</div>
-            </a>
-        </li>
-    @endif
-    @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||
-            auth()->user()->can('list_receive_payments'))
-        <li class="menu-item @if ($last_uri == 'receive_payments') active @endif">
-            <a href="{{ route('receive_payments.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons fa fa-inr"></i>
-                <div data-i18n="Calendar">Receive Payments</div>
-            </a>
-        </li>
-    @endif
-    @if (auth()->user()->hasRole(['Admin']) ||
+       @if (auth()->user()->hasRole(['Admin']) ||
             auth()->user()->can('list_products'))
         <li class="menu-item @if (in_array($last_uri, $product_arr)) open @endif">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -230,6 +203,34 @@
             </ul>
         </li>
     @endif
+    @if (auth()->user()->hasRole(['Admin']) ||
+            auth()->user()->can('list_create_orders'))
+        <li class="menu-item @if ($last_uri == 'ledger') active @endif">
+            <a href="{{ route('admin.company_ledger') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <div data-i18n="Calendar">Company Ledger </div>
+            </a>
+        </li>
+    @endif
+    @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||
+            auth()->user()->can('list_create_orders'))
+        <li class="menu-item @if ($last_uri == 'create_orders') active @endif">
+            <a href="{{ route('create_orders.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-diamond"></i>
+                <div data-i18n="Calendar">Manage Orders</div>
+            </a>
+        </li>
+    @endif
+    @if (auth()->user()->hasRole(['Admin', 'Store Incharge']) ||
+            auth()->user()->can('list_receive_payments'))
+        <li class="menu-item @if ($last_uri == 'receive_payments') active @endif">
+            <a href="{{ route('receive_payments.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons fa fa-inr"></i>
+                <div data-i18n="Calendar">Receive Payments</div>
+            </a>
+        </li>
+    @endif
+ 
 
     @if (auth()->user()->hasRole(['Admin']) || can('list_leads'))
         <li class="menu-item @if (in_array($last_uri, $leads_arr)) open @endif">
@@ -285,7 +286,7 @@
                         <div data-i18n="Calendar">Manage Spendable Items</div>
                     </a>
                 </li>
-
+                
                 @if (auth()->user()->hasRole(['Admin']) ||
                         auth()->user()->can('list_expenses'))
                     <li class="menu-item @if ($last_uri == 'expenses') active @endif">
@@ -303,7 +304,7 @@
         </li>
     @endif
 
-
+ @if (auth()->user()->hasRole(['Admin']) || can('list_banktransactions'))
     <li class="menu-item @if ($last_uri == 'bank_transactions') active @endif">
         <a href="{{ route('bank_transactions.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-briefcase"></i>
@@ -311,7 +312,7 @@
         </a>
 
     </li>
-
+@endif
 
     @if (auth()->user()->hasRole(['Admin']) || can('list_stores'))
         <li class="menu-item @if (in_array($last_uri, $store_arr)) open @endif">

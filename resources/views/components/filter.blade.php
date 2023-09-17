@@ -4,10 +4,22 @@
     $data = $data;
 @endphp
 @if(!empty($data))
+@php
+$count=0;
+if(count($_GET)>0){
+unset($_GET['page']);
+foreach($_GET as $k=>$v){
+if(!empty($v))
+$count++;
+}
+}
+
+@endphp
+
 <div class="btn-group dropleft show" id="filter" >
     <button type="button" class="rounded-0 btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
         aria-expanded="true">
-        <i class="bx bx-filter-alt"></i>&nbsp;&nbsp;Filter
+        <i class="bx bx-filter-alt"></i>&nbsp;&nbsp;Filter  {!! $count>0?'<span class="badge bg-info text-white">'.$count.'</span>':'' !!} 
     </button>
     <div class="dropdown-menu dropleft p-3 shadow-lg" x-placement="left-start" id="dropdown_div"
         style="position: absolute; transform: translate3d(-202px, 0px, 0px); top: 0px; left: -32px;min-width:300px; will-change: transform;">

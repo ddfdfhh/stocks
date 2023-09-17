@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GeneratedProductStockRequest;
 use App\Models\GeneratedProductStock;
 use Maatwebsite\Excel\Facades\Excel;
-use \Illuminate\Http\Request;
 use \DB;
+use \Illuminate\Http\Request;
+
 class GeneratedProductStockController extends Controller
 {
     public function __construct()
@@ -18,7 +19,7 @@ class GeneratedProductStockController extends Controller
         $this->storage_folder = $this->view_folder;
         $this->has_upload = 0;
         $this->is_multiple_upload = 0;
-        $this->has_export = 1;
+        $this->has_export = 0;
         $this->pagination_count = 100;
 
         $this->table_columns = [
@@ -44,37 +45,7 @@ class GeneratedProductStockController extends Controller
             ],
         ];
         $this->form_image_field_name = [];
-        $this->repeating_group_inputs = [
-            [
-                'colname' => 'raw_materials',
-                'label' => 'Enter Raw Material',
-                'inputs' => [
-                    [
-                        'name' => 'raw_materials__json__material_id[]',
-                        'label' => 'Material',
-                        'tag' => 'select',
-                        'type' => 'select',
-                        'default' => '',
-                        'attr' => [
-                            'class' => 'prod_sel', 'onChange' => 'calculateProductPrice()',
-                        ],
-                        'custom_key_for_option' => 'name',
-                        'options' => getListMaterialWithQty(),
-                        'custom_id_for_option' => 'id',
-                        'multiple' => false,
-                    ],
-                    [
-                        'placeholder' => 'Enter quantity',
-                        'name' => 'raw_materials__json__quantity[]',
-                        'label' => 'Quantity',
-                        'tag' => 'input',
-                        'type' => 'number',
-                        'default' => '',
-                        'attr' => ['onChange' => 'calculateProductPrice()'],
-                    ],
-                ],
-            ],
-        ];
+
         $this->toggable_group = [];
         $this->model_relations = [
             [
@@ -199,6 +170,39 @@ class GeneratedProductStockController extends Controller
 
     public function create()
     {
+        $prod_list = getList('Product');
+        $this->repeating_group_inputs = [
+            [
+                'colname' => 'raw_materials',
+                'label' => 'Enter Raw Material',
+                'inputs' => [
+                    [
+                        'name' => 'raw_materials__json__material_id[]',
+                        'label' => 'Material',
+                        'tag' => 'select',
+                        'type' => 'select',
+                        'default' => '',
+                        'attr' => [
+                            'class' => 'prod_sel', 'onChange' => 'calculateProductPrice()',
+                        ],
+                        'custom_key_for_option' => 'name',
+                        'options' => getListMaterialWithQty(),
+                        'custom_id_for_option' => 'id',
+                        'multiple' => false,
+                    ],
+                    [
+                        'placeholder' => 'Enter quantity',
+                        'name' => 'raw_materials__json__quantity[]',
+                        'label' => 'Quantity',
+                        'tag' => 'input',
+                        'type' => 'number',
+                        'default' => '',
+                        'attr' => ['onChange' => 'calculateProductPrice()'],
+                    ],
+                ],
+            ],
+        ];
+
         $data = [
             [
                 'label' => 'Final Product',
@@ -211,7 +215,7 @@ class GeneratedProductStockController extends Controller
                         'default' => '',
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Product'),
+                        'options' => $prod_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -264,16 +268,15 @@ class GeneratedProductStockController extends Controller
         ];
         return view('admin.' . $this->view_folder . '.add', with($view_data));
     }
-     public function upsertAdminProductStock($post)
+    public function upsertAdminProductStock($post)
     {
         $qty = $post['quantity_produced'];
         $update = [
             'total_quantity' => DB::raw('total_quantity+' . $qty),
             'current_quantity' => DB::raw('current_quantity+' . $qty),
             'generated_quantity' => DB::raw('generated_quantity+' . $qty),
-           
+
         ];
-        
 
         if (\DB::table('admin_product_stocks')->where(['product_id' => $post['product_id']])->exists()) {
             \DB::table('admin_product_stocks')->where(['product_id' => $post['product_id']])->update($update);
@@ -300,8 +303,8 @@ class GeneratedProductStockController extends Controller
                 $unit_id = $material_unit_array[$v->material_id];
                 $name = isset($material_names_array[$v->material_id]) ? $material_names_array[$v->material_id] : '';
                 $v->name = $name;
+                $v->quantity = $v->quantity;
                 $v->unit = isset($unit_name_array[$unit_id]) ? $unit_name_array[$unit_id] : '';
-                $v->quantity=$v->quantity;
                 return $v;
             }, $ar);
             //dd($material_qty_array);
@@ -310,14 +313,14 @@ class GeneratedProductStockController extends Controller
                 return createResponse(false, 'Please add stock for raw materials');
 
             }
-           //print_r($material_qty_array);
-         //  dd($ar);
+            //print_r($material_qty_array);
+            //  dd($ar);
             if (count($ar) > 0) {
                 //   print_r($material_qty_array);
                 //   dd($ar);
                 foreach ($ar as $item) {
                     if ($item->material_id) {
-                     
+
                         if (isset($material_qty_array[$item->material_id])) { /***Mterial has stock addedd */
                             if ($material_qty_array[$item->material_id] < $item->quantity) {
                                 return createResponse(false, 'Insufficent quantity for ' . $item->name);
@@ -327,7 +330,7 @@ class GeneratedProductStockController extends Controller
 
                         }
                         \DB::table('material_stocks')->where('material_id', $item->material_id)
-                            ->decrement('current_stock', $item->quantity,['total_outgoing'=>\DB::raw('total_outgoing+'. $item->quantity)]);
+                            ->decrement('current_stock', $item->quantity, ['total_outgoing' => \DB::raw('total_outgoing+' . $item->quantity)]);
                     }
 
                 }
@@ -348,7 +351,7 @@ class GeneratedProductStockController extends Controller
     {
 
         $model = GeneratedProductStock::findOrFail($id);
-
+        $prod_list = getList('Product');
         $data = [
             [
                 'label' => 'Final Product',
@@ -358,10 +361,10 @@ class GeneratedProductStockController extends Controller
                         'label' => 'Product',
                         'tag' => 'select',
                         'type' => 'select',
-                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : getList('Product')[0]->id,
+                        'default' => isset($model) ? formatDefaultValueForSelectEdit($model, 'product_id', true) : ((!empty($prod_list)) ? $prod_list[0]->id : ''),
                         'attr' => [],
                         'custom_key_for_option' => 'name',
-                        'options' => getList('Product'),
+                        'options' => $prod_list,
                         'custom_id_for_option' => 'id',
                         'multiple' => false,
                     ],
@@ -793,21 +796,22 @@ class GeneratedProductStockController extends Controller
         if ($r->ajax()) {
             $post = $r->all();
             $sum = 0;
-            $material_ids = isset($post['raw_materials__json__material_id'])?$post['raw_materials__json__material_id']:[];
-            $material_qty = isset($post['raw_materials__json__quantity'])?array_values($post['raw_materials__json__quantity']):[];
+            $material_ids = isset($post['raw_materials__json__material_id']) ? $post['raw_materials__json__material_id'] : [];
+            $material_qty = isset($post['raw_materials__json__quantity']) ? array_values($post['raw_materials__json__quantity']) : [];
 
             $material_ids = array_values($material_ids);
             $t = \DB::table('input_material')->whereIn('id', $material_ids)->pluck('rate', 'id')->toArray();
             $i = 0;
-           if(count($material_ids)>0 && count($material_qty)>0){
-            foreach ($material_ids as $id) {
-               if(isset($material_qty[$i]) && isset( $t[$id]))
-                $sum += $t[$id] * $material_qty[$i];
+            if (count($material_ids) > 0 && count($material_qty) > 0) {
+                foreach ($material_ids as $id) {
+                    if (isset($material_qty[$i]) && isset($t[$id])) {
+                        $sum += $t[$id] * $material_qty[$i];
+                    }
 
-                $i++;
+                    $i++;
+                }
             }
-        }
-            return createResponse(true, $sum*$post['quantity_produced']);
+            return createResponse(true, $sum * $post['quantity_produced']);
         }
     }
 }
